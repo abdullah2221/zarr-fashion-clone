@@ -1,0 +1,27 @@
+<section class="featured">
+  <div class="featured__container">
+    <h2 class="featured__title">Featured Collections</h2>
+    
+    <div class="featured__grid">
+      @for (collection of collections; track collection.id) {
+        <div class="featured__item group">
+          <div class="featured__image-wrapper">
+            <img [src]="collection.imageUrl" [alt]="collection.name" class="featured__image" />
+            <div class="featured__overlay"></div>
+            
+            <!-- CTA overlay -->
+            <div class="featured__cta-overlay">
+              <span class="featured__cta-label">Want it?</span>
+              <span class="featured__cta-title">ZARR it.</span>
+              <button class="featured__cta-btn">Live Now</button>
+            </div>
+          </div>
+          <div class="featured__info">
+            <span class="featured__brand">{{ collection.brand }}</span>
+            <span class="featured__name">{{ collection.name }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

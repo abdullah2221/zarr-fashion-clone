@@ -1,0 +1,53 @@
+<section class="hero">
+  @for (slide of slides; track slide.id; let i = $index) {
+    <div 
+      class="hero__slide"
+      [class.hero__slide--active]="currentSlide() === i"
+    >
+      <!-- Background Image -->
+      <div class="hero__image-container">
+        <img 
+          [src]="slide.imageUrl" 
+          [alt]="slide.title"
+          class="hero__image"
+          [class.hero__image--zoom]="currentSlide() === i"
+        />
+        <div class="hero__overlay"></div>
+      </div>
+      
+      <!-- Content -->
+      <div class="hero__content">
+        <h2 class="hero__subtitle" [class.hero__subtitle--reveal]="currentSlide() === i">
+          {{ slide.subtitle }}
+        </h2>
+        <h1 class="hero__title" [class.hero__title--reveal]="currentSlide() === i">
+          {{ slide.title }}
+        </h1>
+        <button routerLink="/shop" class="hero__cta" [class.hero__cta--reveal]="currentSlide() === i">
+          {{ slide.ctaText }}
+        </button>
+      </div>
+    </div>
+  }
+  
+  <!-- Controls -->
+  <button class="hero__control hero__control--prev" (click)="prevSlide()" aria-label="Previous slide">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  
+  <button class="hero__control hero__control--next" (click)="nextSlide()" aria-label="Next slide">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  
+  <!-- Indicators -->
+  <div class="hero__indicators">
+    @for (slide of slides; track slide.id; let i = $index) {
+      <button 
+        class="hero__indicator"
+        [class.hero__indicator--active]="currentSlide() === i"
+        (click)="goToSlide(i)"
+        aria-label="Go to slide"
+      ></button>
+    }
+  </div>
+</section>

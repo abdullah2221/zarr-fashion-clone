@@ -1,0 +1,192 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.carousel {
+  padding: $spacing-16 0;
+  background-color: $color-white;
+  position: relative;
+
+  &__header {
+    max-width: 1280px;
+    margin: 0 auto $spacing-8;
+    padding: 0 $spacing-4;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    @include respond-to('sm') { padding: 0 $spacing-6; }
+    @include respond-to('lg') { padding: 0 $spacing-8; }
+  }
+
+  &__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  &__title {
+    font-family: $font-family-serif;
+    font-size: $font-size-3xl;
+    margin: 0;
+  }
+
+  &__tabs {
+    display: flex;
+    gap: $spacing-6;
+    border-bottom: 1px solid $color-gray-200;
+  }
+
+  &__tab {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    padding-bottom: $spacing-2;
+    border-bottom: 2px solid transparent;
+    @include transition;
+
+    &--active {
+      border-bottom-color: $color-black;
+      color: $color-black;
+    }
+
+    &:not(.carousel__tab--active) {
+      color: $color-gray-500;
+      &:hover {
+        color: $color-black;
+      }
+    }
+  }
+
+  &__wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  &__side-banner {
+    background-color: $color-black;
+    color: $color-white;
+    padding: $spacing-8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    margin-bottom: $spacing-8;
+
+    @include respond-to('lg') {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 250px;
+      height: 100%;
+      margin-bottom: 0;
+    }
+  }
+
+  &__banner-title {
+    font-family: $font-family-serif;
+    font-size: $font-size-2xl;
+    font-style: italic;
+    margin-bottom: $spacing-4;
+    margin-top: 0;
+  }
+
+  &__banner-text {
+    font-size: $font-size-xs;
+    color: $color-gray-300;
+    margin-bottom: $spacing-8;
+  }
+
+  &__banner-link {
+    font-size: $font-size-xs;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    @include transition(color);
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__track-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__track {
+    display: flex;
+    gap: $spacing-4;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: $spacing-8;
+    padding-left: $spacing-4;
+    padding-right: $spacing-4;
+
+    @include respond-to('sm') {
+      padding-left: $spacing-6;
+      padding-right: $spacing-6;
+    }
+
+    @include respond-to('md') {
+      gap: $spacing-6;
+    }
+
+    @include respond-to('lg') {
+      padding-left: $spacing-8;
+      padding-right: $spacing-8;
+
+      &--with-banner {
+        padding-left: 280px;
+      }
+    }
+  }
+
+  &__item {
+    flex: none;
+    width: 200px;
+    scroll-snap-align: start;
+
+    @include respond-to('md') {
+      width: 280px;
+    }
+  }
+
+  &__nav {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: $shadow-md;
+    border-radius: $border-radius-full;
+    @include flex-center;
+    color: $color-black;
+    z-index: 20;
+    @include transition;
+
+    @include respond-to('lg') {
+      display: flex;
+    }
+
+    &:hover {
+      background-color: $color-white;
+      color: $color-primary-dark;
+    }
+
+    &--left {
+      left: 0;
+      &.carousel__nav--offset {
+        left: 260px;
+      }
+    }
+
+    &--right {
+      right: $spacing-4;
+    }
+  }
+}

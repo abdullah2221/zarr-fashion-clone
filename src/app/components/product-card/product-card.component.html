@@ -1,0 +1,39 @@
+<div class="product-card" [routerLink]="['/product', product().id]">
+  <div class="product-card__image-wrapper">
+    <!-- Discount Badge -->
+    @if (product().discount) {
+      <app-badge [text]="product().discount!" variant="primary" class="product-card__badge"></app-badge>
+    }
+    
+    <img 
+      [src]="product().imageUrl" 
+      [alt]="product().name"
+      class="product-card__image product-card__image--primary"
+    />
+    <img 
+      [src]="product().hoverImageUrl" 
+      [alt]="product().name"
+      class="product-card__image product-card__image--secondary"
+    />
+    
+    <!-- Quick View Overlay -->
+    <div class="product-card__overlay">
+      <button class="product-card__quick-view" (click)="addToCart($event)">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+  
+  <div class="product-card__details">
+    <span class="product-card__brand">{{ product().brand }}</span>
+    <h3 class="product-card__name">
+      {{ product().name }}
+    </h3>
+    <div class="product-card__price-wrapper">
+      <span class="product-card__price">{{ product().price | appPrice | currency }}</span>
+      @if (product().originalPrice) {
+        <span class="product-card__price--original">{{ product().originalPrice | appPrice | currency }}</span>
+      }
+    </div>
+  </div>
+</div>

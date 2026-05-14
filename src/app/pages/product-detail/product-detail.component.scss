@@ -1,0 +1,206 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.product-detail {
+  padding: $spacing-12 0;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-4;
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-12;
+    align-items: start;
+
+    @include respond-to('md') {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  }
+
+  &__gallery {
+    position: sticky;
+    top: 100px;
+  }
+
+  &__main-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background-color: $color-gray-100;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-6;
+  }
+
+  &__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $color-gray-500;
+
+    a {
+      color: inherit;
+      @include transition(color);
+
+      &:hover {
+        color: $color-black;
+      }
+    }
+
+    .separator {
+      color: $color-gray-300;
+    }
+  }
+
+  &__title {
+    font-family: $font-family-serif;
+    font-size: $font-size-4xl;
+    font-weight: 500;
+    line-height: 1.2;
+    color: $color-black;
+  }
+
+  &__price-row {
+    margin-top: -$spacing-2;
+  }
+
+  &__price {
+    font-size: $font-size-2xl;
+    font-weight: 600;
+    color: $color-black;
+  }
+
+  &__description {
+    font-size: $font-size-base;
+    line-height: 1.6;
+    color: $color-gray-600;
+    max-width: 500px;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+    padding: $spacing-6 0;
+    border-top: 1px solid $color-gray-100;
+    border-bottom: 1px solid $color-gray-100;
+
+    &-item {
+      display: flex;
+      gap: $spacing-2;
+      font-size: $font-size-sm;
+
+      .label {
+        font-weight: 700;
+        color: $color-black;
+        min-width: 80px;
+      }
+
+      .value {
+        color: $color-gray-600;
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-4;
+    margin-top: $spacing-4;
+  }
+
+  &__add-btn {
+    flex: 1;
+    background-color: $color-black;
+    color: $color-white;
+    padding: $spacing-4;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    @include transition;
+
+    &:hover {
+      background-color: $color-primary;
+    }
+  }
+
+  &__wishlist-btn {
+    width: 56px;
+    height: 56px;
+    @include flex-center;
+    border: 1px solid $color-gray-200;
+    color: $color-black;
+    @include transition;
+
+    &:hover {
+      border-color: $color-black;
+      color: $color-accent;
+    }
+
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    margin-top: $spacing-4;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    font-size: $font-size-xs;
+    color: $color-gray-500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__not-found {
+    @include flex-center;
+    flex-direction: column;
+    padding: $spacing-24 $spacing-4;
+    text-align: center;
+    gap: $spacing-4;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: $color-gray-300;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: $font-size-3xl;
+    }
+
+    p {
+      color: $color-gray-500;
+      max-width: 400px;
+      margin-bottom: $spacing-4;
+    }
+  }
+}

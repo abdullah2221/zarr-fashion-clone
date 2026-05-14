@@ -1,0 +1,30 @@
+<app-hero></app-hero>
+
+<div class="reveal-section">
+  <app-category-scroll></app-category-scroll>
+</div>
+
+<div class="reveal-section">
+  <app-featured-collections></app-featured-collections>
+</div>
+
+<div class="reveal-section">
+  <app-product-carousel [title]="'Popular Right Now'" [products]="popularProducts()"></app-product-carousel>
+</div>
+
+<div class="reveal-section">
+  <app-product-carousel 
+    [title]="'On Sale Right Now'" 
+    [products]="saleProducts()"
+    sideBannerTitle="Shop the Sale For Her"
+    sideBannerText="Your favorite looks, now at can't-miss prices — shop chic pieces before they're gone!"
+  ></app-product-carousel>
+</div>
+
+<div class="reveal-section">
+  <app-brands-gallery></app-brands-gallery>
+</div>
+
+<div class="reveal-section">
+  <app-offers></app-offers>
+</div>

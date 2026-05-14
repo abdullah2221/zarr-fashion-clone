@@ -1,0 +1,329 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.cart {
+  padding: $spacing-12 0;
+  background-color: $color-gray-50;
+  min-height: 80vh;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-4;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; // Changed from baseline to center for better alignment
+    margin-bottom: $spacing-10;
+    padding-bottom: $spacing-6;
+    border-bottom: 1px solid $color-gray-200;
+
+    &-main {
+      display: flex;
+      align-items: baseline;
+      gap: $spacing-4;
+    }
+  }
+
+  &__back-btn {
+    display: none;
+    align-items: center;
+    gap: $spacing-2;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    @include transition;
+
+    @include respond-to('md') {
+      display: flex;
+    }
+
+    &:hover {
+      color: $color-black;
+      transform: translateX(-4px);
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__title {
+    font-family: $font-family-serif;
+    font-size: $font-size-3xl;
+    font-weight: 500;
+    color: $color-black;
+  }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-gray-500;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-8;
+    align-items: start;
+
+    @include respond-to('lg') {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  &__item {
+    display: flex;
+    gap: $spacing-4;
+    padding: $spacing-4;
+    background-color: $color-white;
+    border-radius: $border-radius-sm;
+    @include transition;
+
+    &:hover {
+      box-shadow: $shadow-sm;
+    }
+
+    &-image {
+      width: 120px;
+      aspect-ratio: 3/4;
+      background-color: $color-gray-100;
+      overflow: hidden;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-2;
+    }
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    &-name {
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $color-black;
+    }
+
+    &-remove {
+      color: $color-gray-400;
+      @include transition;
+      
+      &:hover {
+        color: $color-accent;
+      }
+
+      mat-icon {
+        font-size: 20px;
+      }
+    }
+
+    &-price {
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+    }
+
+    &-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &-quantity {
+      display: flex;
+      align-items: center;
+      border: 1px solid $color-gray-200;
+      border-radius: $border-radius-none;
+
+      .qty-btn {
+        width: 32px;
+        height: 32px;
+        @include flex-center;
+        color: $color-black;
+        @include transition;
+
+        &:disabled {
+          color: $color-gray-300;
+          cursor: not-allowed;
+        }
+
+        &:not(:disabled):hover {
+          background-color: $color-gray-100;
+        }
+
+        mat-icon {
+          font-size: 16px;
+        }
+      }
+
+      .qty-value {
+        width: 40px;
+        text-align: center;
+        font-size: $font-size-sm;
+        font-weight: 600;
+      }
+    }
+
+    &-total {
+      font-weight: 700;
+      color: $color-black;
+      font-size: $font-size-base;
+    }
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-6; // Increased spacing for more "premium" feel
+  }
+
+  &__summary {
+    position: sticky;
+    top: 100px;
+
+    &-card {
+      background-color: $color-white;
+      padding: $spacing-6;
+      border-radius: $border-radius-sm;
+      box-shadow: $shadow-sm;
+    }
+
+    &-title {
+      font-size: $font-size-lg;
+      font-weight: 600;
+      margin-bottom: $spacing-6;
+      color: $color-black;
+    }
+
+    &-rows {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-3;
+      margin-bottom: $spacing-6;
+    }
+
+    &-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: $font-size-sm;
+      color: $color-gray-600;
+
+      .free {
+        color: $color-success;
+        font-weight: 600;
+      }
+
+      &--total {
+        margin-top: $spacing-3;
+        padding-top: $spacing-4;
+        border-top: 1px solid $color-gray-100;
+        font-size: $font-size-lg;
+        font-weight: 700;
+        color: $color-black;
+      }
+    }
+
+    &-footer {
+      margin-top: $spacing-6;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-2;
+
+      p {
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+        font-size: $font-size-xs;
+        color: $color-gray-400;
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
+
+  &__checkout-btn {
+    width: 100%;
+    background-color: $color-black;
+    color: $color-white;
+    padding: $spacing-4;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    @include transition;
+
+    &:hover {
+      background-color: $color-primary;
+    }
+  }
+
+  &__empty {
+    @include flex-center;
+    flex-direction: column;
+    padding: $spacing-24 $spacing-4;
+    text-align: center;
+    background-color: $color-white;
+    border-radius: $border-radius-sm;
+
+    &-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: $color-gray-200;
+      margin-bottom: $spacing-4;
+    }
+
+    &-title {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      margin-bottom: $spacing-2;
+    }
+
+    &-text {
+      color: $color-gray-500;
+      max-width: 400px;
+      margin-bottom: $spacing-8;
+    }
+  }
+
+  &__shop-btn {
+    display: inline-block;
+    background-color: $color-black;
+    color: $color-white;
+    padding: $spacing-3 $spacing-8;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    @include transition;
+
+    &:hover {
+      background-color: $color-primary;
+    }
+  }
+}

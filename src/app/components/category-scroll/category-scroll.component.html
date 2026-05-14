@@ -1,0 +1,25 @@
+<section class="category-scroll">
+  <h2 class="category-scroll__title">Shop By Category</h2>
+  
+  <!-- Category Tabs -->
+  <div class="category-scroll__tabs">
+    <button class="category-scroll__tab category-scroll__tab--active">Women</button>
+    <button class="category-scroll__tab">Men</button>
+    <button class="category-scroll__tab">Kids</button>
+  </div>
+  
+  <!-- Scrollable container -->
+  <div class="category-scroll__container">
+    <div class="category-scroll__slider hide-scrollbar">
+      @for (category of categories; track category.id) {
+        <div class="category-scroll__item group">
+          <div class="category-scroll__image-wrapper">
+            <img [src]="category.imageUrl" [alt]="category.name" class="category-scroll__image" />
+            <div class="category-scroll__overlay"></div>
+          </div>
+          <h3 class="category-scroll__item-name">{{ category.name }}</h3>
+        </div>
+      }
+    </div>
+  </div>
+</section>

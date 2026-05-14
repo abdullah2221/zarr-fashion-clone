@@ -1,0 +1,73 @@
+@if (product(); as p) {
+  <section class="product-detail">
+    <div class="product-detail__container">
+      <div class="product-detail__grid">
+        
+        <!-- Gallery -->
+        <div class="product-detail__gallery">
+          <div class="product-detail__main-image">
+            <img [src]="p.imageUrl" [alt]="p.name">
+          </div>
+        </div>
+        
+        <!-- Info -->
+        <div class="product-detail__info">
+          <nav class="product-detail__breadcrumb">
+            <a routerLink="/">Home</a>
+            <span class="separator">/</span>
+            <a [routerLink]="['/shop']" [queryParams]="{category: p.category}">{{p.category}}</a>
+          </nav>
+          
+          <h1 class="product-detail__title">{{p.name}}</h1>
+          
+          <div class="product-detail__price-row">
+            <span class="product-detail__price">{{ p.price | appPrice | currency }}</span>
+          </div>
+          
+          <p class="product-detail__description">
+            {{ p.description || 'Elevate your wardrobe with this carefully crafted piece. Designed for both comfort and timeless style, it represents the essence of modern fashion.' }}
+          </p>
+          
+          <div class="product-detail__meta">
+            <div class="product-detail__meta-item">
+              <span class="label">SKU:</span>
+              <span class="value">ZF-{{ p.id }}</span>
+            </div>
+            <div class="product-detail__meta-item">
+              <span class="label">Category:</span>
+              <span class="value">{{ p.category }}</span>
+            </div>
+          </div>
+          
+          <div class="product-detail__actions">
+            <button class="product-detail__add-btn" (click)="addToCart()">
+              ADD TO BAG
+            </button>
+            <button class="product-detail__wishlist-btn" aria-label="Add to wishlist">
+              <mat-icon>favorite_border</mat-icon>
+            </button>
+          </div>
+          
+          <div class="product-detail__features">
+            <div class="product-detail__feature">
+              <mat-icon>local_shipping</mat-icon>
+              <span>Complimentary Shipping</span>
+            </div>
+            <div class="product-detail__feature">
+              <mat-icon>verified</mat-icon>
+              <span>2 Year Quality Guarantee</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+} @else {
+  <div class="product-detail__not-found">
+    <mat-icon>sentiment_dissatisfied</mat-icon>
+    <h2>Product Not Found</h2>
+    <p>The piece you're looking for might have moved or is currently unavailable.</p>
+    <a routerLink="/shop" class="btn btn--outline">Back to Shop</a>
+  </div>
+}

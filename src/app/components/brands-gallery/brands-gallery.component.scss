@@ -1,0 +1,208 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.brands {
+  padding: $spacing-16 0;
+  background-color: $color-white;
+  border-top: 1px solid $color-gray-100;
+
+  @include respond-to('md') {
+    padding: $spacing-24 0;
+  }
+
+  &__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 $spacing-4;
+    @include respond-to('sm') { padding: 0 $spacing-6; }
+    @include respond-to('lg') { padding: 0 $spacing-8; }
+  }
+
+  &__title {
+    font-family: $font-family-serif;
+    font-size: $font-size-3xl;
+    text-align: center;
+    margin-bottom: $spacing-12;
+    margin-top: 0;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: $spacing-8;
+    opacity: 0.8;
+    padding: $spacing-8 0;
+
+    @include respond-to('md') {
+      gap: $spacing-16;
+    }
+  }
+
+  &__logo {
+    min-width: 120px;
+    text-align: center;
+    @include transition(color);
+
+    &:hover {
+      color: $color-primary;
+    }
+
+    &--sahar {
+      font-family: $font-family-serif;
+      font-size: $font-size-lg;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    &--neeshay {
+      font-family: $font-family-serif;
+      font-size: $font-size-xl;
+      font-style: italic;
+      letter-spacing: normal;
+    }
+
+    &--buraq {
+      font-family: $font-family-sans;
+      font-size: $font-size-lg;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    &--yards {
+      font-family: $font-family-serif;
+      font-size: $font-size-xl;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+    }
+
+    &--azure {
+      font-family: $font-family-sans;
+      font-size: $font-size-lg;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: #1e3a8a; // blue-900
+    }
+
+    &--sadaf {
+      font-family: $font-family-sans;
+      font-size: $font-size-sm;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+    }
+
+    &--nainah {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    &--koel {
+      font-family: $font-family-sans;
+      font-size: $font-size-xl;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    &--naya-dour {
+      font-family: $font-family-serif;
+      font-size: $font-size-xl;
+      font-style: italic;
+      text-transform: lowercase;
+    }
+
+    &--mushq {
+      font-family: $font-family-sans;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.stats {
+  width: 100%;
+  background-color: #1c1c1c;
+  color: $color-white;
+  position: relative;
+  overflow: hidden;
+  padding: $spacing-16 0;
+
+  @include respond-to('md') {
+    padding: $spacing-24 0;
+  }
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 10;
+    max-width: 896px; // 4xl
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: $spacing-4;
+    color: $color-primary;
+    margin-top: 0;
+
+    @include respond-to('md') {
+      font-size: $font-size-base;
+    }
+  }
+
+  &__number {
+    font-family: $font-family-serif;
+    font-size: $font-size-5xl;
+    font-weight: 500;
+    color: $color-primary-dark;
+    margin-bottom: $spacing-4;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+
+    @include respond-to('md') {
+      font-size: $font-size-7xl;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0;
+
+    @include respond-to('md') {
+      font-size: $font-size-4xl;
+    }
+  }
+
+  &__divider {
+    width: 4rem;
+    height: 4px;
+    background-color: $color-primary-dark;
+    margin-top: $spacing-8;
+  }
+}

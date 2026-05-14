@@ -1,0 +1,82 @@
+<header 
+  class="navbar"
+  [class.navbar--transparent]="isHomePage() && isTop() && !isMenuOpen()"
+  [class.navbar--scrolled]="!isHomePage() || !isTop() || isMenuOpen()"
+>
+  <div class="navbar__container">
+    <div class="navbar__inner">
+      <!-- Mobile Menu/Back Button -->
+      <div class="navbar__mobile-toggle">
+        @if (!isFocusMode()) {
+          <button (click)="toggleMenu()" class="navbar__icon-btn" aria-label="Toggle menu">
+            <mat-icon>{{ isMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+          </button>
+        } @else {
+          <a routerLink="/shop" class="navbar__icon-btn" aria-label="Back to shop">
+            <mat-icon>chevron_left</mat-icon>
+          </a>
+        }
+      </div>
+      
+      <!-- Desktop Nav -->
+      @if (!isFocusMode()) {
+        <nav class="navbar__nav">
+          <a routerLink="/shop" class="navbar__link" routerLinkActive="active">SHOP ALL</a>
+          <a href="#" class="navbar__link">WOMEN</a>
+          <a href="#" class="navbar__link">MEN</a>
+        </nav>
+      } @else {
+        <nav class="navbar__nav">
+          <a routerLink="/shop" class="navbar__link navbar__link--back">
+            <mat-icon>chevron_left</mat-icon>
+            <span>BACK TO SHOP</span>
+          </a>
+        </nav>
+      }
+      
+      <!-- Logo -->
+      <div class="navbar__logo-wrapper">
+        <a routerLink="/" class="navbar__logo">
+          <span class="navbar__logo-accent">Z/</span>
+          <span class="navbar__logo-text">ZARR</span>
+        </a>
+      </div>
+      
+      <!-- Actions -->
+      <div class="navbar__actions">
+        @if (!isFocusMode()) {
+          <button class="navbar__icon-btn navbar__icon-btn--desktop" aria-label="Search">
+            <mat-icon>search</mat-icon>
+          </button>
+        }
+        <button class="navbar__icon-btn" aria-label="User profile">
+          <mat-icon>person</mat-icon>
+          <span class="navbar__icon-label">SIGN IN</span>
+        </button>
+        @if (!isFocusMode()) {
+          <button [routerLink]="['/cart']" class="navbar__icon-btn navbar__cart-btn" aria-label="Shopping bag">
+            <mat-icon>shopping_bag</mat-icon>
+            <span class="navbar__cart-count">{{ cartCount() }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div 
+    class="navbar__mobile-menu"
+    [class.navbar__mobile-menu--open]="isMenuOpen()"
+  >
+    <div class="navbar__mobile-inner">
+      <a routerLink="/" (click)="toggleMenu()" class="navbar__mobile-link">HOME</a>
+      <a routerLink="/shop" (click)="toggleMenu()" class="navbar__mobile-link">SHOP ALL</a>
+      <a href="#" class="navbar__mobile-link">WOMEN</a>
+      <a href="#" class="navbar__mobile-link">MEN</a>
+      <div class="navbar__divider"></div>
+      <a href="#" class="navbar__mobile-link navbar__mobile-link--search">
+        <mat-icon>search</mat-icon> Search
+      </a>
+    </div>
+  </div>
+</header>
