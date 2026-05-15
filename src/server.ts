@@ -7,8 +7,10 @@ import {
 import express from 'express';
 import {join} from 'node:path';
 import {loadServerEnvironment} from './server-env';
+import {installServerWebSocketTransport} from './server-websocket';
 
 loadServerEnvironment();
+installServerWebSocketTransport();
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 

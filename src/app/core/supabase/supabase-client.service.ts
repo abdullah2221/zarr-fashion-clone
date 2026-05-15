@@ -14,12 +14,17 @@ export class SupabaseClientService {
     if (!this.isConfigured()) return null;
 
     if (!this.client) {
+      const serverRealtimeOptions = !this.isBrowser && typeof globalThis.WebSocket !== 'undefined'
+        ? { transport: globalThis.WebSocket }
+        : undefined;
+
       this.client = createClient<Database>(this.config.url, this.config.anonKey, {
         auth: {
           persistSession: this.isBrowser,
           autoRefreshToken: this.isBrowser,
           detectSessionInUrl: this.isBrowser,
         },
+        realtime: serverRealtimeOptions,
       });
     }
 
