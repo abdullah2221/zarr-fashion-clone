@@ -36,7 +36,6 @@ export class NavbarComponent implements OnInit {
       const focusRoutes = ['/checkout', '/cart'];
       this.layoutService.setFocusMode(focusRoutes.some(route => url.startsWith(route)));
       
-      this.isMenuOpen.set(false);
       this.isMenuOpen.set(false); // Close menu on navigation
       
       // Reset scroll state

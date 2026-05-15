@@ -1,0 +1,313 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.shop-page {
+  app-campaign-chips {
+    display: inline-flex;
+    margin-top: $spacing-5;
+    justify-content: center;
+  }
+
+  app-trust-badge-strip {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
+
+  background: $color-white;
+  padding-top: $spacing-14;
+
+  &__hero {
+    @include premium-container($container-md);
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 5rem) 0 $spacing-10;
+
+    h1 {
+      font-family: $font-family-serif;
+      font-size: clamp(2.25rem, 5.4vw, 5.6rem);
+      line-height: 1.02;
+      font-weight: 500;
+      letter-spacing: -.05em;
+      max-width: 940px;
+      margin: $spacing-3 auto $spacing-4;
+    }
+
+    p {
+      max-width: 690px;
+      margin: 0 auto;
+      color: $color-gray-600;
+      line-height: 1.8;
+    }
+  }
+
+
+  &__container { @include premium-container($container-lg); }
+
+  &__promo {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    margin-bottom: $spacing-6;
+    padding: $spacing-5;
+    background: linear-gradient(135deg, $color-black, $color-rosewood);
+    color: $color-white;
+    box-shadow: $shadow-sm;
+
+    @include respond-to('md') {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    strong {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-weight: 500;
+    }
+
+    span {
+      color: $color-primary-light;
+      font-size: $font-size-sm;
+    }
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+    margin-bottom: $spacing-8;
+    padding-bottom: $spacing-5;
+    border-bottom: 1px solid $color-gray-200;
+
+    @include respond-to('lg') {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__chips {
+    display: flex;
+    gap: $spacing-2;
+    overflow-x: auto;
+    padding-bottom: $spacing-1;
+    max-width: 100%;
+
+    a {
+      flex: none;
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 $spacing-4;
+      border: 1px solid $color-gray-200;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      @include transition;
+
+      &.active, &:hover {
+        background: $color-black;
+        color: $color-white;
+        border-color: $color-black;
+      }
+    }
+  }
+
+  &__actions {
+    display: grid;
+    gap: $spacing-2;
+
+    @include respond-to('sm') {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  &__search,
+  &__sort {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-2;
+    border: 1px solid $color-gray-200;
+    padding: 0 $spacing-4;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: $color-gray-700;
+    white-space: nowrap;
+    @include transition;
+
+    &:hover {
+      border-color: $color-black;
+      background: $color-ivory;
+    }
+
+    .material-icons { font-size: 18px; color: $color-gray-500; }
+  }
+
+  &__search input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    min-width: 0;
+    font-size: $font-size-sm;
+  }
+
+  &__sort select {
+    border: 0;
+    background: transparent;
+    font-size: $font-size-sm;
+    color: $color-gray-700;
+  }
+}
+
+.shop-page {
+  &__layout {
+    display: grid;
+    gap: $spacing-6;
+
+    @include respond-to('lg') {
+      grid-template-columns: 280px minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  &__drawer {
+    padding: $spacing-5;
+    background: $color-ivory;
+    border: 1px solid rgba($color-black, .06);
+    display: grid;
+    gap: $spacing-5;
+    box-shadow: $shadow-sm;
+
+    @include respond-to('lg') {
+      position: sticky;
+      top: 126px;
+    }
+  }
+
+  &__drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    strong {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-weight: 500;
+    }
+
+    span {
+      color: $color-gray-500;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+  }
+
+  &__filter-group {
+    border-top: 1px solid rgba($color-black, .08);
+    padding-top: $spacing-4;
+    display: grid;
+    gap: $spacing-3;
+
+    h3 {
+      font-size: $font-size-xs;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      color: $color-gray-700;
+      font-size: $font-size-sm;
+
+      input {
+        accent-color: $color-black;
+      }
+    }
+  }
+
+  &__size-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+
+    button {
+      min-width: 42px;
+      min-height: 38px;
+      border: 1px solid $color-gray-300;
+      font-size: $font-size-xs;
+      font-weight: 800;
+      @include transition;
+
+      &:hover {
+        background: $color-black;
+        color: $color-white;
+        border-color: $color-black;
+      }
+    }
+  }
+
+  &__range {
+    height: 4px;
+    border-radius: $border-radius-full;
+    background: $color-gray-200;
+    overflow: hidden;
+
+    span {
+      display: block;
+      width: 68%;
+      height: 100%;
+      background: $color-primary-dark;
+    }
+  }
+
+  &__apply {
+    min-height: 46px;
+    background: $color-black;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    @include transition;
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  &__products { min-width: 0; }
+
+  &__result-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: $spacing-3;
+    margin-bottom: $spacing-5;
+    color: $color-gray-600;
+    font-size: $font-size-sm;
+
+    @media (max-width: 520px) {
+      flex-direction: column;
+      gap: $spacing-1;
+    }
+
+    strong {
+      color: $color-black;
+      white-space: nowrap;
+    }
+  }
+
+  &__loading-preview {
+    margin-top: $spacing-8;
+    opacity: .55;
+  }
+}

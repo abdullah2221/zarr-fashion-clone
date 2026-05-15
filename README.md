@@ -1,6 +1,6 @@
-# Zarr Fashion | Premium Angular E-commerce
+# UR-Fashion | Premium Pakistani Fashion E-commerce
 
-A medium-scale, production-ready Angular fashion e-commerce application.
+A medium-scale Angular fashion e-commerce storefront tailored for premium Pakistani fashion shopping.
 
 ## 🚀 Key Features
 

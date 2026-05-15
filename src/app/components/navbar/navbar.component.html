@@ -3,12 +3,20 @@
   [class.navbar--transparent]="isHomePage() && isTop() && !isMenuOpen()"
   [class.navbar--scrolled]="!isHomePage() || !isTop() || isMenuOpen()"
 >
+  @if (!isFocusMode()) {
+    <div class="navbar__announcement" aria-label="Store announcement">
+      <span>Free delivery over Rs. 4,999</span>
+      <span class="navbar__announcement-dot"></span>
+      <span>Cash on Delivery across Pakistan</span>
+      <span class="navbar__announcement-extra">Eid & Summer Lawn edits live now</span>
+    </div>
+  }
+
   <div class="navbar__container">
     <div class="navbar__inner">
-      <!-- Mobile Menu/Back Button -->
       <div class="navbar__mobile-toggle">
         @if (!isFocusMode()) {
-          <button (click)="toggleMenu()" class="navbar__icon-btn" aria-label="Toggle menu">
+          <button (click)="toggleMenu()" class="navbar__icon-btn" [attr.aria-expanded]="isMenuOpen()" aria-controls="mobile-menu" aria-label="Toggle menu">
             <mat-icon>{{ isMenuOpen() ? 'close' : 'menu' }}</mat-icon>
           </button>
         } @else {
@@ -18,12 +26,13 @@
         }
       </div>
       
-      <!-- Desktop Nav -->
       @if (!isFocusMode()) {
-        <nav class="navbar__nav">
-          <a routerLink="/shop" class="navbar__link" routerLinkActive="active">SHOP ALL</a>
-          <a href="#" class="navbar__link">WOMEN</a>
-          <a href="#" class="navbar__link">MEN</a>
+        <nav class="navbar__nav" aria-label="Primary navigation">
+          <a routerLink="/shop" class="navbar__link" routerLinkActive="active">New In</a>
+          <a routerLink="/category/lawn" class="navbar__link">Lawn</a>
+          <a routerLink="/category/unstitched" class="navbar__link">Unstitched</a>
+          <a routerLink="/category/eid-edit" class="navbar__link navbar__link--campaign">Eid Edit</a>
+          <a routerLink="/category/sale" class="navbar__link">Sale</a>
         </nav>
       } @else {
         <nav class="navbar__nav">
@@ -34,49 +43,53 @@
         </nav>
       }
       
-      <!-- Logo -->
       <div class="navbar__logo-wrapper">
-        <a routerLink="/" class="navbar__logo">
-          <span class="navbar__logo-accent">Z/</span>
-          <span class="navbar__logo-text">ZARR</span>
+        <a routerLink="/" class="navbar__logo" aria-label="UR-Fashion home">
+          <span class="navbar__logo-accent">UR</span>
+          <span class="navbar__logo-divider">/</span>
+          <span class="navbar__logo-text">Fashion</span>
         </a>
       </div>
       
-      <!-- Actions -->
       <div class="navbar__actions">
         @if (!isFocusMode()) {
-          <button class="navbar__icon-btn navbar__icon-btn--desktop" aria-label="Search">
+          <a routerLink="/shop" class="navbar__icon-btn navbar__icon-btn--desktop" aria-label="Search collections">
             <mat-icon>search</mat-icon>
-          </button>
+          </a>
+          <a routerLink="/wishlist" class="navbar__icon-btn navbar__icon-btn--desktop" aria-label="Wishlist">
+            <mat-icon>favorite_border</mat-icon>
+          </a>
         }
-        <button class="navbar__icon-btn" aria-label="User profile">
+        <a routerLink="/login" class="navbar__icon-btn navbar__signin" aria-label="Sign in">
           <mat-icon>person</mat-icon>
           <span class="navbar__icon-label">SIGN IN</span>
-        </button>
+        </a>
         @if (!isFocusMode()) {
-          <button [routerLink]="['/cart']" class="navbar__icon-btn navbar__cart-btn" aria-label="Shopping bag">
+          <a [routerLink]="['/cart']" class="navbar__icon-btn navbar__cart-btn" aria-label="Shopping bag">
             <mat-icon>shopping_bag</mat-icon>
             <span class="navbar__cart-count">{{ cartCount() }}</span>
-          </button>
+          </a>
         }
       </div>
     </div>
   </div>
   
-  <!-- Mobile Menu -->
-  <div 
-    class="navbar__mobile-menu"
-    [class.navbar__mobile-menu--open]="isMenuOpen()"
-  >
+  <div id="mobile-menu" class="navbar__mobile-menu" [class.navbar__mobile-menu--open]="isMenuOpen()">
     <div class="navbar__mobile-inner">
-      <a routerLink="/" (click)="toggleMenu()" class="navbar__mobile-link">HOME</a>
-      <a routerLink="/shop" (click)="toggleMenu()" class="navbar__mobile-link">SHOP ALL</a>
-      <a href="#" class="navbar__mobile-link">WOMEN</a>
-      <a href="#" class="navbar__mobile-link">MEN</a>
+      <a routerLink="/" (click)="toggleMenu()" class="navbar__mobile-link">Home</a>
+      <a routerLink="/shop" (click)="toggleMenu()" class="navbar__mobile-link">New Arrivals</a>
+      <a routerLink="/category/lawn" (click)="toggleMenu()" class="navbar__mobile-link">Summer Lawn</a>
+      <a routerLink="/category/unstitched" (click)="toggleMenu()" class="navbar__mobile-link">Unstitched</a>
+      <a routerLink="/category/wedding" (click)="toggleMenu()" class="navbar__mobile-link">Wedding Collection</a>
+      <a routerLink="/category/sale" (click)="toggleMenu()" class="navbar__mobile-link navbar__mobile-link--sale">Flat 30% Off</a>
+      <a routerLink="/wishlist" (click)="toggleMenu()" class="navbar__mobile-link">Wishlist</a>
+      <a routerLink="/track-order" (click)="toggleMenu()" class="navbar__mobile-link">Track Order</a>
       <div class="navbar__divider"></div>
-      <a href="#" class="navbar__mobile-link navbar__mobile-link--search">
-        <mat-icon>search</mat-icon> Search
-      </a>
+      <div class="navbar__mobile-trust">
+        <span><mat-icon>payments</mat-icon> Cash on Delivery</span>
+        <span><mat-icon>local_shipping</mat-icon> Nationwide delivery</span>
+      </div>
+      <a routerLink="/category/eid-edit" (click)="toggleMenu()" class="navbar__mobile-cta">Shop Eid Edit</a>
     </div>
   </div>
 </header>

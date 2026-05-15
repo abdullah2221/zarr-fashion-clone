@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { CategoryScrollComponent } from '../../components/category-scroll/category-scroll.component';
 import { FeaturedCollectionsComponent } from '../../components/featured-collections/featured-collections.component';
@@ -19,7 +20,8 @@ import { animate, inView } from 'motion';
     FeaturedCollectionsComponent,
     ProductCarouselComponent,
     BrandsGalleryComponent,
-    OffersComponent
+    OffersComponent,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -34,10 +36,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   saleProducts = this.productService.getSaleProducts();
 
   ngOnInit() {
-    this.metaService.updateMeta(
-      'Home',
-      'Premium fashion collections for women, men, and kids. Shop the latest trends at Zarr Fashion.'
-    );
+    this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
+    this.metaService.setSeo({
+      title: 'Home',
+      description: 'Premium Pakistani fashion for Eid, lawn season, weddings, and everyday elegance with Cash on Delivery and nationwide delivery.',
+      path: '/',
+      keywords: 'Pakistani fashion, Eid collection, lawn collection, wedding wear, ready to wear, unstitched suits',
+      type: 'website'
+    });
   }
 
   ngAfterViewInit() {

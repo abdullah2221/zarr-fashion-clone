@@ -2,11 +2,12 @@ import { Component, input, ElementRef, ViewChild } from '@angular/core';
 import { Product } from '../../shared/models/models';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product-carousel',
   standalone: true,
-  imports: [ProductCardComponent, MatIconModule],
+  imports: [ProductCardComponent, MatIconModule, RouterLink],
   templateUrl: './product-carousel.component.html',
   styleUrl: './product-carousel.component.scss'
 })

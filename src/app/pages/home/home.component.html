@@ -1,12 +1,57 @@
 <app-hero></app-hero>
 
-<div class="reveal-section">
-  <app-category-scroll></app-category-scroll>
-</div>
+<section class="pakistan-pulse" aria-label="Seasonal Pakistan fashion highlights">
+  <div class="pakistan-pulse__container">
+    <span class="pakistan-pulse__label">Trending in Pakistan</span>
+    <div class="pakistan-pulse__marquee">
+      <span>Eid Collection</span>
+      <span>Ramadan Sale</span>
+      <span>Summer Lawn 2026</span>
+      <span>Winter Collection</span>
+      <span>Wedding Formals</span>
+      <span>Ready to Wear</span>
+      <span>Unstitched Edit</span>
+      <span>Stitched Pret</span>
+    </div>
+    <span class="pakistan-pulse__badge">Free delivery over Rs. 4,999</span>
+  </div>
+</section>
 
-<div class="reveal-section">
-  <app-featured-collections></app-featured-collections>
-</div>
+<section class="trust-strip" aria-label="Shopping promises">
+  <div class="trust-strip__container">
+    <div class="trust-strip__item"><span class="material-icons">local_shipping</span><strong>Free delivery</strong><small>On orders over Rs. 4,999</small></div>
+    <div class="trust-strip__item"><span class="material-icons">payments</span><strong>Cash on Delivery</strong><small>Available across Pakistan</small></div>
+    <div class="trust-strip__item"><span class="material-icons">verified_user</span><strong>Secure checkout</strong><small>SSL protected shopping</small></div>
+    <div class="trust-strip__item"><span class="material-icons">autorenew</span><strong>Easy exchange</strong><small>Simple support-led process</small></div>
+  </div>
+</section>
+
+<section class="collection-tags reveal-section" aria-label="Pakistani collection labels">
+  <div class="collection-tags__container">
+    <a routerLink="/category/eid-edit">Eid Edit</a>
+    <a routerLink="/shop">Ramadan Sale</a>
+    <a routerLink="/category/lawn">Summer Lawn</a>
+    <a routerLink="/shop">Winter Arrivals</a>
+    <a routerLink="/category/wedding">Wedding / Formal Wear</a>
+    <a routerLink="/shop">Ready to Wear</a>
+    <a routerLink="/category/unstitched">Unstitched</a>
+    <a routerLink="/shop">Stitched</a>
+  </div>
+</section>
+
+<div class="reveal-section"><app-category-scroll></app-category-scroll></div>
+<div class="reveal-section"><app-featured-collections></app-featured-collections></div>
+
+<section class="campaign-band reveal-section">
+  <div class="campaign-band__container">
+    <div class="campaign-band__copy">
+      <span class="eyebrow">Limited Time</span>
+      <h2>Flat 30% Off on selected lawn & pret</h2>
+      <p>Build your summer wardrobe before the sizes disappear. Free delivery and Cash on Delivery are available on eligible orders.</p>
+    </div>
+    <a routerLink="/shop" class="campaign-band__button">Shop the Sale</a>
+  </div>
+</section>
 
 <div class="reveal-section">
   <app-product-carousel [title]="'Popular Right Now'" [products]="popularProducts()"></app-product-carousel>
@@ -21,10 +66,63 @@
   ></app-product-carousel>
 </div>
 
-<div class="reveal-section">
-  <app-brands-gallery></app-brands-gallery>
-</div>
+<section class="proof reveal-section">
+  <div class="proof__container">
+    <div class="proof__intro">
+      <span class="eyebrow">Loved by shoppers</span>
+      <h2>Premium fashion with the trust Pakistani customers expect.</h2>
+    </div>
+    <div class="proof__grid">
+      <article class="proof__card"><div class="proof__stars">★★★★★</div><p>“The Eid suit arrived beautifully packed and exactly like the photos. COD made ordering easy.”</p><strong>Ayesha, Lahore</strong></article>
+      <article class="proof__card"><div class="proof__stars">★★★★★</div><p>“Fast delivery to Islamabad and the fabric quality felt premium for the price.”</p><strong>Maham, Islamabad</strong></article>
+      <article class="proof__card"><div class="proof__stars">★★★★★</div><p>“The lawn edit is easy to browse on mobile. I found sizes and offers quickly.”</p><strong>Sana, Karachi</strong></article>
+    </div>
+  </div>
+</section>
 
-<div class="reveal-section">
-  <app-offers></app-offers>
-</div>
+<div class="reveal-section"><app-brands-gallery></app-brands-gallery></div>
+<div class="reveal-section"><app-offers></app-offers></div>
+
+<section class="campaign-cards reveal-section" aria-label="Seasonal campaign cards">
+  <div class="campaign-cards__container">
+    <article class="campaign-cards__card">
+      <span class="campaign-cards__tag">Selling Fast</span>
+      <h3>Eid Luxe Formals</h3>
+      <p>Premium festive silhouettes with statement dupattas and occasion-ready finishing.</p>
+      <a routerLink="/category/eid-edit">Shop Eid Collection</a>
+    </article>
+    <article class="campaign-cards__card">
+      <span class="campaign-cards__tag campaign-cards__tag--accent">Limited Stock</span>
+      <h3>Summer Lawn Essentials</h3>
+      <p>Breathable unstitched and stitched lawn sets curated for high-heat Pakistani days.</p>
+      <a routerLink="/category/lawn">Explore Lawn</a>
+    </article>
+    <article class="campaign-cards__card">
+      <span class="campaign-cards__tag">Trending in Pakistan</span>
+      <h3>Wedding & Mehndi Edit</h3>
+      <p>From dholki to walima, discover rich tones, festive embroidery, and formal glam.</p>
+      <a routerLink="/category/wedding">View Wedding Styles</a>
+    </article>
+  </div>
+</section>
+
+<section class="support-band reveal-section" aria-label="Support and delivery reassurance">
+  <div class="support-band__container">
+    <div class="support-band__item"><span class="material-icons">payments</span><strong>Cash on Delivery</strong><small>Available across Pakistan</small></div>
+    <div class="support-band__item"><span class="material-icons">chat</span><strong>WhatsApp Support</strong><small>Quick styling and order help</small></div>
+    <div class="support-band__item"><span class="material-icons">autorenew</span><strong>Easy Exchange</strong><small>Simple support-led process</small></div>
+    <div class="support-band__item"><span class="material-icons">local_shipping</span><strong>Nationwide Delivery</strong><small>Urban and regional coverage</small></div>
+  </div>
+</section>
+
+<section class="newsletter reveal-section">
+  <div class="newsletter__container">
+    <span class="eyebrow">First access</span>
+    <h2>Get Eid drops, lawn launches and sale alerts first.</h2>
+    <form class="newsletter__form">
+      <input type="email" placeholder="Enter your email address" aria-label="Email address" required />
+      <button type="submit">Notify Me</button>
+    </form>
+    <p>No clutter. Just curated UR-Fashion updates for new arrivals, COD offers and seasonal campaigns.</p>
+  </div>
+</section>

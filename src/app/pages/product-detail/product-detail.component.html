@@ -2,72 +2,76 @@
   <section class="product-detail">
     <div class="product-detail__container">
       <div class="product-detail__grid">
-        
-        <!-- Gallery -->
         <div class="product-detail__gallery">
-          <div class="product-detail__main-image">
-            <img [src]="p.imageUrl" [alt]="p.name">
+          <div class="product-detail__main-image"><img [src]="p.imageUrl" [alt]="p.name" fetchpriority="high" decoding="async"></div>
+          <div class="product-detail__thumbs">
+            <img [src]="p.imageUrl" [alt]="p.name + ' front'" loading="lazy" decoding="async">
+            <img [src]="p.hoverImageUrl" [alt]="p.name + ' alternate'" loading="lazy" decoding="async">
           </div>
         </div>
         
-        <!-- Info -->
         <div class="product-detail__info">
-          <nav class="product-detail__breadcrumb">
-            <a routerLink="/">Home</a>
-            <span class="separator">/</span>
-            <a [routerLink]="['/shop']" [queryParams]="{category: p.category}">{{p.category}}</a>
-          </nav>
-          
+          <nav class="product-detail__breadcrumb"><a routerLink="/">Home</a><span>/</span><a routerLink="/shop">{{p.category || 'Collection'}}</a></nav>
+          <div class="product-detail__badges">
+            @if (p.badge) { <span>{{ p.badge }}</span> }
+            @if (p.discount) { <span class="sale">{{ p.discount }}</span> }
+          </div>
+          <p class="product-detail__brand">{{ p.brand }}</p>
           <h1 class="product-detail__title">{{p.name}}</h1>
-          
+          @if (p.rating) { <div class="product-detail__rating"><span>★★★★★</span> {{ p.rating }} / 5 · {{ p.reviewCount || 0 }} reviews</div> }
           <div class="product-detail__price-row">
-            <span class="product-detail__price">{{ p.price | appPrice | currency }}</span>
+            <span class="product-detail__price">{{ p.price | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span>
+            @if (p.originalPrice) { <span class="product-detail__original">{{ p.originalPrice | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span> }
+          </div>
+          <p class="product-detail__description">{{ p.description || 'Elevate your wardrobe with this carefully crafted piece. Designed for comfort, premium finish and timeless Pakistani fashion moments.' }}</p>
+
+          <div class="product-detail__campaign-chips" aria-label="Collection and campaign labels">
+            <span>Trending in Pakistan</span>
+            <span>Summer Lawn</span>
+            <span>Ready to Wear</span>
+            <span>Wedding/Formal</span>
+            <span>Free delivery over Rs. 4,999</span>
           </div>
           
-          <p class="product-detail__description">
-            {{ p.description || 'Elevate your wardrobe with this carefully crafted piece. Designed for both comfort and timeless style, it represents the essence of modern fashion.' }}
-          </p>
-          
-          <div class="product-detail__meta">
-            <div class="product-detail__meta-item">
-              <span class="label">SKU:</span>
-              <span class="value">ZF-{{ p.id }}</span>
+          @if ((p.sizes || []).length) {
+            <div class="product-detail__sizes">
+              <div class="product-detail__section-label">Select size</div>
+              <div class="product-detail__size-grid">
+                @for (size of p.sizes || []; track size) { <button>{{ size }}</button> }
+              </div>
             </div>
-            <div class="product-detail__meta-item">
-              <span class="label">Category:</span>
-              <span class="value">{{ p.category }}</span>
-            </div>
-          </div>
+          }
           
           <div class="product-detail__actions">
-            <button class="product-detail__add-btn" (click)="addToCart()">
-              ADD TO BAG
-            </button>
-            <button class="product-detail__wishlist-btn" aria-label="Add to wishlist">
-              <mat-icon>favorite_border</mat-icon>
-            </button>
+            <button class="product-detail__add-btn" (click)="addToCart()">ADD TO BAG</button>
+            <button class="product-detail__wishlist-btn" aria-label="Add to wishlist"><mat-icon>favorite_border</mat-icon></button>
           </div>
           
           <div class="product-detail__features">
-            <div class="product-detail__feature">
-              <mat-icon>local_shipping</mat-icon>
-              <span>Complimentary Shipping</span>
-            </div>
-            <div class="product-detail__feature">
-              <mat-icon>verified</mat-icon>
-              <span>2 Year Quality Guarantee</span>
-            </div>
+            <div class="product-detail__feature"><mat-icon>payments</mat-icon><span>Cash on Delivery available</span></div>
+            <div class="product-detail__feature"><mat-icon>local_shipping</mat-icon><span>Free delivery over Rs. 4,999</span></div>
+            <div class="product-detail__feature"><mat-icon>lock</mat-icon><span>Secure SSL checkout</span></div>
+            <div class="product-detail__feature"><mat-icon>support_agent</mat-icon><span>WhatsApp styling support</span></div>
+          </div>
+
+          <aside class="product-detail__style-card">
+            <span class="eyebrow">Stylist note</span>
+            <p>Need help choosing size, fabric or occasion styling? Message UR-Fashion support before ordering.</p>
+            <a routerLink="/contact"><mat-icon>chat</mat-icon> Contact a stylist</a>
+          </aside>
+
+          <div class="product-detail__accordions">
+            <details open><summary>Delivery & returns</summary><p>Nationwide delivery across Pakistan. Exchange support is available according to policy and stock availability.</p></details>
+            <details><summary>Styling note</summary><p>Pair with neutral accessories for daytime occasions or gold accents for festive gatherings.</p></details>
           </div>
         </div>
-
       </div>
     </div>
+    <div class="product-detail__related">
+      <app-product-carousel [title]="'Complete the Look'" [products]="relatedProducts()"></app-product-carousel>
+    </div>
+    <div class="product-detail__sticky-cta"><span>{{ p.price | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span><button (click)="addToCart()">ADD TO BAG</button></div>
   </section>
 } @else {
-  <div class="product-detail__not-found">
-    <mat-icon>sentiment_dissatisfied</mat-icon>
-    <h2>Product Not Found</h2>
-    <p>The piece you're looking for might have moved or is currently unavailable.</p>
-    <a routerLink="/shop" class="btn btn--outline">Back to Shop</a>
-  </div>
+  <div class="product-detail__not-found"><mat-icon>sentiment_dissatisfied</mat-icon><h2>Product Not Found</h2><p>The piece you're looking for might have moved or is currently unavailable.</p><a routerLink="/shop" class="btn btn--outline">Back to Shop</a></div>
 }

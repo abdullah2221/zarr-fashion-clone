@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { Product } from '../shared/models/models';
 
 export interface CartItem extends Product {
@@ -9,7 +9,8 @@ export interface CartItem extends Product {
   providedIn: 'root'
 })
 export class CartService {
-  private cartItems = signal<CartItem[]>([]);
+  private static readonly STORAGE_KEY = 'ur_fashion_cart_v1';
+  private cartItems = signal<CartItem[]>(this.loadFromStorage());
 
   items = this.cartItems.asReadonly();
 
@@ -23,6 +24,10 @@ export class CartService {
       return acc + (price * item.quantity);
     }, 0);
   });
+
+  constructor() {
+    this.persistToStorage();
+  }
 
   addToCart(product: Product) {
     this.cartItems.update(items => {
@@ -54,5 +59,25 @@ export class CartService {
 
   clearCart() {
     this.cartItems.set([]);
+  }
+
+  private persistToStorage() {
+    effect(() => {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(CartService.STORAGE_KEY, JSON.stringify(this.cartItems()));
+      }
+    });
+  }
+
+  private loadFromStorage(): CartItem[] {
+    try {
+      if (typeof localStorage === 'undefined') return [];
+      const raw = localStorage.getItem(CartService.STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 }

@@ -1,24 +1,28 @@
 <section class="category-scroll">
-  <h2 class="category-scroll__title">Shop By Category</h2>
+  <div class="category-scroll__heading">
+    <span class="eyebrow">Curated for Pakistan</span>
+    <h2 class="category-scroll__title">Shop By Moment</h2>
+    <p>From everyday lawn to Eid formals, discover edits built around how Pakistan shops season by season.</p>
+  </div>
   
-  <!-- Category Tabs -->
-  <div class="category-scroll__tabs">
+  <div class="category-scroll__tabs" aria-label="Audience tabs">
     <button class="category-scroll__tab category-scroll__tab--active">Women</button>
     <button class="category-scroll__tab">Men</button>
     <button class="category-scroll__tab">Kids</button>
   </div>
   
-  <!-- Scrollable container -->
   <div class="category-scroll__container">
     <div class="category-scroll__slider hide-scrollbar">
       @for (category of categories; track category.id) {
-        <div class="category-scroll__item group">
+        <a [routerLink]="category.slug ? ['/category', category.slug] : '/shop'" class="category-scroll__item">
           <div class="category-scroll__image-wrapper">
-            <img [src]="category.imageUrl" [alt]="category.name" class="category-scroll__image" />
+            <img [src]="category.imageUrl" [alt]="category.name" class="category-scroll__image" loading="lazy" decoding="async" />
             <div class="category-scroll__overlay"></div>
+            <span class="category-scroll__shop">Shop now</span>
           </div>
           <h3 class="category-scroll__item-name">{{ category.name }}</h3>
-        </div>
+          <p class="category-scroll__item-subtitle">{{ category.subtitle }}</p>
+        </a>
       }
     </div>
   </div>

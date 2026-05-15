@@ -6,11 +6,12 @@ import { MetaService } from '../../core/services/meta.service';
 import { PricePipe } from '../../shared/pipes/price.pipe';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { ProductCarouselComponent } from '../../components/product-carousel/product-carousel.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, PricePipe, RouterLink, MatIconModule],
+  imports: [CommonModule, PricePipe, RouterLink, MatIconModule, ProductCarouselComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,16 +23,60 @@ export class ProductDetailComponent {
   private metaService = inject(MetaService);
 
   product = computed(() => this.productService.getProductById(Number(this.id())));
+  relatedProducts = computed(() => this.productService.getProducts()().filter(p => p.id !== Number(this.id())).slice(0, 6));
 
   constructor() {
     effect(() => {
       const p = this.product();
       if (p) {
-        this.metaService.updateMeta(
-          p.name,
-          p.description || '',
-          p.imageUrl
-        );
+        this.metaService.setSeo({
+          title: `${p.brand} ${p.name}`,
+          description: p.description || `${p.name} by ${p.brand}. Shop premium Pakistani fashion with COD and nationwide delivery.`,
+          image: p.imageUrl,
+          path: `/product/${p.id}`,
+          keywords: `${p.brand}, ${p.category || 'fashion'}, Pakistani fashion, ${p.collection || 'ready to wear'}`,
+          type: 'product'
+        });
+
+        const priceValue = parseFloat(p.price.replace(/[^\d.]/g, '')) || 0;
+        const productSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: p.name,
+          image: [p.imageUrl, p.hoverImageUrl].filter(Boolean),
+          description: p.description || p.name,
+          brand: { '@type': 'Brand', name: p.brand },
+          sku: String(p.id),
+          category: p.category,
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'PKR',
+            price: priceValue,
+            availability: 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/NewCondition',
+            url: `https://www.ur-fashion.pk/product/${p.id}`
+          },
+          aggregateRating: p.rating
+            ? {
+                '@type': 'AggregateRating',
+                ratingValue: p.rating,
+                reviewCount: p.reviewCount || 1
+              }
+            : undefined
+        };
+        this.metaService.setJsonLd('seo-product-schema', productSchema);
+
+        const breadcrumb = {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.ur-fashion.pk/' },
+            { '@type': 'ListItem', position: 2, name: 'Shop', item: 'https://www.ur-fashion.pk/shop' },
+            { '@type': 'ListItem', position: 3, name: p.category || 'Collection', item: `https://www.ur-fashion.pk/category/${p.categorySlug}` },
+            { '@type': 'ListItem', position: 4, name: p.name, item: `https://www.ur-fashion.pk/product/${p.id}` }
+          ]
+        };
+        this.metaService.setJsonLd('seo-breadcrumb-schema', breadcrumb);
       }
     });
   }
@@ -43,4 +88,3 @@ export class ProductDetailComponent {
     }
   }
 }
-

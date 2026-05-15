@@ -1,12 +1,80 @@
 <section class="shop-page">
-  <div class="container">
-    <header class="shop-header">
-      <h1>All Collections</h1>
-      <p>Discover our latest premium fashion pieces</p>
-    </header>
+  <div class="shop-page__hero">
+    <span class="eyebrow">{{ pageLabel() }}</span>
+    <h1>{{ pageTitle() }}</h1>
+    <p>{{ pageIntro() }}</p>
+    <app-campaign-chips [chips]="campaignChips"></app-campaign-chips>
+  </div>
 
-    <div class="mt-12">
-      <app-product-grid [products]="products()"></app-product-grid>
+  <div class="shop-page__container">
+    <aside class="shop-page__promo">
+      <strong>Summer Lawn Live</strong>
+      <span>Flat 30% off selected styles • Free delivery over Rs. 4,999</span>
+    </aside>
+
+    <app-trust-badge-strip [items]="trustItems"></app-trust-badge-strip>
+
+    <div class="shop-page__toolbar" aria-label="Product filters and sorting">
+      <div class="shop-page__chips">
+        @for (chip of categoryChips; track chip.slug) {
+          <a [routerLink]="chip.slug === 'all' ? '/shop' : ['/category', chip.slug]" [class.active]="selectedCategory() === chip.slug">{{ chip.label }}</a>
+        }
+      </div>
+      <div class="shop-page__actions">
+        <label class="shop-page__search">
+          <span class="material-icons">search</span>
+          <input type="search" placeholder="Search products" [value]="searchQuery()" (input)="onSearchInput($event)" />
+        </label>
+        <label class="shop-page__sort">
+          <span>Sort</span>
+          <select [value]="sortBy()" (change)="onSortChange($event)">
+            <option value="featured">Featured</option>
+            <option value="newest">Newest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating-high">Top Rated</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="shop-page__layout">
+      <aside class="shop-page__drawer" aria-label="Filters">
+        <div class="shop-page__drawer-header">
+          <strong>Filters</strong>
+          <span>Refine</span>
+        </div>
+        <div class="shop-page__filter-group">
+          <h3>Collection</h3>
+          <label><input type="checkbox"> Summer Lawn</label>
+          <label><input type="checkbox"> Eid Edit</label>
+          <label><input type="checkbox"> Wedding</label>
+          <label><input type="checkbox"> Sale</label>
+        </div>
+        <div class="shop-page__filter-group">
+          <h3>Size</h3>
+          <div class="shop-page__size-row"><button>XS</button><button>S</button><button>M</button><button>L</button><button>XL</button></div>
+        </div>
+        <div class="shop-page__filter-group">
+          <h3>Price</h3>
+          <div class="shop-page__range"><span></span></div>
+          <p>Rs. 3,000 — Rs. 15,000</p>
+        </div>
+        <button class="shop-page__apply" type="button">Apply Filters</button>
+      </aside>
+
+      <div class="shop-page__products">
+        <div class="shop-page__result-bar">
+          <span>Showing curated UR-Fashion pieces @if (searchQuery()) { matching “{{ searchQuery() }}” }</span>
+          <strong>{{ products().length }} products</strong>
+        </div>
+        <app-product-grid [products]="products()"></app-product-grid>
+        @if (isLoading()) {
+          <div class="shop-page__loading-preview" aria-label="Loading products">
+            <app-loading-skeleton-card [count]="4"></app-loading-skeleton-card>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </section>

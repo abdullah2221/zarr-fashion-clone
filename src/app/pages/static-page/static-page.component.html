@@ -1,0 +1,98 @@
+<section class="static-page">
+  <div class="static-page__hero">
+    <span class="static-page__icon"><mat-icon>{{ page().icon }}</mat-icon></span>
+    <span class="eyebrow">{{ page().eyebrow }}</span>
+    <h1>{{ page().title }}</h1>
+    <p>{{ page().intro }}</p>
+    @if (page().ctaText && page().ctaLink) {
+      <a [routerLink]="page().ctaLink" class="static-page__cta">{{ page().ctaText }}</a>
+    }
+  </div>
+
+  <div class="static-page__container">
+    <app-campaign-chips [chips]="campaignChips"></app-campaign-chips>
+
+    <app-trust-badge-strip [items]="trustItems"></app-trust-badge-strip>
+
+    @if (page().secondary?.length) {
+      <div class="static-page__contact-strip">
+        @for (item of page().secondary; track item.label) {
+          <div><strong>{{ item.label }}</strong><span>{{ item.value }}</span></div>
+        }
+      </div>
+    }
+
+    @switch (page().formType) {
+      @case ('checkout') {
+        <div class="static-page__checkout-preview">
+          <form class="static-page__form-shell" aria-label="Checkout form">
+            <div class="static-page__form-header"><mat-icon>lock</mat-icon><div><h2>Checkout details</h2><p>Delivery, COD and order review presented in one calm flow.</p></div></div>
+            <div class="static-page__form-grid"><input placeholder="Full name" aria-label="Full name"><input placeholder="Phone number" aria-label="Phone number"><input placeholder="City" aria-label="City"><input placeholder="Province" aria-label="Province"><input class="wide" placeholder="Complete delivery address" aria-label="Complete delivery address"></div>
+            <div class="static-page__payment-cards"><button type="button" class="active"><mat-icon>payments</mat-icon> Cash on Delivery</button><button type="button"><mat-icon>lock</mat-icon> Secure Card</button></div>
+            <button type="button">Continue to Order Review</button>
+          </form>
+          <aside class="static-page__checkout-summary">
+            <h2>Order Preview</h2>
+            <div><span>Subtotal</span><strong>Rs. 12,940</strong></div>
+            <div><span>Delivery</span><strong>Free</strong></div>
+            <div><span>Promo</span><strong>- Rs. 1,000</strong></div>
+            <div class="total"><span>Total</span><strong>Rs. 11,940</strong></div>
+            <p><mat-icon>verified_user</mat-icon> Secure checkout • COD available • Easy exchange support</p>
+          </aside>
+        </div>
+      }
+      @case ('auth') {
+        <form class="static-page__form-shell" aria-label="Login form">
+          <div class="static-page__form-header"><mat-icon>person</mat-icon><div><h2>Login or create account</h2><p>Use email or phone to save wishlist, addresses and orders.</p></div></div>
+          <div class="static-page__form-grid"><input placeholder="Email or phone" aria-label="Email or phone"><input placeholder="Password" type="password" aria-label="Password"></div>
+          <button type="button">Continue Securely</button>
+        </form>
+      }
+      @case ('track') {
+        <form class="static-page__form-shell" aria-label="Track order form">
+          <div class="static-page__form-header"><mat-icon>travel_explore</mat-icon><div><h2>Find your order</h2><p>Enter your order number and contact detail used at checkout.</p></div></div>
+          <div class="static-page__form-grid"><input placeholder="Order number" aria-label="Order number"><input placeholder="Phone or email" aria-label="Phone or email"></div>
+          <button type="button">Track Order</button>
+        </form>
+      }
+      @case ('contact') {
+        <form class="static-page__form-shell" aria-label="Contact support form">
+          <div class="static-page__form-header"><mat-icon>support_agent</mat-icon><div><h2>Send a support request</h2><p>For delivery, COD, exchange or product questions.</p></div></div>
+          <div class="static-page__form-grid"><input placeholder="Your name" aria-label="Your name"><input placeholder="Phone or email" aria-label="Phone or email"><textarea class="wide" placeholder="How can we help?" aria-label="Message"></textarea></div>
+          <button type="button">Send Message</button>
+        </form>
+      }
+      @case ('wishlist') {
+        <div class="static-page__empty-state"><mat-icon>favorite_border</mat-icon><h2>Your wishlist is ready</h2><p>Save your favourite pieces and return when you are ready to shop Eid, lawn or wedding looks.</p><div class="static-page__mini-products"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div><div class="static-page__state-tags"><span>Selling Fast</span><span>Limited Stock</span><span>Trending in Pakistan</span></div><a routerLink="/shop">Start Shopping</a></div>
+      }
+      @case ('account') {
+        <div class="static-page__dashboard" aria-label="Account dashboard">
+          <aside class="static-page__dashboard-nav"><strong>My UR-Fashion</strong><a>Profile</a><a>Orders</a><a>Addresses</a><a>Wishlist</a></aside>
+          <div class="static-page__dashboard-main">
+            <div class="static-page__profile-card"><mat-icon>account_circle</mat-icon><div><h2>Welcome back</h2><p>Manage your seasonal wardrobe, saved addresses and recent orders.</p></div></div>
+            <div class="static-page__dashboard-grid"><div><span>Recent orders</span><strong>02</strong></div><div><span>Saved addresses</span><strong>03</strong></div><div><span>Wishlist items</span><strong>08</strong></div></div>
+          </div>
+        </div>
+      }
+    }
+
+    <div class="static-page__grid">
+      @for (section of page().sections; track section.title) {
+        <article class="static-page__card">
+          @if (section.icon) { <mat-icon>{{ section.icon }}</mat-icon> }
+          <h2>{{ section.title }}</h2>
+          <p>{{ section.body }}</p>
+        </article>
+      }
+    </div>
+
+    <div class="static-page__support">
+      <div>
+        <span class="eyebrow">Need help?</span>
+        <h2>UR-Fashion customer support</h2>
+        <p>Use the support links above for order, delivery, exchange and account assistance.</p>
+      </div>
+      <a routerLink="/contact" class="static-page__support-link">Contact Support</a>
+    </div>
+  </div>
+</section>

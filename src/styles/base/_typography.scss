@@ -3,13 +3,19 @@
 body {
   font-family: $font-family-sans;
   font-size: $font-size-base;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-serif;
   font-weight: 600;
   line-height: 1.2;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 .font-serif {

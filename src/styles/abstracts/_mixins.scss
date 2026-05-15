@@ -1,6 +1,5 @@
 @use 'variables' as *;
 
-// Responsive Breakpoints
 @mixin respond-to($breakpoint) {
   @if $breakpoint == 'sm' {
     @media (min-width: $breakpoint-sm) { @content; }
@@ -15,35 +14,22 @@
   }
 }
 
-// Flexbox Center
 @mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-// Transitions
 @mixin transition($property: all, $duration: $transition-base) {
   transition: $property $duration;
 }
 
-// Clearfix
-@mixin clearfix {
-  &::after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-}
-
-// Text Truncate
 @mixin text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// Aspect Ratio
 @mixin aspect-ratio($width, $height) {
   position: relative;
   &::before {
@@ -58,4 +44,45 @@
     width: 100%;
     height: 100%;
   }
+}
+
+@mixin premium-container($max: $container-lg) {
+  width: 100%;
+  max-width: $max;
+  margin: 0 auto;
+  padding-left: $spacing-4;
+  padding-right: $spacing-4;
+
+  @include respond-to('sm') {
+    padding-left: $spacing-6;
+    padding-right: $spacing-6;
+  }
+
+  @include respond-to('lg') {
+    padding-left: $spacing-8;
+    padding-right: $spacing-8;
+  }
+}
+
+@mixin focus-visible {
+  &:focus-visible {
+    outline: none;
+    box-shadow: $focus-ring;
+  }
+}
+
+@mixin touch-target {
+  min-width: $touch-target;
+  min-height: $touch-target;
+}
+
+@mixin fluid-heading($min, $preferred, $max) {
+  font-size: clamp($min, $preferred, $max);
+  line-height: 1.05;
+}
+
+@mixin image-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

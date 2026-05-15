@@ -1,0 +1,17 @@
+{
+  "name": "UR-Fashion",
+  "short_name": "UR-Fashion",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf8f1",
+  "theme_color": "#111111",
+  "description": "Premium Pakistani fashion storefront for Eid, lawn, wedding and ready-to-wear collections.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
+
