@@ -73,3 +73,23 @@
     }
   }
 }
+
+.product-detail__loading {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) 1rem;
+}
+.product-detail__loading-image,
+.product-detail__loading-copy {
+  min-height: 280px;
+  background: linear-gradient(110deg, #f4efe5 8%, #fff 18%, #f4efe5 33%);
+  background-size: 200% 100%;
+  animation: product-detail-shimmer 1.2s linear infinite;
+}
+.product-detail__loading-copy { min-height: 220px; }
+@media (min-width: 768px) {
+  .product-detail__loading { grid-template-columns: 1fr 1fr; }
+}
+@keyframes product-detail-shimmer { to { background-position-x: -200%; } }

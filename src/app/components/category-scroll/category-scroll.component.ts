@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CATEGORIES } from '../../data/data';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-category-scroll',
@@ -10,5 +10,9 @@ import { CATEGORIES } from '../../data/data';
   styleUrl: './category-scroll.component.scss'
 })
 export class CategoryScrollComponent {
-  categories = CATEGORIES;
+  private readonly productService = inject(ProductService);
+
+  categories = this.productService.getCategories();
+  isLoading = this.productService.isLoading;
+  error = this.productService.error;
 }

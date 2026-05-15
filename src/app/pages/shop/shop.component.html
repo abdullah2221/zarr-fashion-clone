@@ -16,7 +16,7 @@
 
     <div class="shop-page__toolbar" aria-label="Product filters and sorting">
       <div class="shop-page__chips">
-        @for (chip of categoryChips; track chip.slug) {
+        @for (chip of categoryChips(); track chip.slug) {
           <a [routerLink]="chip.slug === 'all' ? '/shop' : ['/category', chip.slug]" [class.active]="selectedCategory() === chip.slug">{{ chip.label }}</a>
         }
       </div>
@@ -68,11 +68,15 @@
           <span>Showing curated UR-Fashion pieces @if (searchQuery()) { matching “{{ searchQuery() }}” }</span>
           <strong>{{ products().length }} products</strong>
         </div>
-        <app-product-grid [products]="products()"></app-product-grid>
+        @if (error()) {
+          <div class="shop-page__notice">{{ error() }}</div>
+        }
         @if (isLoading()) {
           <div class="shop-page__loading-preview" aria-label="Loading products">
             <app-loading-skeleton-card [count]="4"></app-loading-skeleton-card>
           </div>
+        } @else {
+          <app-product-grid [products]="products()"></app-product-grid>
         }
       </div>
     </div>

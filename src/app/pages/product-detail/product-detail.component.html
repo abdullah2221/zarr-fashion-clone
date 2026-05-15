@@ -1,4 +1,9 @@
-@if (product(); as p) {
+@if (isLoading()) {
+  <section class="product-detail__loading" aria-label="Loading product">
+    <div class="product-detail__loading-image"></div>
+    <div class="product-detail__loading-copy"></div>
+  </section>
+} @else if (product(); as p) {
   <section class="product-detail">
     <div class="product-detail__container">
       <div class="product-detail__grid">
@@ -73,5 +78,6 @@
     <div class="product-detail__sticky-cta"><span>{{ p.price | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span><button (click)="addToCart()">ADD TO BAG</button></div>
   </section>
 } @else {
-  <div class="product-detail__not-found"><mat-icon>sentiment_dissatisfied</mat-icon><h2>Product Not Found</h2><p>The piece you're looking for might have moved or is currently unavailable.</p><a routerLink="/shop" class="btn btn--outline">Back to Shop</a></div>
+  <div class="product-detail__not-found">
+    @if (error()) { <p>{{ error() }}</p> }<mat-icon>sentiment_dissatisfied</mat-icon><h2>Product Not Found</h2><p>The piece you're looking for might have moved or is currently unavailable.</p><a routerLink="/shop" class="btn btn--outline">Back to Shop</a></div>
 }

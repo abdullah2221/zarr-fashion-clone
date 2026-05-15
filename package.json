@@ -9,7 +9,12 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "serve:ssr:app": "node dist/app/server/server.mjs"
+    "serve:ssr:app": "node dist/app/server/server.mjs",
+    "prestart": "node scripts/write-runtime-config.mjs",
+    "predev": "node scripts/write-runtime-config.mjs",
+    "prebuild": "node scripts/write-runtime-config.mjs",
+    "prewatch": "node scripts/write-runtime-config.mjs",
+    "preserve:ssr:app": "node scripts/write-runtime-config.mjs"
   },
   "private": true,
   "dependencies": {
@@ -24,10 +29,12 @@
     "@angular/router": "^21.0.0",
     "@angular/ssr": "^21.0.0",
     "@google/genai": "^1.27.0",
+    "@supabase/supabase-js": "^2.105.4",
     "express": "^5.1.0",
     "motion": "^12.23.24",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "ws": "^8.20.1"
   },
   "devDependencies": {
     "@angular/build": "^21.0.0",
@@ -36,6 +43,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "@types/ws": "^8.18.1",
     "angular-eslint": "21.1.0",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.1",

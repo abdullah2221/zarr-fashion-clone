@@ -23,17 +23,14 @@ export class ShopComponent {
   slug = input<string>();
   searchQuery = signal('');
   sortBy = signal<ProductSortBy>('featured');
-  isLoading = signal(false);
+  isLoading = this.productService.isLoading;
+  error = this.productService.error;
   selectedCategory = computed(() => this.slug() || 'all');
 
-  categoryChips = [
+  categoryChips = computed(() => [
     { label: 'All', slug: 'all' },
-    { label: 'Unstitched', slug: 'unstitched' },
-    { label: 'Lawn', slug: 'lawn' },
-    { label: 'Ready to Wear', slug: 'ready-to-wear' },
-    { label: 'Wedding', slug: 'wedding' },
-    { label: 'Sale', slug: 'sale' }
-  ];
+    ...this.productService.getCategories()().map(category => ({ label: category.name, slug: category.slug || 'all' }))
+  ]);
 
   campaignChips = ['Trending in Pakistan', 'Eid Collection', 'Ramadan Sale', 'Summer Lawn', 'Wedding/Formal', 'Ready to Wear', 'Unstitched', 'Stitched'];
 

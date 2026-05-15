@@ -23,7 +23,15 @@ export class ProductDetailComponent {
   private metaService = inject(MetaService);
 
   product = computed(() => this.productService.getProductById(Number(this.id())));
-  relatedProducts = computed(() => this.productService.getProducts()().filter(p => p.id !== Number(this.id())).slice(0, 6));
+  isLoading = this.productService.isLoading;
+  error = this.productService.error;
+  relatedProducts = computed(() => {
+    const current = this.product();
+    const candidates = this.productService.getProducts()().filter(p => p.id !== Number(this.id()));
+    if (!current) return candidates.slice(0, 6);
+    const sameCategory = candidates.filter(p => p.categorySlug === current.categorySlug);
+    return [...sameCategory, ...candidates.filter(p => p.categorySlug !== current.categorySlug)].slice(0, 6);
+  });
 
   constructor() {
     effect(() => {
