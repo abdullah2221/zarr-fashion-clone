@@ -1,0 +1,377 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.dashboard {
+  display: grid;
+  gap: $spacing-5;
+
+  &__hero,
+  &__metric,
+  &__panel {
+    border: 1px solid rgba($color-black, .06);
+    border-radius: 24px;
+    background: rgba($color-white, .96);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .05);
+  }
+
+  &__hero,
+  &__panel {
+    padding: clamp($spacing-5, 2vw, $spacing-6);
+  }
+
+  &__hero {
+    display: grid;
+    gap: $spacing-4;
+
+    @include respond-to('lg') {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    h2 {
+      margin: $spacing-2 0;
+      font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+      letter-spacing: -.04em;
+      color: $color-gray-900;
+    }
+
+    p {
+      max-width: 64ch;
+      margin: 0;
+      color: $color-gray-600;
+      line-height: 1.75;
+    }
+  }
+
+  &__hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-3;
+  }
+
+  &__summary-grid,
+  &__analytics-grid,
+  &__content-grid {
+    display: grid;
+    gap: $spacing-4;
+  }
+
+  &__summary-grid {
+    @include respond-to('md') {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include respond-to('xl') {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__metric {
+    display: grid;
+    gap: $spacing-3;
+    padding: $spacing-5;
+  }
+
+  &__metric-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-3;
+  }
+
+  &__metric-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    color: $color-white;
+  }
+
+  &__metric[data-tone='gold'] &__metric-icon {
+    background: linear-gradient(145deg, #d6b24a, #b98a18);
+  }
+
+  &__metric[data-tone='green'] &__metric-icon {
+    background: linear-gradient(145deg, #22c55e, #159167);
+  }
+
+  &__metric[data-tone='violet'] &__metric-icon {
+    background: linear-gradient(145deg, #8b5cf6, #6d5df7);
+  }
+
+  &__metric[data-tone='orange'] &__metric-icon {
+    background: linear-gradient(145deg, #fb923c, #f97316);
+  }
+
+  &__metric-label,
+  &__kicker,
+  &__dual-metrics span,
+  &__placeholder-card span {
+    color: $color-gray-500;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  &__metric strong {
+    font-size: clamp(1.7rem, 3vw, 2.25rem);
+    letter-spacing: -.04em;
+    color: $color-gray-900;
+  }
+
+  &__metric small {
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+  }
+
+  &__trend {
+    color: $color-success;
+    font-size: $font-size-sm;
+    font-weight: 700;
+  }
+
+  &__sparkline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: end;
+    gap: $spacing-2;
+    min-height: 72px;
+
+    span {
+      border-radius: 999px 999px 12px 12px;
+      background: linear-gradient(180deg, rgba($color-primary, .55), rgba($color-primary-light, .12));
+    }
+
+    span:nth-child(1) { height: 30px; }
+    span:nth-child(2) { height: 44px; }
+    span:nth-child(3) { height: 22px; }
+    span:nth-child(4) { height: 56px; }
+    span:nth-child(5) { height: 48px; }
+  }
+
+  &__metric--loading {
+    pointer-events: none;
+  }
+
+  &__skeleton {
+    background: linear-gradient(90deg, rgba($color-gray-200, .9), rgba($color-white, .95), rgba($color-gray-200, .9));
+    background-size: 200% 100%;
+    animation: dashboardShimmer 1.4s linear infinite;
+    border-radius: 14px;
+  }
+
+  &__skeleton--icon {
+    width: 54px;
+    height: 54px;
+  }
+
+  &__skeleton--line {
+    width: 42%;
+    height: 14px;
+  }
+
+  &__skeleton--value {
+    width: 56%;
+    height: 34px;
+  }
+
+  &__skeleton--chart {
+    width: 100%;
+    height: 72px;
+  }
+
+  &__analytics-grid {
+    @include respond-to('xl') {
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .85fr);
+    }
+  }
+
+  &__content-grid {
+    @include respond-to('xl') {
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    }
+  }
+
+  &__panel {
+    display: grid;
+    gap: $spacing-5;
+  }
+
+  &__panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-3;
+
+    h3 {
+      margin: $spacing-1 0 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      letter-spacing: -.03em;
+      color: $color-gray-900;
+    }
+  }
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 $spacing-3;
+    border-radius: 999px;
+    border: 1px solid rgba($color-black, .06);
+    background: rgba($color-gray-50, .95);
+    color: $color-gray-600;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  &__dual-metrics {
+    display: grid;
+    gap: $spacing-4;
+
+    @include respond-to('sm') {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    strong {
+      display: block;
+      margin-top: $spacing-1;
+      font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+      letter-spacing: -.04em;
+      color: $color-gray-900;
+    }
+  }
+
+  &__chart-placeholder {
+    min-height: 280px;
+    display: flex;
+    align-items: end;
+    gap: $spacing-3;
+    padding-top: $spacing-6;
+    border-top: 1px solid rgba($color-black, .06);
+
+    span {
+      flex: 1;
+      border-radius: 18px 18px 8px 8px;
+      background: linear-gradient(180deg, rgba($color-warning, .78), rgba($color-warning, .25));
+    }
+
+    span:nth-child(1) { height: 62px; }
+    span:nth-child(2) { height: 122px; }
+    span:nth-child(3) { height: 88px; }
+    span:nth-child(4) { height: 198px; }
+    span:nth-child(5) { height: 142px; }
+    span:nth-child(6) { height: 244px; }
+  }
+
+  &__action-list,
+  &__activity-list,
+  &__placeholder-stack {
+    display: grid;
+    gap: $spacing-3;
+  }
+
+  &__action-item,
+  &__activity-item,
+  &__placeholder-card {
+    border: 1px solid rgba($color-black, .06);
+    border-radius: 18px;
+    background: rgba($color-gray-50, .95);
+  }
+
+  &__action-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: $spacing-3;
+    align-items: center;
+    padding: $spacing-4;
+    color: inherit;
+  }
+
+  &__action-icon,
+  &__activity-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba($color-primary-light, .3);
+    color: $color-primary-dark;
+  }
+
+  &__action-item strong,
+  &__activity-item strong {
+    display: block;
+    color: $color-gray-900;
+  }
+
+  &__action-item span {
+    display: block;
+    margin-top: $spacing-1;
+    color: $color-gray-500;
+    font-size: $font-size-sm;
+    line-height: 1.6;
+  }
+
+  &__activity-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: $spacing-3;
+    align-items: center;
+    padding: $spacing-4;
+
+    p,
+    small {
+      margin: 0;
+      color: $color-gray-500;
+      font-size: $font-size-sm;
+      line-height: 1.6;
+    }
+  }
+
+  &__placeholder-card {
+    padding: $spacing-5;
+
+    strong {
+      display: block;
+      margin: $spacing-2 0;
+      font-size: clamp(1.7rem, 2vw, 2.2rem);
+      letter-spacing: -.04em;
+      color: $color-gray-900;
+    }
+
+    small {
+      color: $color-gray-500;
+      font-size: $font-size-sm;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 767px) {
+    &__hero,
+    &__metric,
+    &__panel {
+      border-radius: 20px;
+    }
+
+    &__hero-actions {
+      app-admin-action-button {
+        width: 100%;
+      }
+    }
+
+    &__activity-item {
+      grid-template-columns: auto minmax(0, 1fr);
+
+      small {
+        grid-column: 2;
+      }
+    }
+  }
+}
+
+@keyframes dashboardShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

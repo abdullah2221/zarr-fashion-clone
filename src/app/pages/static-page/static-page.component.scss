@@ -324,6 +324,25 @@
     &:hover { background: $color-primary-dark; }
   }
 
+  &__form-shell button[disabled] {
+    opacity: .64;
+    cursor: wait;
+  }
+
+  &__auth-message {
+    margin-top: $spacing-4;
+    padding: $spacing-3 $spacing-4;
+    background: $color-ivory;
+    border-left: 4px solid $color-primary-dark;
+    color: $color-gray-700;
+    line-height: 1.6;
+  }
+
+  &__auth-message--error {
+    border-left-color: $color-error;
+    color: $color-rosewood;
+  }
+
   &__empty-state {
     text-align: center;
 

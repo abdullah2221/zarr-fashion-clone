@@ -1,0 +1,145 @@
+<section class="dashboard">
+  <div class="dashboard__hero">
+    <div>
+      <span class="eyebrow">Operations Overview</span>
+      <h2>Welcome back, {{ session.displayName() }}</h2>
+      <p>Track catalog health, monitor publishing progress, and jump straight into the tasks that keep UR-Fashion’s storefront polished.</p>
+    </div>
+
+    <div class="dashboard__hero-actions">
+      <app-admin-action-button icon="add" label="Add product" appearance="solid" [showLabel]="true" [size]="'touch'" [routerLink]="['/admin/products/new']" />
+      <app-admin-action-button icon="verified_user" label="Verification console" appearance="soft" [showLabel]="true" [size]="'touch'" [routerLink]="['/admin/verify']" />
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="dashboard__summary-grid">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <article class="dashboard__metric dashboard__metric--loading">
+          <div class="dashboard__skeleton dashboard__skeleton--icon"></div>
+          <div class="dashboard__skeleton dashboard__skeleton--line"></div>
+          <div class="dashboard__skeleton dashboard__skeleton--value"></div>
+          <div class="dashboard__skeleton dashboard__skeleton--chart"></div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="dashboard__summary-grid">
+      @for (card of summaryCards(); track card.label) {
+        <article class="dashboard__metric" [attr.data-tone]="card.tone">
+          <div class="dashboard__metric-head">
+            <div class="dashboard__metric-icon">
+              <mat-icon>{{ card.icon }}</mat-icon>
+            </div>
+            <span class="dashboard__trend">{{ card.trend }}</span>
+          </div>
+          <span class="dashboard__metric-label">{{ card.label }}</span>
+          <strong>{{ card.value }}</strong>
+          <small>{{ card.sublabel }}</small>
+          <div class="dashboard__sparkline" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <div class="dashboard__analytics-grid">
+    <article class="dashboard__panel dashboard__panel--wide">
+      <div class="dashboard__panel-head">
+        <div>
+          <span class="dashboard__kicker">Analytics</span>
+          <h3>Catalog performance</h3>
+        </div>
+        <span class="dashboard__pill">Yearly snapshot</span>
+      </div>
+
+      <div class="dashboard__dual-metrics">
+        <div>
+          <span>Live products</span>
+          <strong>{{ summaryCards()[1].value }}</strong>
+        </div>
+        <div>
+          <span>Categories</span>
+          <strong>{{ summaryCards()[2].value }}</strong>
+        </div>
+      </div>
+
+      <div class="dashboard__chart-placeholder" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </article>
+
+    <article class="dashboard__panel">
+      <div class="dashboard__panel-head">
+        <div>
+          <span class="dashboard__kicker">Quick Actions</span>
+          <h3>Work faster</h3>
+        </div>
+      </div>
+
+      <div class="dashboard__action-list">
+        @for (action of quickActions; track action.label) {
+          <a [routerLink]="action.path" class="dashboard__action-item">
+            <div class="dashboard__action-icon">
+              <mat-icon>{{ action.icon }}</mat-icon>
+            </div>
+            <div>
+              <strong>{{ action.label }}</strong>
+              <span>{{ action.hint }}</span>
+            </div>
+          </a>
+        }
+      </div>
+    </article>
+  </div>
+
+  <div class="dashboard__content-grid">
+    <article class="dashboard__panel">
+      <div class="dashboard__panel-head">
+        <div>
+          <span class="dashboard__kicker">Recent Activity</span>
+          <h3>Latest catalog updates</h3>
+        </div>
+      </div>
+
+      <div class="dashboard__activity-list">
+        @for (activity of recentActivity(); track activity.title + activity.meta) {
+          <div class="dashboard__activity-item">
+            <div class="dashboard__activity-icon">
+              <mat-icon>{{ activity.icon }}</mat-icon>
+            </div>
+            <div>
+              <strong>{{ activity.title }}</strong>
+              <p>{{ activity.text }}</p>
+            </div>
+            <small>{{ activity.meta }}</small>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="dashboard__panel">
+      <div class="dashboard__panel-head">
+        <div>
+          <span class="dashboard__kicker">Future Modules</span>
+          <h3>Revenue and orders</h3>
+        </div>
+        <span class="dashboard__pill">Placeholder</span>
+      </div>
+
+      <div class="dashboard__placeholder-stack">
+        <div class="dashboard__placeholder-card">
+          <span>Revenue</span>
+          <strong>Rs. 0</strong>
+          <small>Connect when orders module is live</small>
+        </div>
+        <div class="dashboard__placeholder-card">
+          <span>Orders</span>
+          <strong>0</strong>
+          <small>Reserved for upcoming operations data</small>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

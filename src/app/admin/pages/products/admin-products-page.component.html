@@ -1,0 +1,292 @@
+<section class="admin-products">
+  <div class="admin-products__hero">
+    <div>
+      <span class="eyebrow">Catalog Control</span>
+      <h1>Products</h1>
+      <p>Manage pricing, stock, badges, visibility, and the premium product experience your storefront reads directly from Supabase.</p>
+    </div>
+    <div class="admin-products__hero-actions">
+      <div class="admin-products__mini-stats">
+        @for (stat of productStats(); track stat.label) {
+          <article>
+            <span>{{ stat.label }}</span>
+            <strong>{{ stat.value }}</strong>
+          </article>
+        }
+      </div>
+      <app-admin-action-button
+        icon="add"
+        label="Add product"
+        appearance="solid"
+        [showLabel]="true"
+        [size]="'touch'"
+        [routerLink]="['/admin/products/new']"
+      />
+    </div>
+  </div>
+
+  <div class="admin-products__filters-card">
+    <div class="admin-products__filters-head">
+      <div>
+        <span class="admin-products__section-kicker">Filters</span>
+        <h2>Refine the product list</h2>
+      </div>
+      @if (hasActiveFilters()) {
+        <app-admin-action-button icon="filter_alt_off" label="Clear filters" appearance="soft" [showLabel]="true" [size]="'touch'" (pressed)="clearFilters()" />
+      }
+    </div>
+
+    <div class="admin-products__filters">
+      <label class="admin-products__search-field">
+        <span>Search</span>
+        <div>
+          <mat-icon>search</mat-icon>
+          <input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Name, SKU, category">
+        </div>
+      </label>
+
+      <label>
+        <span>Category</span>
+        <select [ngModel]="categoryId()" (ngModelChange)="categoryId.set($event)">
+          <option value="">All categories</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Status</span>
+        <select [ngModel]="status()" (ngModelChange)="status.set($event)">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Featured</span>
+        <select [ngModel]="featured()" (ngModelChange)="featured.set($event)">
+          <option value="all">All</option>
+          <option value="featured">Featured</option>
+          <option value="standard">Standard</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Stock</span>
+        <select [ngModel]="stock()" (ngModelChange)="stock.set($event)">
+          <option value="all">All</option>
+          <option value="low">Low stock</option>
+          <option value="out">Out of stock</option>
+          <option value="in">Healthy stock</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Sort</span>
+        <select [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+          <option value="newest">Newest</option>
+          <option value="name">Name</option>
+          <option value="price-high">Price high</option>
+          <option value="price-low">Price low</option>
+          <option value="stock-high">Stock high</option>
+          <option value="stock-low">Stock low</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  @if (actionError()) {
+    <p class="admin-products__alert admin-products__alert--error">{{ actionError() }}</p>
+  }
+  @if (actionSuccess()) {
+    <p class="admin-products__alert admin-products__alert--success">{{ actionSuccess() }}</p>
+  }
+
+  @if (isLoading()) {
+    <div class="admin-products__empty-state">
+      <mat-icon>hourglass_top</mat-icon>
+      <h2>Loading catalog</h2>
+      <p>Fetching live products, categories, and image mappings from Supabase.</p>
+    </div>
+  } @else if (!filteredProducts().length) {
+    <div class="admin-products__empty-state">
+      <mat-icon>{{ hasActiveFilters() ? 'search_off' : 'inventory_2' }}</mat-icon>
+      <h2>{{ hasActiveFilters() ? 'No matching products' : 'No products yet' }}</h2>
+      <p>
+        {{ hasActiveFilters()
+          ? 'Try broadening your filters or search terms.'
+          : 'Create your first product to populate the storefront catalog.' }}
+      </p>
+      @if (hasActiveFilters()) {
+        <app-admin-action-button icon="filter_alt_off" label="Reset filters" appearance="soft" [showLabel]="true" [size]="'touch'" (pressed)="clearFilters()" />
+      } @else {
+        <app-admin-action-button icon="add" label="Create first product" appearance="solid" [showLabel]="true" [size]="'touch'" [routerLink]="['/admin/products/new']" />
+      }
+    </div>
+  } @else {
+  <div class="admin-products__desktop">
+    <div class="admin-products__table-head">
+      <div>
+        <span class="admin-products__section-kicker">Products Table</span>
+        <h2>{{ filteredProducts().length }} items</h2>
+      </div>
+      <span class="admin-products__table-hint">Desktop table view</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Feature</th>
+          <th>Campaigns</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of filteredProducts(); track item.record.id) {
+          <tr>
+            <td>
+              <div class="admin-products__product-cell">
+                <img [src]="item.imageUrl" [alt]="item.record.name">
+                <div>
+                  <strong>{{ item.record.name }}</strong>
+                  <span>{{ item.record.sku }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ item.categoryName }}</td>
+            <td>
+              <strong>Rs. {{ item.currentPrice | number:'1.0-0' }}</strong>
+              @if (item.originalPrice) {
+                <span>Was Rs. {{ item.originalPrice | number:'1.0-0' }}</span>
+              }
+            </td>
+            <td>
+              <app-admin-status-badge [text]="item.record.stock_quantity <= 5 ? item.record.stock_quantity === 0 ? 'Out' : 'Low' : 'Healthy'" [tone]="item.record.stock_quantity === 0 ? 'warning' : item.record.stock_quantity <= 5 ? 'warning' : 'success'"></app-admin-status-badge>
+              <small>{{ item.record.stock_quantity }} units</small>
+            </td>
+            <td>
+              <app-admin-status-badge [text]="item.record.is_active ? 'Published' : 'Draft'" [tone]="item.record.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+            </td>
+            <td>
+              <app-admin-status-badge [text]="item.record.is_featured ? 'Featured' : 'Standard'" [tone]="item.record.is_featured ? 'success' : 'muted'"></app-admin-status-badge>
+            </td>
+            <td>
+              @if (item.campaignTags.length) {
+                <div class="admin-products__tags">
+                  @for (tag of item.campaignTags; track tag) {
+                    <span>{{ tag }}</span>
+                  }
+                </div>
+              } @else {
+                <span class="admin-products__muted">No tags</span>
+              }
+            </td>
+            <td>
+              <div class="admin-products__actions">
+                <app-admin-action-button [routerLink]="['/product', item.record.id]" icon="visibility" label="View product" />
+                <app-admin-action-button [routerLink]="['/admin/products', item.record.id]" icon="edit" label="Edit product" />
+                <app-admin-action-button
+                  [icon]="item.record.is_active ? 'pause_circle' : 'check_circle'"
+                  [label]="item.record.is_active ? 'Unpublish product' : 'Publish product'"
+                  [tone]="item.record.is_active ? 'warning' : 'success'"
+                  [disabled]="busyId() === item.record.id"
+                  (pressed)="toggleActive(item.record.id, !item.record.is_active)"
+                />
+                <app-admin-action-button
+                  [icon]="item.record.is_featured ? 'star_outline' : 'star'"
+                  [label]="item.record.is_featured ? 'Remove featured' : 'Mark as featured'"
+                  [tone]="item.record.is_featured ? 'warning' : 'success'"
+                  [disabled]="busyId() === item.record.id"
+                  (pressed)="toggleFeatured(item.record.id, !item.record.is_featured)"
+                />
+                <app-admin-action-button
+                  icon="delete"
+                  label="Delete product"
+                  tone="danger"
+                  [disabled]="busyId() === item.record.id"
+                  (pressed)="deleteProduct(item.record.id, item.record.name)"
+                />
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="admin-products__mobile">
+    @for (item of filteredProducts(); track item.record.id) {
+      <article class="admin-products__card">
+        <div class="admin-products__card-header">
+          <img [src]="item.imageUrl" [alt]="item.record.name">
+          <div>
+            <strong>{{ item.record.name }}</strong>
+            <span>{{ item.record.sku }}</span>
+            <small>{{ item.categoryName }}</small>
+          </div>
+        </div>
+
+        <div class="admin-products__card-metrics">
+          <div><span>Live price</span><strong>Rs. {{ item.currentPrice | number:'1.0-0' }}</strong></div>
+          <div><span>Stock</span><strong>{{ item.record.stock_quantity }}</strong></div>
+        </div>
+
+        <div class="admin-products__card-badges">
+          <app-admin-status-badge [text]="item.record.is_active ? 'Published' : 'Draft'" [tone]="item.record.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+          <app-admin-status-badge [text]="item.record.is_featured ? 'Featured' : 'Standard'" [tone]="item.record.is_featured ? 'success' : 'muted'"></app-admin-status-badge>
+          <app-admin-status-badge [text]="item.record.stock_quantity === 0 ? 'Out of stock' : item.record.stock_quantity <= 5 ? 'Low stock' : 'Healthy stock'" [tone]="item.record.stock_quantity <= 5 ? 'warning' : 'success'"></app-admin-status-badge>
+        </div>
+
+        @if (item.campaignTags.length) {
+          <div class="admin-products__tags">
+            @for (tag of item.campaignTags; track tag) {
+              <span>{{ tag }}</span>
+            }
+          </div>
+        }
+
+        <div class="admin-products__actions">
+          <app-admin-action-button [routerLink]="['/product', item.record.id]" icon="visibility" label="View product" appearance="soft" [showLabel]="true" [size]="'touch'" />
+          <app-admin-action-button [routerLink]="['/admin/products', item.record.id]" icon="edit" label="Edit product" appearance="soft" [showLabel]="true" [size]="'touch'" />
+          <app-admin-action-button
+            [icon]="item.record.is_active ? 'pause_circle' : 'check_circle'"
+            [label]="item.record.is_active ? 'Unpublish product' : 'Publish product'"
+            [tone]="item.record.is_active ? 'warning' : 'success'"
+            appearance="soft"
+            [showLabel]="true"
+            [size]="'touch'"
+            [disabled]="busyId() === item.record.id"
+            (pressed)="toggleActive(item.record.id, !item.record.is_active)"
+          />
+          <app-admin-action-button
+            [icon]="item.record.is_featured ? 'star_outline' : 'star'"
+            [label]="item.record.is_featured ? 'Remove featured' : 'Mark as featured'"
+            [tone]="item.record.is_featured ? 'warning' : 'success'"
+            appearance="soft"
+            [showLabel]="true"
+            [size]="'touch'"
+            [disabled]="busyId() === item.record.id"
+            (pressed)="toggleFeatured(item.record.id, !item.record.is_featured)"
+          />
+          <app-admin-action-button
+            icon="delete"
+            label="Delete product"
+            tone="danger"
+            appearance="soft"
+            [showLabel]="true"
+            [size]="'touch'"
+            [disabled]="busyId() === item.record.id"
+            (pressed)="deleteProduct(item.record.id, item.record.name)"
+          />
+        </div>
+      </article>
+    }
+  </div>
+  }
+</section>

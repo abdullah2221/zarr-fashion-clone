@@ -10,9 +10,9 @@
   </div>
 
   <div class="static-page__container">
-    <app-campaign-chips [chips]="campaignChips"></app-campaign-chips>
+    <app-campaign-chips [chips]="campaignChips()"></app-campaign-chips>
 
-    <app-trust-badge-strip [items]="trustItems"></app-trust-badge-strip>
+    <app-trust-badge-strip [items]="trustItems()"></app-trust-badge-strip>
 
     @if (page().secondary?.length) {
       <div class="static-page__contact-strip">
@@ -42,10 +42,19 @@
         </div>
       }
       @case ('auth') {
-        <form class="static-page__form-shell" aria-label="Login form">
+        <form class="static-page__form-shell" aria-label="Login form" [formGroup]="authForm" (ngSubmit)="signIn()">
           <div class="static-page__form-header"><mat-icon>person</mat-icon><div><h2>Login or create account</h2><p>Use email or phone to save wishlist, addresses and orders.</p></div></div>
-          <div class="static-page__form-grid"><input placeholder="Email or phone" aria-label="Email or phone"><input placeholder="Password" type="password" aria-label="Password"></div>
-          <button type="button">Continue Securely</button>
+          <div class="static-page__form-grid">
+            <input placeholder="Email address" aria-label="Email address" formControlName="email">
+            <input placeholder="Password" type="password" aria-label="Password" formControlName="password">
+          </div>
+          @if (authError()) {
+            <p class="static-page__auth-message static-page__auth-message--error">{{ authError() }}</p>
+          }
+          @if (authNotice()) {
+            <p class="static-page__auth-message">{{ authNotice() }}</p>
+          }
+          <button type="submit" [disabled]="isAuthSubmitting()">{{ isAuthSubmitting() ? 'Signing In...' : 'Continue Securely' }}</button>
         </form>
       }
       @case ('track') {

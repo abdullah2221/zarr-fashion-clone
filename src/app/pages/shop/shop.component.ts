@@ -7,6 +7,7 @@ import { MetaService } from '../../core/services/meta.service';
 import { CampaignChipsComponent } from '../../components/campaign-chips/campaign-chips.component';
 import { TrustBadgeStripComponent, TrustBadgeItem } from '../../components/trust-badge-strip/trust-badge-strip.component';
 import { LoadingSkeletonCardComponent } from '../../components/loading-skeleton-card/loading-skeleton-card.component';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 
 @Component({
   selector: 'app-shop',
@@ -19,6 +20,7 @@ import { LoadingSkeletonCardComponent } from '../../components/loading-skeleton-
 export class ShopComponent {
   private productService = inject(ProductService);
   private metaService = inject(MetaService);
+  readonly content = inject(StorefrontContentService);
 
   slug = input<string>();
   searchQuery = signal('');
@@ -32,14 +34,10 @@ export class ShopComponent {
     ...this.productService.getCategories()().map(category => ({ label: category.name, slug: category.slug || 'all' }))
   ]);
 
-  campaignChips = ['Trending in Pakistan', 'Eid Collection', 'Ramadan Sale', 'Summer Lawn', 'Wedding/Formal', 'Ready to Wear', 'Unstitched', 'Stitched'];
-
-  trustItems: TrustBadgeItem[] = [
-    { icon: 'payments', label: 'Cash on Delivery' },
-    { icon: 'chat', label: 'WhatsApp support' },
-    { icon: 'autorenew', label: 'Easy exchange' },
-    { icon: 'local_shipping', label: 'Delivery across Pakistan' }
-  ];
+  campaignChips = this.content.campaignChips;
+  trustItems = computed<TrustBadgeItem[]>(() =>
+    this.content.trustBadges().map(item => ({ icon: item.icon, label: item.label }))
+  );
 
   products = computed(() => this.productService.queryProducts({
     categorySlug: this.selectedCategory() === 'all' ? undefined : this.selectedCategory(),
@@ -61,7 +59,7 @@ export class ShopComponent {
       const title = slug ? `${categoryLabel} Collection` : 'Shop All';
       const description = slug
         ? `Shop ${categoryLabel} styles at UR-Fashion with COD, seasonal campaign picks, and delivery across Pakistan.`
-        : 'Explore all UR-Fashion collections including Eid, lawn, ready-to-wear, wedding edits, and sale picks.';
+        : this.content.settings().defaultSeoDescription;
       const path = slug ? `/category/${slug}` : '/shop';
 
       this.metaService.setSeo({

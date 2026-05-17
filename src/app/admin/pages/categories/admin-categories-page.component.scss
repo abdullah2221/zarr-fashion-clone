@@ -1,0 +1,532 @@
+@use '../../../../styles/abstracts/variables' as *;
+@use '../../../../styles/abstracts/mixins' as *;
+
+.admin-categories {
+  display: grid;
+  gap: $spacing-5;
+
+  &__hero,
+  &__list-card,
+  &__panel,
+  &__empty-state {
+    border: 1px solid rgba($color-black, .06);
+    border-radius: 24px;
+    background: rgba($color-white, .96);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .05);
+  }
+
+  &__hero {
+    display: grid;
+    gap: $spacing-4;
+    padding: clamp($spacing-5, 2vw, $spacing-6);
+
+    @include respond-to('lg') {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    h1 {
+      margin: $spacing-2 0;
+      font-family: $font-family-serif;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+    }
+
+    p {
+      margin: 0;
+      max-width: 62ch;
+      color: $color-gray-600;
+      line-height: 1.7;
+    }
+  }
+
+  &__hero-actions {
+    display: grid;
+    gap: $spacing-3;
+    align-items: start;
+
+    @include respond-to('xl') {
+      justify-items: end;
+    }
+  }
+
+  &__mini-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $spacing-3;
+
+    article {
+      min-width: 120px;
+      padding: $spacing-3 $spacing-4;
+      border-radius: 18px;
+      background: rgba($color-gray-50, .95);
+      border: 1px solid rgba($color-black, .06);
+    }
+
+    span {
+      display: block;
+      color: $color-gray-500;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    strong {
+      display: block;
+      margin-top: $spacing-1;
+      font-size: $font-size-2xl;
+      letter-spacing: -.03em;
+      color: $color-gray-900;
+    }
+  }
+
+  &__alert {
+    padding: $spacing-3 $spacing-4;
+    border-left: 4px solid $color-primary-dark;
+    background: rgba($color-primary-light, .12);
+    color: $color-gray-700;
+  }
+
+  &__alert--error {
+    border-left-color: $color-error;
+    background: rgba($color-error, .08);
+    color: $color-rosewood;
+  }
+
+  &__alert--success {
+    border-left-color: $color-success;
+    background: rgba($color-success, .08);
+    color: color-mix(in srgb, $color-success 76%, $color-black 24%);
+  }
+
+  &__layout {
+    display: grid;
+    gap: $spacing-5;
+
+    @include respond-to('xl') {
+      grid-template-columns: minmax(340px, .86fr) minmax(0, 1.3fr);
+      align-items: start;
+    }
+  }
+
+  &__list-card,
+  &__panel {
+    display: grid;
+    gap: $spacing-4;
+    padding: clamp($spacing-4, 2vw, $spacing-5);
+  }
+
+  &__section-head,
+  &__panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-3;
+
+    h2,
+    h3 {
+      margin: $spacing-1 0 0;
+      letter-spacing: -.03em;
+      color: $color-gray-900;
+    }
+
+    h2 {
+      font-size: clamp(1.2rem, 2vw, 1.7rem);
+    }
+
+    h3 {
+      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    }
+
+    p {
+      margin: $spacing-2 0 0;
+      max-width: 52ch;
+      color: $color-gray-600;
+      line-height: 1.6;
+    }
+  }
+
+  &__section-kicker {
+    color: $color-gray-500;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  &__filters {
+    display: grid;
+    gap: $spacing-3;
+
+    @include respond-to('md') {
+      grid-template-columns: minmax(0, 1.5fr) minmax(180px, .7fr);
+    }
+
+    label {
+      display: grid;
+      gap: $spacing-2;
+    }
+
+    span {
+      font-size: $font-size-xs;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: $color-gray-600;
+    }
+
+    input,
+    select {
+      min-height: 44px;
+      border: 1px solid rgba($color-black, .08);
+      border-radius: 16px;
+      padding: 0 $spacing-3;
+      background: rgba($color-gray-50, .9);
+      color: $color-gray-800;
+    }
+  }
+
+  &__search-field {
+    div {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      min-height: 44px;
+      padding: 0 $spacing-3;
+      border: 1px solid rgba($color-black, .08);
+      border-radius: 16px;
+      background: rgba($color-gray-50, .9);
+    }
+
+    input {
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+    }
+
+    mat-icon {
+      color: $color-gray-400;
+    }
+  }
+
+  &__list {
+    display: grid;
+    gap: $spacing-3;
+  }
+
+  &__item {
+    display: grid;
+    gap: $spacing-3;
+    padding: $spacing-3;
+    border: 1px solid rgba($color-black, .06);
+    border-radius: 18px;
+    background: $color-white;
+    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+  }
+
+  &__item.is-selected {
+    border-color: rgba($color-primary-dark, .35);
+    background: rgba($color-primary-light, .08);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+  }
+
+  &__item-main {
+    display: flex;
+    gap: $spacing-3;
+    align-items: center;
+    text-align: left;
+
+    img {
+      width: 76px;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 18px;
+      background: $color-cream;
+      flex-shrink: 0;
+    }
+
+    strong,
+    span,
+    small {
+      display: block;
+    }
+
+    strong {
+      font-size: 1rem;
+      color: $color-gray-900;
+    }
+
+    span,
+    small {
+      margin-top: $spacing-1;
+      color: $color-gray-500;
+    }
+  }
+
+  &__item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    align-items: center;
+
+    small {
+      color: $color-gray-500;
+    }
+  }
+
+  &__item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-left: auto;
+  }
+
+  &__editor {
+    display: grid;
+    gap: $spacing-5;
+
+    @include respond-to('xl') {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .42fr);
+      align-items: start;
+    }
+  }
+
+  &__editor-main,
+  &__editor-side {
+    display: grid;
+    gap: $spacing-4;
+  }
+
+  &__panel--sticky {
+    @include respond-to('xl') {
+      position: sticky;
+      top: $spacing-5;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-4;
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label {
+      display: grid;
+      gap: $spacing-2;
+    }
+
+    span {
+      font-size: $font-size-xs;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: $color-gray-600;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba($color-black, .08);
+      border-radius: 16px;
+      background: rgba($color-gray-50, .9);
+      color: $color-gray-800;
+    }
+
+    input {
+      min-height: 48px;
+      padding: 0 $spacing-3;
+    }
+
+    textarea {
+      min-height: 132px;
+      padding: $spacing-3;
+      resize: vertical;
+    }
+  }
+
+  &__field {
+    grid-column: 1 / -1;
+  }
+
+  &__check {
+    display: flex !important;
+    align-items: flex-start;
+    gap: $spacing-3;
+    min-height: 48px;
+    padding: $spacing-3;
+    border: 1px solid rgba($color-black, .08);
+    border-radius: 18px;
+    background: rgba($color-gray-50, .9);
+
+    input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin-top: 2px;
+    }
+
+    div {
+      display: grid;
+      gap: $spacing-1;
+    }
+
+    strong {
+      color: $color-gray-900;
+    }
+
+    small {
+      color: $color-gray-500;
+      line-height: 1.5;
+    }
+  }
+
+  &__image-preview {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba($color-ivory, .9), rgba($color-cream, .95));
+    border: 1px dashed rgba($color-black, .1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    div {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      gap: $spacing-2;
+      text-align: center;
+      color: $color-gray-500;
+      padding: $spacing-4;
+    }
+
+    mat-icon {
+      width: 34px;
+      height: 34px;
+      font-size: 34px;
+    }
+  }
+
+  &__upload {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-2;
+    min-height: 46px;
+    padding: 0 $spacing-4;
+    border: 1px solid rgba($color-black, .08);
+    border-radius: 16px;
+    background: rgba($color-gray-50, .95);
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+
+  &__status-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-3;
+    padding: $spacing-3;
+    border-radius: 18px;
+    background: rgba($color-gray-50, .95);
+    border: 1px solid rgba($color-black, .06);
+  }
+
+  &__status-label {
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: $color-gray-500;
+  }
+
+  &__side-actions {
+    display: grid;
+    gap: $spacing-3;
+
+    app-admin-action-button {
+      width: 100%;
+    }
+  }
+
+  &__empty-state {
+    display: grid;
+    justify-items: center;
+    gap: $spacing-3;
+    padding: clamp($spacing-6, 4vw, $spacing-8);
+    text-align: center;
+
+    mat-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+      color: $color-gray-500;
+    }
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    p {
+      max-width: 44ch;
+      color: $color-gray-600;
+      line-height: 1.7;
+    }
+  }
+
+  @media (max-width: 767px) {
+    &__item-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 424px) {
+    &__hero,
+    &__list-card,
+    &__panel,
+    &__empty-state {
+      padding-inline: $spacing-4;
+    }
+
+    &__mini-stats {
+      grid-template-columns: 1fr;
+    }
+
+    &__item-main {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      align-items: start;
+    }
+
+    &__item-actions,
+    app-admin-action-button {
+      width: 100%;
+    }
+
+    &__item-actions {
+      margin-left: 0;
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/ro
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../services/cart.service';
 import { LayoutService } from '../../core/services/layout.service';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 import { filter } from 'rxjs';
 
 @Component({
@@ -18,6 +19,7 @@ export class NavbarComponent implements OnInit {
   private cartService = inject(CartService);
   private router = inject(Router);
   layoutService = inject(LayoutService);
+  readonly content = inject(StorefrontContentService);
   
   isTop = signal(true);
   isMenuOpen = signal(false);

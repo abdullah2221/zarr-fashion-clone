@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Product, Category } from '../shared/models/models';
+import { Product, Category, ProductImage } from '../shared/models/models';
 import { CATEGORIES, POPULAR_PRODUCTS, PRODUCTS, SALE_PRODUCTS } from '../data/data';
 import { SupabaseClientService } from '../core/supabase/supabase-client.service';
 import {
@@ -20,6 +20,7 @@ export type CatalogSource = 'supabase' | 'local';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
+  private static readonly PRODUCT_PLACEHOLDER_URL = '/images/product-placeholder.svg';
   private readonly supabaseClient = inject(SupabaseClientService);
   private readonly supabaseProducts = inject(SupabaseProductRepository);
   private readonly supabaseCategories = inject(SupabaseCategoryRepository);
@@ -159,7 +160,7 @@ export class ProductService {
 
   private useLocalCatalog() {
     this.categoriesSignal.set(CATEGORIES);
-    this.productsSignal.set(PRODUCTS);
+    this.productsSignal.set(PRODUCTS.map(product => this.withResolvedLocalImages(product)));
     this.sourceSignal.set('local');
   }
 
@@ -176,9 +177,9 @@ export class ProductService {
   private mapProduct(product: Tables<'products'>, categories: Tables<'categories'>[], images: Tables<'product_images'>[]): Product {
     const category = categories.find(item => item.id === product.category_id);
     const metadata = this.asRecord(product.metadata);
-    const orderedImages = [...images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
-    const primaryPath = orderedImages[0]?.storage_path;
-    const hoverPath = orderedImages[1]?.storage_path ?? primaryPath;
+    const galleryImages = this.resolveSupabaseGallery(images, product.name);
+    const primaryImage = galleryImages[0];
+    const hoverImage = galleryImages[1] ?? primaryImage;
     const price = this.formatPrice(product.price);
     const originalPrice = product.original_price == null ? undefined : this.formatPrice(product.original_price);
 
@@ -191,8 +192,9 @@ export class ProductService {
       originalPrice,
       originalPriceValue: product.original_price ?? undefined,
       discount: originalPrice ? this.discountLabel(product.price, product.original_price || product.price) : undefined,
-      imageUrl: primaryPath ? this.supabaseStorage.getProductImageUrl(primaryPath) : '',
-      hoverImageUrl: hoverPath ? this.supabaseStorage.getProductImageUrl(hoverPath) : '',
+      imageUrl: primaryImage.url,
+      hoverImageUrl: hoverImage?.url ?? primaryImage.url,
+      images: galleryImages,
       url: `/product/${product.legacy_id}`,
       category: category?.name,
       categorySlug: category?.slug || 'shop',
@@ -207,6 +209,83 @@ export class ProductService {
       isTrending: this.booleanValue(metadata['isTrending']),
       campaignTags: this.stringArray(metadata['campaignTags']),
     };
+  }
+
+  private withResolvedLocalImages(product: Product): Product {
+    const galleryImages = this.deduplicateImages(
+      [
+        {
+          url: product.imageUrl,
+          alt: `${product.name} primary image`,
+          isPrimary: true,
+        },
+        product.hoverImageUrl
+          ? {
+              url: product.hoverImageUrl,
+              alt: `${product.name} alternate image`,
+            }
+          : undefined,
+      ],
+      product.name
+    );
+    const primaryImage = galleryImages[0];
+    const hoverImage = galleryImages[1] ?? primaryImage;
+
+    return {
+      ...product,
+      imageUrl: primaryImage.url,
+      hoverImageUrl: hoverImage?.url ?? primaryImage.url,
+      images: galleryImages,
+    };
+  }
+
+  private resolveSupabaseGallery(images: Tables<'product_images'>[], productName: string): ProductImage[] {
+    const orderedImages = [...images].sort(
+      (a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order
+    );
+    const galleryImages = this.deduplicateImages(
+      orderedImages.map(image => ({
+        url: this.supabaseStorage.getProductImageUrl(image.storage_path),
+        storagePath: image.storage_path,
+        alt: image.alt_text || `${productName} image`,
+        isPrimary: image.is_primary,
+      })),
+      productName
+    );
+
+    return galleryImages.length
+      ? galleryImages
+      : [
+          {
+            url: ProductService.PRODUCT_PLACEHOLDER_URL,
+            alt: `${productName} placeholder image`,
+            isPrimary: true,
+          },
+        ];
+  }
+
+  private deduplicateImages(images: Array<ProductImage | undefined>, productName: string): ProductImage[] {
+    const seen = new Set<string>();
+    const uniqueImages: ProductImage[] = [];
+
+    for (const image of images) {
+      if (!image?.url) continue;
+
+      const key = this.imageDedupKey(image);
+      if (seen.has(key)) continue;
+
+      seen.add(key);
+      uniqueImages.push({
+        ...image,
+        alt: image.alt || `${productName} image`,
+      });
+    }
+
+    return uniqueImages;
+  }
+
+  private imageDedupKey(image: ProductImage): string {
+    return (image.storagePath || image.url).trim().toLowerCase();
   }
 
   private asRecord(value: unknown): Record<string, unknown> {

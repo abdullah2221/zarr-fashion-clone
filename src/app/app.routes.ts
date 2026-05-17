@@ -9,6 +9,10 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
   {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.routes').then(module => module.ADMIN_ROUTES),
+  },
+  {
     path: '',
     component: HomeComponent,
     title: 'UR-Fashion | Premium Pakistani Fashion',

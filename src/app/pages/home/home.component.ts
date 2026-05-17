@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, PLATFORM_ID, OnInit } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { CategoryScrollComponent } from '../../components/category-scroll/category-scroll.component';
@@ -9,6 +9,7 @@ import { BrandsGalleryComponent } from '../../components/brands-gallery/brands-g
 import { OffersComponent } from '../../components/offers/offers.component';
 import { ProductService } from '../../services/product.service';
 import { MetaService } from '../../core/services/meta.service';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 import { animate, inView } from 'motion';
 
 @Component({
@@ -21,7 +22,8 @@ import { animate, inView } from 'motion';
     ProductCarouselComponent,
     BrandsGalleryComponent,
     OffersComponent,
-    RouterLink
+    RouterLink,
+    DecimalPipe,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -31,6 +33,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private platformId = inject(PLATFORM_ID);
   private productService = inject(ProductService);
   private metaService = inject(MetaService);
+  readonly content = inject(StorefrontContentService);
 
   popularProducts = this.productService.getPopularProducts();
   saleProducts = this.productService.getSaleProducts();
@@ -39,7 +42,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
     this.metaService.setSeo({
       title: 'Home',
-      description: 'Premium Pakistani fashion for Eid, lawn season, weddings, and everyday elegance with Cash on Delivery and nationwide delivery.',
+      description: this.content.settings().defaultSeoDescription,
       path: '/',
       keywords: 'Pakistani fashion, Eid collection, lawn collection, wedding wear, ready to wear, unstitched suits',
       type: 'website'

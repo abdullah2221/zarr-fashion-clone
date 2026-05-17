@@ -1,3 +1,10 @@
+export interface ProductImage {
+  url: string;
+  storagePath?: string;
+  alt?: string;
+  isPrimary?: boolean;
+}
+
 export interface Product {
   id: number;
   brand: string;
@@ -10,6 +17,7 @@ export interface Product {
   imageUrl: string;
   image?: string;
   hoverImageUrl: string;
+  images?: ProductImage[];
   url: string;
   category?: string;
   categorySlug: string;
@@ -31,9 +39,11 @@ export interface HeroSlide {
   title: string;
   subtitle: string;
   ctaText: string;
+  ctaLink?: string;
   eyebrow?: string;
   description?: string;
   secondaryCtaText?: string;
+  secondaryCtaLink?: string;
   campaignTag?: string;
 }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, computed, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
@@ -7,6 +7,8 @@ import { PricePipe } from '../../shared/pipes/price.pipe';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductCarouselComponent } from '../../components/product-carousel/product-carousel.component';
+import { ProductImage } from '../../shared/models/models';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -18,13 +20,22 @@ import { ProductCarouselComponent } from '../../components/product-carousel/prod
 })
 export class ProductDetailComponent {
   id = input.required<string>();
-  private productService = inject(ProductService);
-  private cartService = inject(CartService);
-  private metaService = inject(MetaService);
+  private readonly productService = inject(ProductService);
+  private readonly cartService = inject(CartService);
+  private readonly metaService = inject(MetaService);
+  readonly content = inject(StorefrontContentService);
+  private readonly selectedImageUrl = signal<string | null>(null);
 
   product = computed(() => this.productService.getProductById(Number(this.id())));
   isLoading = this.productService.isLoading;
   error = this.productService.error;
+  galleryImages = computed(() => this.product()?.images || []);
+  mainImage = computed(() => {
+    const selectedImageUrl = this.selectedImageUrl();
+    const galleryImages = this.galleryImages();
+    return galleryImages.find(image => image.url === selectedImageUrl) || galleryImages[0] || null;
+  });
+  activeImageUrl = computed(() => this.mainImage()?.url || null);
   relatedProducts = computed(() => {
     const current = this.product();
     const candidates = this.productService.getProducts()().filter(p => p.id !== Number(this.id()));
@@ -35,12 +46,27 @@ export class ProductDetailComponent {
 
   constructor() {
     effect(() => {
+      const primaryImageUrl = this.galleryImages()[0]?.url || null;
+      const selectedImageUrl = this.selectedImageUrl();
+      if (!primaryImageUrl) {
+        if (selectedImageUrl !== null) {
+          this.selectedImageUrl.set(null);
+        }
+        return;
+      }
+      if (selectedImageUrl !== primaryImageUrl && !this.galleryImages().some(image => image.url === selectedImageUrl)) {
+        this.selectedImageUrl.set(primaryImageUrl);
+      }
+    });
+
+    effect(() => {
       const p = this.product();
+      const galleryImages = this.galleryImages();
       if (p) {
         this.metaService.setSeo({
           title: `${p.brand} ${p.name}`,
           description: p.description || `${p.name} by ${p.brand}. Shop premium Pakistani fashion with COD and nationwide delivery.`,
-          image: p.imageUrl,
+          image: galleryImages[0]?.url || p.imageUrl,
           path: `/product/${p.id}`,
           keywords: `${p.brand}, ${p.category || 'fashion'}, Pakistani fashion, ${p.collection || 'ready to wear'}`,
           type: 'product'
@@ -51,7 +77,7 @@ export class ProductDetailComponent {
           '@context': 'https://schema.org',
           '@type': 'Product',
           name: p.name,
-          image: [p.imageUrl, p.hoverImageUrl].filter(Boolean),
+          image: galleryImages.map(image => image.url),
           description: p.description || p.name,
           brand: { '@type': 'Brand', name: p.brand },
           sku: String(p.id),
@@ -87,6 +113,10 @@ export class ProductDetailComponent {
         this.metaService.setJsonLd('seo-breadcrumb-schema', breadcrumb);
       }
     });
+  }
+
+  selectImage(image: ProductImage) {
+    this.selectedImageUrl.set(image.url);
   }
 
   addToCart() {

@@ -2,25 +2,22 @@
   <div class="footer__container">
     @if (!isFocusMode()) {
       <div class="footer__promise-grid">
-        <div><mat-icon>payments</mat-icon><strong>Cash on Delivery</strong><span>Available across Pakistan</span></div>
-        <div><mat-icon>local_shipping</mat-icon><strong>Nationwide delivery</strong><span>Free over Rs. 4,999</span></div>
+        <div><mat-icon>payments</mat-icon><strong>Cash on Delivery</strong><span>{{ content.settings().codMessage }}</span></div>
+        <div><mat-icon>local_shipping</mat-icon><strong>Nationwide delivery</strong><span>{{ content.settings().deliveryMessage }}</span></div>
         <div><mat-icon>verified_user</mat-icon><strong>Secure checkout</strong><span>SSL protected shopping</span></div>
-        <div><mat-icon>support_agent</mat-icon><strong>Customer care</strong><span>WhatsApp-ready support</span></div>
+        <div><mat-icon>support_agent</mat-icon><strong>Customer care</strong><span>{{ content.settings().whatsappNumber }}</span></div>
       </div>
 
       <div class="footer__seasonal-tags">
-        <span>Eid Collection</span>
-        <span>Ramadan Sale</span>
-        <span>Summer Lawn</span>
-        <span>Wedding/Formal</span>
-        <span>Ready to Wear</span>
-        <span>Unstitched / Stitched</span>
+        @for (chip of content.campaignChips().slice(0, 6); track chip) {
+          <span>{{ chip }}</span>
+        }
       </div>
 
       <div class="footer__grid">
         <div class="footer__column footer__brand-column">
           <a routerLink="/" class="footer__brand"><span>UR</span>/Fashion</a>
-          <p class="footer__text">Premium Pakistani fashion edits for Eid, lawn season, weddings and everyday elegance.</p>
+          <p class="footer__text">{{ content.settings().defaultSeoDescription }}</p>
         </div>
         <div class="footer__column">
           <h4 class="footer__subtitle">Help & Information</h4>
@@ -54,9 +51,9 @@
         </div>
       </div>
     }
-    <div class="footer__bottom">
+      <div class="footer__bottom">
       @if (!isFocusMode()) {
-        <div class="footer__social-section"><h4 class="footer__subtitle">Follow Us</h4><div class="footer__socials"><a href="https://www.instagram.com/" target="_blank" rel="noopener" class="footer__social-link" aria-label="Instagram"><mat-icon>camera_alt</mat-icon></a><a href="https://www.youtube.com/" target="_blank" rel="noopener" class="footer__social-link" aria-label="YouTube"><mat-icon>play_arrow</mat-icon></a><a href="https://www.facebook.com/" target="_blank" rel="noopener" class="footer__social-link" aria-label="Facebook"><mat-icon>facebook</mat-icon></a></div></div>
+        <div class="footer__social-section"><h4 class="footer__subtitle">Follow Us</h4><div class="footer__socials"><a [href]="content.settings().socialLinks.instagram || 'https://www.instagram.com/'" target="_blank" rel="noopener" class="footer__social-link" aria-label="Instagram"><mat-icon>camera_alt</mat-icon></a><a [href]="content.settings().socialLinks.youtube || 'https://www.youtube.com/'" target="_blank" rel="noopener" class="footer__social-link" aria-label="YouTube"><mat-icon>play_arrow</mat-icon></a><a [href]="content.settings().socialLinks.facebook || 'https://www.facebook.com/'" target="_blank" rel="noopener" class="footer__social-link" aria-label="Facebook"><mat-icon>facebook</mat-icon></a></div></div>
       }
       <div class="footer__copyright">&copy; 2026 UR-Fashion. All rights reserved.</div>
     </div>

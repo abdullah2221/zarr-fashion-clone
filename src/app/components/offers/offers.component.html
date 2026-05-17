@@ -6,10 +6,19 @@
       <p>Seasonal merchandising built around Eid, Ramadan, lawn season, weddings and 14 August gifting.</p>
     </div>
     <div class="offers__grid">
-      <a routerLink="/shop" class="offers__card"><img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=900" alt="Eid Collection" loading="lazy" decoding="async"/><div><span>Eid 2026</span><h3>Eid Noor Collection</h3><p>Festive formals and premium pret for family gatherings.</p><strong>Shop Eid Edit</strong></div></a>
-      <a routerLink="/shop" class="offers__card"><img src="https://images.unsplash.com/photo-1583391733958-d25e07fac04f?auto=format&fit=crop&q=80&w=900" alt="Summer Lawn" loading="lazy" decoding="async"/><div><span>Summer Lawn</span><h3>Flat 30% Off</h3><p>Breathable prints and unstitched essentials for warmer days.</p><strong>Shop Lawn Sale</strong></div></a>
-      <a routerLink="/shop" class="offers__card"><img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=900" alt="Wedding Season" loading="lazy" decoding="async"/><div><span>Wedding Season</span><h3>Mehndi to Walima</h3><p>Elegant occasionwear for every ceremony on your calendar.</p><strong>Explore Formals</strong></div></a>
-      <a routerLink="/shop" class="offers__card"><img src="https://images.unsplash.com/photo-1603344797033-f0f4f587ab60?auto=format&fit=crop&q=80&w=900" alt="Independence Day" loading="lazy" decoding="async"/><div><span>14 August</span><h3>Azadi Green Edit</h3><p>Limited festive styling in fresh greens, whites and gold accents.</p><strong>View Collection</strong></div></a>
+      @for (campaign of campaigns(); track campaign.id) {
+        <a [routerLink]="campaign.linkUrl" class="offers__card">
+          @if (campaign.imageUrl) {
+            <img [src]="campaign.imageUrl" [alt]="campaign.title" loading="lazy" decoding="async"/>
+          }
+          <div>
+            <span>{{ campaign.subtitle || campaign.campaignType || 'Campaign' }}</span>
+            <h3>{{ campaign.title }}</h3>
+            <p>{{ campaign.description }}</p>
+            <strong>{{ campaign.ctaText || 'Explore' }}</strong>
+          </div>
+        </a>
+      }
     </div>
   </div>
 </section>

@@ -4,9 +4,12 @@ import { Inserts, Tables, Updates } from '../models/database.types';
 import {
   AdminRepository,
   AuthRepository,
+  BannerRepository,
+  CampaignRepository,
   CategoryRepository,
   FeedbackRepository,
   OrderRepository,
+  ProfileRepository,
   ProductRepository,
   StorageRepository,
   WishlistRepository,
@@ -57,9 +60,60 @@ export class SupabaseAuthRepository extends SupabaseRepositoryBase implements Au
 }
 
 @Injectable({ providedIn: 'root' })
+export class SupabaseProfileRepository extends SupabaseRepositoryBase implements ProfileRepository {
+  async getCurrent() {
+    const user = await this.currentUser();
+    if (!user) return null;
+
+    const { data, error } = await this.client().from('profiles').select('*').eq('id', user.id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateCurrent(changes: Updates<'profiles'>) {
+    const user = await this.currentUser();
+    if (!user) throw new Error('Profile update requires an authenticated user.');
+
+    const { data, error } = await this.client().from('profiles').update(changes).eq('id', user.id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async isAdmin() {
+    const { data, error } = await this.client().rpc('is_admin');
+    if (error) throw error;
+    return Boolean(data);
+  }
+
+  async isSuperAdmin() {
+    const { data, error } = await this.client().rpc('is_super_admin');
+    if (error) throw error;
+    return Boolean(data);
+  }
+
+  private async currentUser() {
+    const { data, error } = await this.client().auth.getUser();
+    if (error) throw error;
+    return data.user;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
 export class SupabaseProductRepository extends SupabaseRepositoryBase implements ProductRepository {
   async listActive() {
     const { data, error } = await this.client().from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('products').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async getById(id: string) {
+    const { data, error } = await this.client().from('products').select('*').eq('id', id).maybeSingle();
     if (error) throw error;
     return data;
   }
@@ -75,6 +129,40 @@ export class SupabaseProductRepository extends SupabaseRepositoryBase implements
     if (error) throw error;
     return data;
   }
+
+  async createImage(image: Inserts<'product_images'>) {
+    const { data, error } = await this.client().from('product_images').insert(image).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateImage(id: string, changes: Updates<'product_images'>) {
+    const { data, error } = await this.client().from('product_images').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteImage(id: string) {
+    const { error } = await this.client().from('product_images').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  async create(product: Inserts<'products'>) {
+    const { data, error } = await this.client().from('products').insert(product).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'products'>) {
+    const { data, error } = await this.client().from('products').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('products').delete().eq('id', id);
+    if (error) throw error;
+  }
 }
 
 @Injectable({ providedIn: 'root' })
@@ -85,10 +173,115 @@ export class SupabaseCategoryRepository extends SupabaseRepositoryBase implement
     return data;
   }
 
+  async listAll() {
+    const { data, error } = await this.client().from('categories').select('*').order('sort_order').order('name');
+    if (error) throw error;
+    return data;
+  }
+
+  async getById(id: string) {
+    const { data, error } = await this.client().from('categories').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
   async getBySlug(slug: string) {
     const { data, error } = await this.client().from('categories').select('*').eq('slug', slug).eq('is_active', true).maybeSingle();
     if (error) throw error;
     return data;
+  }
+
+  async create(category: Inserts<'categories'>) {
+    const { data, error } = await this.client().from('categories').insert(category).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'categories'>) {
+    const { data, error } = await this.client().from('categories').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('categories').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseBannerRepository extends SupabaseRepositoryBase implements BannerRepository {
+  async listActive() {
+    const { data, error } = await this.client().from('banners').select('*').eq('is_active', true).order('sort_order').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('banners').select('*').order('sort_order').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async getById(id: string) {
+    const { data, error } = await this.client().from('banners').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async create(banner: Inserts<'banners'>) {
+    const { data, error } = await this.client().from('banners').insert(banner).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'banners'>) {
+    const { data, error } = await this.client().from('banners').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('banners').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseCampaignRepository extends SupabaseRepositoryBase implements CampaignRepository {
+  async listActive() {
+    const { data, error } = await this.client().from('campaigns').select('*').eq('is_active', true).order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('campaigns').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async getById(id: string) {
+    const { data, error } = await this.client().from('campaigns').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async create(campaign: Inserts<'campaigns'>) {
+    const { data, error } = await this.client().from('campaigns').insert(campaign).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'campaigns'>) {
+    const { data, error } = await this.client().from('campaigns').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('campaigns').delete().eq('id', id);
+    if (error) throw error;
   }
 }
 
@@ -158,10 +351,29 @@ export class SupabaseStorageRepository extends SupabaseRepositoryBase implements
     return this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).getPublicUrl(path).data.publicUrl;
   }
 
-  async uploadProductImage(path: string, file: File) {
-    const { error } = await this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).upload(path, file, { upsert: false });
+  getPublicImageUrl(path: string) {
+    return this.getProductImageUrl(path);
+  }
+
+  async uploadProductImage(path: string, file: File, options?: { upsert?: boolean }) {
+    const { error } = await this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).upload(path, file, {
+      upsert: options?.upsert ?? false,
+    });
     if (error) throw error;
     return path;
+  }
+
+  async uploadPublicImage(path: string, file: File, options?: { upsert?: boolean }) {
+    return this.uploadProductImage(path, file, options);
+  }
+
+  async removeProductImage(path: string) {
+    const { error } = await this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).remove([path]);
+    if (error) throw error;
+  }
+
+  async removePublicImage(path: string) {
+    await this.removeProductImage(path);
   }
 }
 
@@ -177,5 +389,22 @@ export class SupabaseAdminRepository extends SupabaseRepositoryBase implements A
     const { data, error } = await this.client().from('admin_settings').update(changes).eq('key', key).select('*').single();
     if (error) throw error;
     return data;
+  }
+
+  async getSetting(key: string) {
+    const { data, error } = await this.client().from('admin_settings').select('*').eq('key', key).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async upsertSetting(setting: Inserts<'admin_settings'>) {
+    const { data, error } = await this.client().from('admin_settings').upsert(setting).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteSetting(key: string) {
+    const { error } = await this.client().from('admin_settings').delete().eq('key', key);
+    if (error) throw error;
   }
 }

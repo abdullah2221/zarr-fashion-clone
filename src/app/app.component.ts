@@ -21,13 +21,21 @@ import { CommonModule } from '@angular/common';
 export class AppComponent implements OnInit {
   private router = inject(Router);
   isHomePage = signal(true);
+  isAdminRoute = signal(false);
 
   ngOnInit() {
+    this.updateRouteState(this.router.url);
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url;
-      this.isHomePage.set(url === '/' || url === '/home' || url === '');
+      this.updateRouteState(url);
     });
+  }
+
+  private updateRouteState(url: string) {
+    const cleanUrl = (url || '').split('?')[0];
+    this.isHomePage.set(cleanUrl === '/' || cleanUrl === '/home' || cleanUrl === '');
+    this.isAdminRoute.set(cleanUrl.startsWith('/admin'));
   }
 }

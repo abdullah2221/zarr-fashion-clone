@@ -3,16 +3,16 @@
     <span class="eyebrow">{{ pageLabel() }}</span>
     <h1>{{ pageTitle() }}</h1>
     <p>{{ pageIntro() }}</p>
-    <app-campaign-chips [chips]="campaignChips"></app-campaign-chips>
+    <app-campaign-chips [chips]="campaignChips()"></app-campaign-chips>
   </div>
 
   <div class="shop-page__container">
     <aside class="shop-page__promo">
-      <strong>Summer Lawn Live</strong>
-      <span>Flat 30% off selected styles • Free delivery over Rs. 4,999</span>
+      <strong>{{ content.shopBanner()?.title || 'Summer Lawn Live' }}</strong>
+      <span>{{ content.shopBanner()?.description || content.settings().deliveryMessage }}</span>
     </aside>
 
-    <app-trust-badge-strip [items]="trustItems"></app-trust-badge-strip>
+    <app-trust-badge-strip [items]="trustItems()"></app-trust-badge-strip>
 
     <div class="shop-page__toolbar" aria-label="Product filters and sorting">
       <div class="shop-page__chips">
@@ -65,7 +65,7 @@
 
       <div class="shop-page__products">
         <div class="shop-page__result-bar">
-          <span>Showing curated UR-Fashion pieces @if (searchQuery()) { matching “{{ searchQuery() }}” }</span>
+          <span>Showing curated UR-Fashion pieces @if (searchQuery()) { matching "{{ searchQuery() }}" }</span>
           <strong>{{ products().length }} products</strong>
         </div>
         @if (error()) {

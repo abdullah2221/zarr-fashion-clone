@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MetaService } from '../../core/services/meta.service';
 import { CampaignChipsComponent } from '../../components/campaign-chips/campaign-chips.component';
 import { TrustBadgeStripComponent, TrustBadgeItem } from '../../components/trust-badge-strip/trust-badge-strip.component';
+import { AdminSessionService } from '../../services/admin-session.service';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 
 type PageKey =
   | 'wishlist'
@@ -178,7 +181,7 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
 @Component({
   selector: 'app-static-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, CampaignChipsComponent, TrustBadgeStripComponent],
+  imports: [CommonModule, RouterLink, MatIconModule, ReactiveFormsModule, CampaignChipsComponent, TrustBadgeStripComponent],
   templateUrl: './static-page.component.html',
   styleUrl: './static-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -187,20 +190,25 @@ export class StaticPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private metaService = inject(MetaService);
+  private formBuilder = inject(FormBuilder);
+  private adminSession = inject(AdminSessionService);
+  readonly contentService = inject(StorefrontContentService);
 
   page = signal<StaticPageContent>(CONTENT.about);
-  campaignChips = ['Trending in Pakistan', 'Eid Collection', 'Ramadan Sale', 'Summer Lawn', 'Ready to Wear', 'Unstitched / Stitched'];
-  trustItems: TrustBadgeItem[] = [
-    { icon: 'payments', label: 'Cash on Delivery' },
-    { icon: 'chat', label: 'WhatsApp support' },
-    { icon: 'autorenew', label: 'Easy exchange' },
-    { icon: 'local_shipping', label: 'Delivery across Pakistan' }
-  ];
+  isAuthSubmitting = signal(false);
+  authError = signal<string | null>(null);
+  authNotice = signal<string | null>(null);
+  authForm = this.formBuilder.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
+  campaignChips = this.contentService.campaignChips;
+  trustItems = signal<TrustBadgeItem[]>([]);
 
   ngOnInit() {
     this.route.data.subscribe(data => {
       const key = (data['page'] || 'about') as PageKey;
-      const content = CONTENT[key] || CONTENT.about;
+      const content = this.withStorefrontOverrides(key, CONTENT[key] || CONTENT.about);
       this.page.set(content);
       const noindexPages: PageKey[] = ['checkout', 'login', 'account', 'track-order'];
       this.metaService.setSeo({
@@ -212,5 +220,70 @@ export class StaticPageComponent implements OnInit {
       });
       this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
     });
+
+    void this.adminSession.ensureInitialized().then(() => {
+      if (this.adminSession.isAuthenticated()) {
+        this.authNotice.set(`Signed in as ${this.adminSession.user()?.email || this.adminSession.displayName()}.`);
+      }
+    });
+
+    this.trustItems.set(this.contentService.trustBadges().map(item => ({ icon: item.icon, label: item.label })));
+  }
+
+  async signIn() {
+    if (this.authForm.invalid) {
+      this.authForm.markAllAsTouched();
+      return;
+    }
+
+    const { email, password } = this.authForm.getRawValue();
+    this.isAuthSubmitting.set(true);
+    this.authError.set(null);
+    this.authNotice.set(null);
+
+    try {
+      await this.adminSession.signIn(email, password);
+      const redirect = this.route.snapshot.queryParamMap.get('redirect');
+      const target = redirect || (this.adminSession.isAdmin() ? '/admin/dashboard' : '/account');
+      await this.router.navigateByUrl(target);
+    } catch (error) {
+      this.authError.set(error instanceof Error ? error.message : 'Unable to sign in right now.');
+    } finally {
+      this.isAuthSubmitting.set(false);
+    }
+  }
+
+  private withStorefrontOverrides(key: PageKey, content: StaticPageContent): StaticPageContent {
+    const settings = this.contentService.settings();
+    const overrides: Partial<Record<PageKey, Partial<StaticPageContent>>> = {
+      contact: {
+        intro: settings.contactPageIntro || content.intro,
+        secondary: [
+          { label: 'WhatsApp', value: settings.whatsappNumber || 'Chat support available' },
+          { label: 'Email', value: settings.supportEmail || 'support@ur-fashion.pk' },
+          { label: 'Phone', value: settings.supportPhone || 'Pakistan-wide online store' },
+        ],
+      },
+      about: {
+        intro: settings.aboutPageIntro || content.intro,
+      },
+      faq: {
+        intro: settings.faqIntro || content.intro,
+      },
+      'privacy-policy': {
+        intro: settings.privacySummary || content.intro,
+      },
+      'terms-conditions': {
+        intro: settings.termsSummary || content.intro,
+      },
+      'return-exchange-policy': {
+        intro: settings.returnExchangeSummary || content.intro,
+      },
+    };
+
+    return {
+      ...content,
+      ...(overrides[key] || {}),
+    };
   }
 }

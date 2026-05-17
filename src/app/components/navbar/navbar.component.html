@@ -5,10 +5,10 @@
 >
   @if (!isFocusMode()) {
     <div class="navbar__announcement" aria-label="Store announcement">
-      <span>Free delivery over Rs. 4,999</span>
+      <span>Free delivery over Rs. {{ content.settings().freeDeliveryThreshold }}</span>
       <span class="navbar__announcement-dot"></span>
-      <span>Cash on Delivery across Pakistan</span>
-      <span class="navbar__announcement-extra">Eid & Summer Lawn edits live now</span>
+      <span>{{ content.settings().codMessage }}</span>
+      <span class="navbar__announcement-extra">{{ content.campaignChips()[0] || 'Seasonal edits live now' }}</span>
     </div>
   }
 
@@ -86,10 +86,10 @@
       <a routerLink="/track-order" (click)="toggleMenu()" class="navbar__mobile-link">Track Order</a>
       <div class="navbar__divider"></div>
       <div class="navbar__mobile-trust">
-        <span><mat-icon>payments</mat-icon> Cash on Delivery</span>
-        <span><mat-icon>local_shipping</mat-icon> Nationwide delivery</span>
+        <span><mat-icon>payments</mat-icon> {{ content.settings().codMessage }}</span>
+        <span><mat-icon>local_shipping</mat-icon> {{ content.settings().deliveryMessage }}</span>
       </div>
-      <a routerLink="/category/eid-edit" (click)="toggleMenu()" class="navbar__mobile-cta">Shop Eid Edit</a>
+      <a routerLink="/shop" (click)="toggleMenu()" class="navbar__mobile-cta">{{ content.campaignChips()[1] || 'Shop Seasonal Edit' }}</a>
     </div>
   </div>
 </header>

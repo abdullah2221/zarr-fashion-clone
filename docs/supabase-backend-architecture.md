@@ -32,11 +32,13 @@ Enable RLS on every application table.
 
 - Public read: active `products`, active `categories`, active `banners`, active `campaigns`, and approved `feedback`.
 - Admin write: only `admin` and `super_admin` profiles may insert/update/delete product, category, product image, banner, campaign, and admin setting records.
+- Role and settings safety: only `super_admin` should manage user roles and `admin_settings`; catalog/content writes may be handled by `admin` and `super_admin`.
 - Wishlist: authenticated users may select/insert/delete only rows where `user_id = auth.uid()`.
 - Orders: authenticated users may insert orders for themselves and select only their own orders.
 - Order items: access is allowed only through ownership of the parent order.
 - Feedback: authenticated users may submit their own feedback; guest/customer submissions can be supported with nullable `user_id` plus rate limiting or server-side validation later. Only admins may approve/reject.
 - Profiles: users may read/update their own profile; only privileged roles may read or change other users' roles.
+- Prevent self-escalation by requiring users to keep their existing `profiles.role` value when updating their own profile.
 
 A helper SQL function such as `public.is_admin()` should centralize admin checks from `profiles.role`.
 
