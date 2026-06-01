@@ -1,7 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type UserRole = 'customer' | 'admin' | 'super_admin';
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'packed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
 export type FeedbackStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Database {
@@ -32,14 +32,14 @@ export interface Database {
         Relationships: [];
       };
       orders: {
-        Row: { id: string; user_id: string; status: OrderStatus; subtotal: number; shipping_amount: number; total_amount: number; currency: string; shipping_address: Json; notes: string | null; created_at: string; updated_at: string };
-        Insert: { id?: string; user_id: string; status?: OrderStatus; subtotal: number; shipping_amount?: number; total_amount: number; currency?: string; shipping_address: Json; notes?: string | null; created_at?: string; updated_at?: string };
+        Row: { id: string; user_id: string | null; status: OrderStatus; subtotal: number; shipping_amount: number; total_amount: number; currency: string; shipping_address: Json; notes: string | null; order_number: string | null; customer_name: string | null; customer_phone: string | null; customer_email: string | null; city: string | null; province: string | null; payment_method: string | null; verification_status: string | null; tracking_number: string | null; courier_name: string | null; dispatch_date: string | null; delivered_date: string | null; created_at: string; updated_at: string };
+        Insert: { id?: string; user_id?: string | null; status?: OrderStatus; subtotal: number; shipping_amount?: number; total_amount: number; currency?: string; shipping_address: Json; notes?: string | null; order_number?: string | null; customer_name?: string | null; customer_phone?: string | null; customer_email?: string | null; city?: string | null; province?: string | null; payment_method?: string | null; verification_status?: string | null; tracking_number?: string | null; courier_name?: string | null; dispatch_date?: string | null; delivered_date?: string | null; created_at?: string; updated_at?: string };
         Update: Partial<Database['public']['Tables']['orders']['Insert']>;
         Relationships: [];
       };
       order_items: {
-        Row: { id: string; order_id: string; product_id: string | null; product_name: string; sku: string | null; unit_price: number; quantity: number; line_total: number; created_at: string };
-        Insert: { id?: string; order_id: string; product_id?: string | null; product_name: string; sku?: string | null; unit_price: number; quantity: number; line_total: number; created_at?: string };
+        Row: { id: string; order_id: string; product_id: string | null; product_name: string; sku: string | null; unit_price: number; quantity: number; line_total: number; size: string | null; color: string | null; created_at: string };
+        Insert: { id?: string; order_id: string; product_id?: string | null; product_name: string; sku?: string | null; unit_price: number; quantity: number; line_total: number; size?: string | null; color?: string | null; created_at?: string };
         Update: Partial<Database['public']['Tables']['order_items']['Insert']>;
         Relationships: [];
       };
@@ -75,7 +75,24 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      is_super_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      create_guest_order: {
+        Args: { payload: Json };
+        Returns: { order_id: string; order_number: string }[];
+      };
+      track_order_public: {
+        Args: { lookup_order_number: string; lookup_phone: string };
+        Returns: { order_number: string; status: string; payment_method: string | null; city: string | null; province: string | null; total_amount: number; tracking_number: string | null; courier_name: string | null; dispatch_date: string | null; delivered_date: string | null; created_at: string }[];
+      };
+    };
     Enums: {
       user_role: UserRole;
       order_status: OrderStatus;

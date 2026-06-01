@@ -6,12 +6,15 @@ export interface AuthRepository {
   getCurrentUser(): Promise<User | null>;
   signInWithPassword(email: string, password: string): Promise<User>;
   signUp(email: string, password: string): Promise<User>;
+  resetPasswordForEmail(email: string, redirectTo?: string): Promise<void>;
+  updatePassword(password: string): Promise<void>;
   signOut(): Promise<void>;
 }
 
 export interface ProfileRepository {
   getCurrent(): Promise<Tables<'profiles'> | null>;
   updateCurrent(changes: Updates<'profiles'>): Promise<Tables<'profiles'>>;
+  upsertProfile(profile: Inserts<'profiles'>): Promise<Tables<'profiles'>>;
   isAdmin(): Promise<boolean>;
   isSuperAdmin(): Promise<boolean>;
 }
@@ -60,7 +63,49 @@ export interface CampaignRepository {
 
 export interface OrderRepository {
   create(order: Inserts<'orders'>, items: Omit<Inserts<'order_items'>, 'order_id'>[]): Promise<Tables<'orders'>>;
+  createGuestCheckout(params: {
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string | null;
+    shipping_address: string;
+    city: string;
+    province: string;
+    notes: string | null;
+    total_amount: number;
+    subtotal: number;
+    shipping_amount: number;
+    currency: string;
+    payment_method: string;
+    status: string;
+    items: Array<{
+      product_id: string | null;
+      product_name: string;
+      sku: string | null;
+      unit_price: number;
+      quantity: number;
+      line_total: number;
+      size?: string | null;
+      color?: string | null;
+    }>;
+  }): Promise<{ order_id: string; order_number: string }>;
   listMine(): Promise<Tables<'orders'>[]>;
+  findByOrderNumberAndPhone(orderNumber: string, phone: string): Promise<{
+    order_number: string;
+    status: string;
+    payment_method: string | null;
+    city: string | null;
+    province: string | null;
+    total_amount: number;
+    tracking_number: string | null;
+    courier_name: string | null;
+    dispatch_date: string | null;
+    delivered_date: string | null;
+    created_at: string;
+  } | null>;
+  listAll(): Promise<Tables<'orders'>[]>;
+  getById(id: string): Promise<Tables<'orders'> | null>;
+  listItems(orderId: string): Promise<Tables<'order_items'>[]>;
+  update(id: string, changes: Updates<'orders'>): Promise<Tables<'orders'>>;
 }
 
 export interface WishlistRepository {

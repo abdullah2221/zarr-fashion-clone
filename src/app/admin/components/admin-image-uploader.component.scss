@@ -11,6 +11,36 @@
     gap: $spacing-3;
   }
 
+  &__alert {
+    padding: $spacing-3 $spacing-4;
+    border-radius: 16px;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .05em;
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    text-transform: uppercase;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &--error {
+      background: rgba($color-error, .08);
+      border: 1px solid rgba($color-error, .16);
+      color: $color-error;
+    }
+
+    &--success {
+      background: rgba($color-success, .08);
+      border: 1px solid rgba($color-success, .16);
+      color: $color-success;
+    }
+  }
+
   &__action {
     position: relative;
     display: inline-flex;

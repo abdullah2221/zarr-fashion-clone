@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,9 +19,35 @@ export class AdminImageUploaderComponent {
 
   @Output() imagesChange = new EventEmitter<AdminImageDraft[]>();
 
+  // Image validation constraints
+  private readonly maxSizeBytes = 5 * 1024 * 1024; // 5MB
+  private readonly allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+
+  readonly error = signal<string | null>(null);
+  readonly success = signal<string | null>(null);
+
+  private validateFile(file: File): boolean {
+    this.error.set(null);
+    this.success.set(null);
+
+    if (!this.allowedTypes.includes(file.type)) {
+      this.error.set(`"${file.name}" has an unsupported format. Please upload JPEG, PNG, WEBP, GIF, or SVG.`);
+      return false;
+    }
+
+    if (file.size > this.maxSizeBytes) {
+      this.error.set(`"${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Max size allowed is 5MB.`);
+      return false;
+    }
+
+    return true;
+  }
+
   onMainSelected(event: Event) {
     const file = this.extractFile(event);
     if (!file) return;
+
+    if (!this.validateFile(file)) return;
 
     const currentImages = [...this.images()];
     const existing = currentImages.filter(image => !image.markedForDeletion);
@@ -40,6 +66,8 @@ export class AdminImageUploaderComponent {
 
     const next = [mainImage, ...demotedImages, ...retiredPrimary];
     this.emitState(next);
+    this.success.set('Main image selected and validated.');
+    setTimeout(() => this.success.set(null), 4000);
   }
 
   onGallerySelected(event: Event) {
@@ -47,9 +75,19 @@ export class AdminImageUploaderComponent {
     const files = Array.from(input?.files || []);
     if (!files.length) return;
 
+    const validFiles: File[] = [];
+    for (const file of files) {
+      if (this.validateFile(file)) {
+        validFiles.push(file);
+      } else {
+        if (input) input.value = '';
+        return;
+      }
+    }
+
     const next = [
       ...this.images().filter(image => !image.markedForDeletion),
-      ...files.map(file => ({
+      ...validFiles.map(file => ({
         file,
         previewUrl: URL.createObjectURL(file),
         altText: '',
@@ -58,6 +96,8 @@ export class AdminImageUploaderComponent {
       })),
     ];
     this.emitState(next);
+    this.success.set(`Added ${validFiles.length} gallery image(s) successfully.`);
+    setTimeout(() => this.success.set(null), 4000);
     if (input) input.value = '';
   }
 

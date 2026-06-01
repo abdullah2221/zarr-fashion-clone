@@ -1,0 +1,33 @@
+<section class="order-tracking">
+  <div class="order-tracking__container">
+    <header>
+      <span class="eyebrow">Track Order</span>
+      <h1>Check Your Delivery Status</h1>
+      <p>Use your order number and checkout phone number.</p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="order-tracking__card">
+      <label><span>Order Number</span><input formControlName="orderNumber" placeholder="URF-20260601-ABCD"></label>
+      <label><span>Phone Number</span><input formControlName="phone" placeholder="03001234567"></label>
+      <button type="submit" [disabled]="isLoading()">{{ isLoading() ? 'Checking...' : 'Track Order' }}</button>
+    </form>
+
+    @if (error()) {
+      <p class="order-tracking__error">{{ error() }}</p>
+    }
+
+    @if (result(); as order) {
+      <article class="order-tracking__result">
+        <h2>{{ order.order_number }}</h2>
+        <p><span>Status</span><strong>{{ order.status | titlecase }}</strong></p>
+        <p><span>Total</span><strong>{{ order.total_amount | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
+        <p><span>Date</span><strong>{{ order.created_at | date:'mediumDate' }}</strong></p>
+        <p><span>City</span><strong>{{ order.city || '-' }}</strong></p>
+        <p><span>Province</span><strong>{{ order.province || '-' }}</strong></p>
+        <p><span>Payment</span><strong>{{ (order.payment_method || 'cod') | uppercase }}</strong></p>
+        <p><span>Tracking</span><strong>{{ order.tracking_number || 'Pending dispatch' }}</strong></p>
+        <p class="order-tracking__message">{{ statusMessage() }}</p>
+      </article>
+    }
+  </div>
+</section>

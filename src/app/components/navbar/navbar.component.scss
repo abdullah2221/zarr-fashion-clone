@@ -177,7 +177,18 @@
     justify-content: flex-end;
     align-items: center;
     gap: $spacing-2;
+    position: relative;
     @include respond-to('sm') { gap: $spacing-4; }
+  }
+
+  &__auth-loading {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $color-gray-500;
+    display: none;
+    @include respond-to('sm') { display: inline-flex; }
   }
 
   &__signin { display: none; @include respond-to('sm') { display: flex; } }
@@ -239,6 +250,56 @@
     @include transition;
     &:hover { color: $color-primary-dark; transform: translateX(4px); }
     &--sale { color: $color-accent; }
+    &--button { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; }
+  }
+
+  &__account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: $color-white;
+    border: 1px solid rgba($color-black, .08);
+    box-shadow: $shadow-lg;
+    display: none;
+    z-index: $z-index-dropdown;
+
+    &--open { display: grid; }
+
+    a, button {
+      min-height: 42px;
+      padding: 0 $spacing-3;
+      display: flex;
+      align-items: center;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      border: 0;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover { background: $color-ivory; }
+    }
+  }
+
+  &__account-head {
+    padding: $spacing-3;
+    border-bottom: 1px solid $color-gray-200;
+    display: grid;
+    gap: 2px;
+
+    strong {
+      font-size: $font-size-sm;
+      line-height: 1.3;
+      color: $color-black;
+    }
+
+    small {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: $color-gray-500;
+    }
   }
 
   &__mobile-trust {

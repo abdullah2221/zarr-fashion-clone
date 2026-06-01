@@ -32,28 +32,33 @@
       <div class="admin-product-editor__main">
         <section class="admin-product-editor__panel">
           <div class="admin-product-editor__panel-head">
-            <h2>Basic information</h2>
+            <div class="admin-product-editor__section-title">
+              <h2>Basic information</h2>
+              @if ((form.controls.name.invalid && form.controls.name.touched) || (form.controls.slug.invalid && form.controls.slug.touched) || (form.controls.sku.invalid && form.controls.sku.touched)) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
             <p>Name, slug, SKU, description, and the core identity the storefront uses.</p>
           </div>
 
           <div class="admin-product-editor__grid admin-product-editor__grid--two">
             <label>
               <span>Name *</span>
-              <input formControlName="name">
+              <input formControlName="name" [class.invalid-field]="form.controls.name.invalid && form.controls.name.touched">
               @if (form.controls.name.invalid && form.controls.name.touched) {
                 <small class="admin-product-editor__field-error">Product name is required.</small>
               }
             </label>
             <label>
               <span>Slug *</span>
-              <input formControlName="slug">
+              <input formControlName="slug" [class.invalid-field]="form.controls.slug.invalid && form.controls.slug.touched">
               @if (form.controls.slug.invalid && form.controls.slug.touched) {
                 <small class="admin-product-editor__field-error">A unique slug is required.</small>
               }
             </label>
             <label>
               <span>SKU *</span>
-              <input formControlName="sku">
+              <input formControlName="sku" [class.invalid-field]="form.controls.sku.invalid && form.controls.sku.touched">
               @if (form.controls.sku.invalid && form.controls.sku.touched) {
                 <small class="admin-product-editor__field-error">SKU is required for admin operations.</small>
               }
@@ -72,14 +77,22 @@
 
         <section class="admin-product-editor__panel">
           <div class="admin-product-editor__panel-head">
-            <h2>Pricing & inventory</h2>
+            <div class="admin-product-editor__section-title">
+              <h2>Pricing & inventory</h2>
+              @if ((form.controls.regularPrice.invalid && form.controls.regularPrice.touched) || (form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched)) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
             <p>Keep the commercial details clean so the storefront displays correct pricing, stock, and availability.</p>
           </div>
 
           <div class="admin-product-editor__grid admin-product-editor__grid--two">
             <label>
               <span>Regular / original price *</span>
-              <input type="number" min="1" formControlName="regularPrice">
+              <input type="number" min="1" formControlName="regularPrice" [class.invalid-field]="form.controls.regularPrice.invalid && form.controls.regularPrice.touched">
+              @if (form.controls.regularPrice.invalid && form.controls.regularPrice.touched) {
+                <small class="admin-product-editor__field-error">Regular price is required and must be at least Rs 1.</small>
+              }
             </label>
             <label>
               <span>Sale price</span>
@@ -87,7 +100,10 @@
             </label>
             <label>
               <span>Stock quantity *</span>
-              <input type="number" min="0" formControlName="stockQuantity">
+              <input type="number" min="0" formControlName="stockQuantity" [class.invalid-field]="form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched">
+              @if (form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched) {
+                <small class="admin-product-editor__field-error">Stock quantity is required and must be 0 or more.</small>
+              }
             </label>
             <label>
               <span>Delivery note</span>
@@ -192,7 +208,12 @@
       <aside class="admin-product-editor__side">
         <section class="admin-product-editor__panel">
           <div class="admin-product-editor__panel-head">
-            <h2>Publish controls</h2>
+            <div class="admin-product-editor__section-title">
+              <h2>Publish controls</h2>
+              @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
             <p>Use this sidebar to control status, category, storefront emphasis, and final save actions.</p>
           </div>
 
@@ -204,12 +225,15 @@
 
             <label>
               <span>Category *</span>
-              <select formControlName="categoryId">
+              <select formControlName="categoryId" [class.invalid-field]="form.controls.categoryId.invalid && form.controls.categoryId.touched">
                 <option value="">Select a category</option>
                 @for (category of categories(); track category.id) {
                   <option [value]="category.id">{{ category.name }}</option>
                 }
               </select>
+              @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+                <small class="admin-product-editor__field-error">Please select a storefront category.</small>
+              }
             </label>
 
             <div class="admin-product-editor__checks admin-product-editor__checks--stacked">

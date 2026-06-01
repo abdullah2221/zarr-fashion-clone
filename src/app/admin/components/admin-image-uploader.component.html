@@ -12,6 +12,19 @@
       <span>Add gallery images</span>
     </label>
   </div>
+  
+  @if (error()) {
+    <div class="admin-image-uploader__alert admin-image-uploader__alert--error">
+      <mat-icon>warning</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
+  @if (success()) {
+    <div class="admin-image-uploader__alert admin-image-uploader__alert--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ success() }}</span>
+    </div>
+  }
 
   @if (!images().length) {
     <div class="admin-image-uploader__empty">

@@ -45,13 +45,14 @@ export class AdminShellComponent {
     { label: 'Products', icon: 'inventory_2', path: '/admin/products' },
     { label: 'Categories', icon: 'category', path: '/admin/categories' },
     { label: 'Campaigns', icon: 'campaign', path: '/admin/campaigns' },
+    { label: 'Orders', icon: 'receipt_long', path: '/admin/orders' },
     { label: 'Settings', icon: 'tune', path: '/admin/settings' },
-    { label: 'Orders', icon: 'receipt_long', soon: true },
     { label: 'Customers', icon: 'groups', soon: true },
     { label: 'Feedback', icon: 'reviews', soon: true },
   ];
 
   constructor() {
+    void this.session.ensureInitialized();
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url;
       this.breadcrumbs.set(this.buildBreadcrumbs(url));

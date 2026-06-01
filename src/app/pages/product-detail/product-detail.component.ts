@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProductCarouselComponent } from '../../components/product-carousel/product-carousel.component';
 import { ProductImage } from '../../shared/models/models';
 import { StorefrontContentService } from '../../services/storefront-content.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -24,7 +25,9 @@ export class ProductDetailComponent {
   private readonly cartService = inject(CartService);
   private readonly metaService = inject(MetaService);
   readonly content = inject(StorefrontContentService);
+  private readonly wishlistService = inject(WishlistService);
   private readonly selectedImageUrl = signal<string | null>(null);
+  private readonly selectedSize = signal<string | null>(null);
 
   product = computed(() => this.productService.getProductById(Number(this.id())));
   isLoading = this.productService.isLoading;
@@ -43,6 +46,13 @@ export class ProductDetailComponent {
     const sameCategory = candidates.filter(p => p.categorySlug === current.categorySlug);
     return [...sameCategory, ...candidates.filter(p => p.categorySlug !== current.categorySlug)].slice(0, 6);
   });
+  sizeOptions = computed(() => this.product()?.sizes || []);
+  activeSize = this.selectedSize.asReadonly();
+  inWishlist = computed(() => {
+    const product = this.product();
+    if (!product) return false;
+    return this.wishlistService.isInWishlist(product.id);
+  });
 
   constructor() {
     effect(() => {
@@ -56,6 +66,18 @@ export class ProductDetailComponent {
       }
       if (selectedImageUrl !== primaryImageUrl && !this.galleryImages().some(image => image.url === selectedImageUrl)) {
         this.selectedImageUrl.set(primaryImageUrl);
+      }
+    });
+
+    effect(() => {
+      const sizes = this.sizeOptions();
+      const current = this.selectedSize();
+      if (!sizes.length) {
+        if (current !== null) this.selectedSize.set(null);
+        return;
+      }
+      if (!current || !sizes.includes(current)) {
+        this.selectedSize.set(sizes[0]);
       }
     });
 
@@ -122,7 +144,17 @@ export class ProductDetailComponent {
   addToCart() {
     const p = this.product();
     if (p) {
-      this.cartService.addToCart(p);
+      this.cartService.addToCart(p, { size: this.selectedSize() || undefined });
     }
+  }
+
+  async toggleWishlist() {
+    const product = this.product();
+    if (!product) return;
+    await this.wishlistService.toggle(product);
+  }
+
+  chooseSize(size: string) {
+    this.selectedSize.set(size);
   }
 }

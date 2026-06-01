@@ -29,6 +29,11 @@ export class ShopComponent {
   error = this.productService.error;
   selectedCategory = computed(() => this.slug() || 'all');
 
+  // Interactive Filter States
+  selectedCollections = signal<string[]>([]);
+  selectedSizes = signal<string[]>([]);
+  maxPrice = signal<number>(15000);
+
   categoryChips = computed(() => [
     { label: 'All', slug: 'all' },
     ...this.productService.getCategories()().map(category => ({ label: category.name, slug: category.slug || 'all' }))
@@ -39,11 +44,69 @@ export class ShopComponent {
     this.content.trustBadges().map(item => ({ icon: item.icon, label: item.label }))
   );
 
-  products = computed(() => this.productService.queryProducts({
-    categorySlug: this.selectedCategory() === 'all' ? undefined : this.selectedCategory(),
-    search: this.searchQuery(),
-    sortBy: this.sortBy()
-  }));
+  products = computed(() => {
+    let list = this.productService.queryProducts({
+      categorySlug: this.selectedCategory() === 'all' ? undefined : this.selectedCategory(),
+      search: this.searchQuery(),
+      sortBy: this.sortBy()
+    });
+
+    const collections = this.selectedCollections();
+    if (collections.length > 0) {
+      list = list.filter(p => p.collection && collections.some(col => p.collection?.toLowerCase().includes(col.toLowerCase())));
+    }
+
+    const sizes = this.selectedSizes();
+    if (sizes.length > 0) {
+      list = list.filter(p => p.sizes && p.sizes.some(s => sizes.includes(s)));
+    }
+
+    const priceLimit = this.maxPrice();
+    list = list.filter(p => {
+      const price = p.priceValue || parseFloat(p.price.replace(/[^\d.]/g, '')) || 0;
+      return price <= priceLimit;
+    });
+
+    return list;
+  });
+
+  // Filter Helper Methods
+  isCollectionSelected(name: string): boolean {
+    return this.selectedCollections().includes(name);
+  }
+
+  toggleCollection(name: string): void {
+    const current = this.selectedCollections();
+    if (current.includes(name)) {
+      this.selectedCollections.set(current.filter(item => item !== name));
+    } else {
+      this.selectedCollections.set([...current, name]);
+    }
+  }
+
+  isSizeSelected(size: string): boolean {
+    return this.selectedSizes().includes(size);
+  }
+
+  toggleSize(size: string): void {
+    const current = this.selectedSizes();
+    if (current.includes(size)) {
+      this.selectedSizes.set(current.filter(item => item !== size));
+    } else {
+      this.selectedSizes.set([...current, size]);
+    }
+  }
+
+  onPriceSliderChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.maxPrice.set(parseFloat(value) || 15000);
+  }
+
+  clearFilters(): void {
+    this.selectedCollections.set([]);
+    this.selectedSizes.set([]);
+    this.maxPrice.set(15000);
+  }
 
   pageLabel = computed(() => this.formatSlug(this.slug()) || 'UR-Fashion Collections');
   pageTitle = computed(() => this.slug() ? `${this.formatSlug(this.slug())} Collection` : 'Shop premium fashion for every Pakistani season');

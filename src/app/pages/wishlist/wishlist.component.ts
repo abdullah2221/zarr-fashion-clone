@@ -5,6 +5,7 @@ import { WishlistService } from '../../services/wishlist.service';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { CampaignChipsComponent } from '../../components/campaign-chips/campaign-chips.component';
 import { MetaService } from '../../core/services/meta.service';
+import { AdminSessionService } from '../../services/admin-session.service';
 
 @Component({
   selector: 'app-wishlist',
@@ -22,9 +23,12 @@ import { MetaService } from '../../core/services/meta.service';
 
         @if (items().length) {
           <div class="wishlist-page__meta">
-            <span>Saved pieces from your device</span>
+            <span>{{ isLoggedIn() ? 'Synced with your account' : 'Saved pieces from your device' }}</span>
             <strong>{{ items().length }} items</strong>
           </div>
+          @if (error()) {
+            <p class="wishlist-page__error">{{ error() }}</p>
+          }
           <app-product-grid [products]="items()"></app-product-grid>
         } @else {
           <app-empty-state
@@ -82,6 +86,14 @@ import { MetaService } from '../../core/services/meta.service';
       color: #111111;
       white-space: nowrap;
     }
+    .wishlist-page__error {
+      margin: 0 0 1rem;
+      color: #b91c1c;
+      border-left: 3px solid #b91c1c;
+      background: rgba(185, 28, 28, .08);
+      padding: .6rem .75rem;
+      font-size: .9rem;
+    }
     @media (min-width: 640px) {
       .wishlist-page__container {
         padding: 0 1.5rem;
@@ -98,7 +110,10 @@ import { MetaService } from '../../core/services/meta.service';
 export class WishlistComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   private metaService = inject(MetaService);
+  private session = inject(AdminSessionService);
   items = this.wishlistService.items;
+  error = this.wishlistService.error;
+  isLoggedIn = this.session.isLoggedIn;
 
   chips = ['Trending in Pakistan', 'Eid Collection', 'Summer Lawn', 'Wedding/Formal', 'Ready to Wear'];
   count = computed(() => this.items().length);

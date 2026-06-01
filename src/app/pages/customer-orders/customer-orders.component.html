@@ -1,0 +1,29 @@
+<section class="customer-orders">
+  <div class="customer-orders__container">
+    <header>
+      <span class="eyebrow">My Orders</span>
+      <h1>Order History</h1>
+    </header>
+    @if (loading()) {
+      <p>Loading orders...</p>
+    } @else if (error()) {
+      <p class="customer-orders__error">{{ error() }}</p>
+    } @else if (!orders().length) {
+      <p>No orders found yet.</p>
+      <a routerLink="/shop">Start shopping</a>
+    } @else {
+      <div class="customer-orders__list">
+        @for (order of orders(); track order.id) {
+          <article>
+            <p><span>Order</span><strong>{{ order.order_number || (order.id.slice(0, 8).toUpperCase()) }}</strong></p>
+            <p><span>Date</span><strong>{{ order.created_at | date:'mediumDate' }}</strong></p>
+            <p><span>Status</span><strong>{{ statusLabel(order.status) }}</strong></p>
+            <p><span>Total</span><strong>{{ order.total_amount | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
+            <p><span>Payment</span><strong>{{ (order.payment_method || 'cod') | uppercase }}</strong></p>
+            <a [routerLink]="['/orders', order.id]">View Details</a>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

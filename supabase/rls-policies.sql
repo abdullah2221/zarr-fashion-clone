@@ -17,6 +17,7 @@ drop policy if exists "admins manage categories" on public.categories;
 drop policy if exists "public can read product images" on public.product_images;
 drop policy if exists "admins manage product images" on public.product_images;
 drop policy if exists "users read own profile" on public.profiles;
+drop policy if exists "users insert own customer profile" on public.profiles;
 drop policy if exists "users update own profile except role" on public.profiles;
 drop policy if exists "super admins manage profiles" on public.profiles;
 drop policy if exists "admins manage profiles" on public.profiles;
@@ -82,6 +83,10 @@ create policy "public can read product images" on public.product_images for sele
 create policy "admins manage product images" on public.product_images for all using (public.is_admin()) with check (public.is_admin());
 
 create policy "users read own profile" on public.profiles for select using (id = auth.uid() or public.is_admin());
+create policy "users insert own customer profile" on public.profiles for insert with check (
+  id = auth.uid()
+  and role = 'customer'
+);
 create policy "users update own profile except role" on public.profiles for update using (id = auth.uid()) with check (
   id = auth.uid()
   and role = (select p.role from public.profiles as p where p.id = auth.uid())

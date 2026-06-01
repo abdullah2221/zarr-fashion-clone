@@ -56,14 +56,20 @@
             <div class="product-detail__sizes">
               <div class="product-detail__section-label">Select size</div>
               <div class="product-detail__size-grid">
-                @for (size of p.sizes || []; track size) { <button>{{ size }}</button> }
+                @for (size of p.sizes || []; track size) {
+                  <button
+                    [class.is-active]="activeSize() === size"
+                    (click)="chooseSize(size)">{{ size }}</button>
+                }
               </div>
             </div>
           }
           
           <div class="product-detail__actions">
             <button class="product-detail__add-btn" (click)="addToCart()">ADD TO BAG</button>
-            <button class="product-detail__wishlist-btn" aria-label="Add to wishlist"><mat-icon>favorite_border</mat-icon></button>
+            <button class="product-detail__wishlist-btn" (click)="toggleWishlist()" [attr.aria-label]="inWishlist() ? 'Remove from wishlist' : 'Add to wishlist'">
+              <mat-icon>{{ inWishlist() ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
           </div>
           
           <div class="product-detail__features">

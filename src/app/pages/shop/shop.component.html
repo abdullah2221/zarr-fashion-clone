@@ -42,25 +42,55 @@
       <aside class="shop-page__drawer" aria-label="Filters">
         <div class="shop-page__drawer-header">
           <strong>Filters</strong>
-          <span>Refine</span>
+          <button type="button" class="clear-filters-link" (click)="clearFilters()">Clear All</button>
         </div>
         <div class="shop-page__filter-group">
           <h3>Collection</h3>
-          <label><input type="checkbox"> Summer Lawn</label>
-          <label><input type="checkbox"> Eid Edit</label>
-          <label><input type="checkbox"> Wedding</label>
-          <label><input type="checkbox"> Sale</label>
+          <label>
+            <input type="checkbox" [checked]="isCollectionSelected('Summer Lawn')" (change)="toggleCollection('Summer Lawn')"> 
+            Summer Lawn
+          </label>
+          <label>
+            <input type="checkbox" [checked]="isCollectionSelected('Unstitched')" (change)="toggleCollection('Unstitched')"> 
+            Unstitched
+          </label>
+          <label>
+            <input type="checkbox" [checked]="isCollectionSelected('Ready to Wear')" (change)="toggleCollection('Ready to Wear')"> 
+            Ready to Wear
+          </label>
+          <label>
+            <input type="checkbox" [checked]="isCollectionSelected('Sale')" (change)="toggleCollection('Sale')"> 
+            Sale
+          </label>
         </div>
         <div class="shop-page__filter-group">
           <h3>Size</h3>
-          <div class="shop-page__size-row"><button>XS</button><button>S</button><button>M</button><button>L</button><button>XL</button></div>
+          <div class="shop-page__size-row">
+            @for (size of ['XS', 'S', 'M', 'L', 'XL', '36', '37', '38', '39', '40']; track size) {
+              <button 
+                type="button" 
+                [class.active]="isSizeSelected(size)" 
+                (click)="toggleSize(size)"
+              >{{ size }}</button>
+            }
+          </div>
         </div>
         <div class="shop-page__filter-group">
-          <h3>Price</h3>
-          <div class="shop-page__range"><span></span></div>
-          <p>Rs. 3,000 — Rs. 15,000</p>
+          <h3>Max Price</h3>
+          <div class="shop-page__price-slider">
+            <input 
+              type="range" 
+              min="3000" 
+              max="15000" 
+              step="250" 
+              [value]="maxPrice()" 
+              (input)="onPriceSliderChange($event)"
+              class="premium-slider"
+            >
+          </div>
+          <p class="price-display">Up to Rs. {{ maxPrice() | number:'1.0-0' }}</p>
         </div>
-        <button class="shop-page__apply" type="button">Apply Filters</button>
+        <button class="shop-page__apply" type="button" (click)="clearFilters()">Reset Filters</button>
       </aside>
 
       <div class="shop-page__products">

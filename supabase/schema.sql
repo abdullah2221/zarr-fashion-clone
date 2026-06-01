@@ -1,5 +1,5 @@
 create type public.user_role as enum ('customer', 'admin', 'super_admin');
-create type public.order_status as enum ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled');
+create type public.order_status as enum ('pending', 'confirmed', 'packed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned');
 create type public.feedback_status as enum ('pending', 'approved', 'rejected');
 
 create table public.profiles (

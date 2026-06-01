@@ -1,0 +1,9 @@
+.customer-order-detail {
+  padding: 3rem 0 4rem;
+  &__container { max-width: 980px; margin: 0 auto; padding: 0 1rem; display: grid; gap: .9rem; }
+  &__error { color: #b91c1c; }
+  &__timeline { display: flex; gap: .5rem; flex-wrap: wrap; span { padding: .35rem .7rem; border: 1px solid rgba(17,17,17,.2); border-radius: 999px; font-size: .8rem; } .is-done { background: #111; color: #fff; border-color: #111; } }
+  &__summary { display: grid; gap: .5rem; background: #fff; border: 1px solid rgba(17,17,17,.08); border-radius: 12px; padding: .8rem; p { margin: 0; display: flex; justify-content: space-between; gap: .8rem; } span { color: #6b7280; font-size: .82rem; text-transform: uppercase; letter-spacing: .07em; } }
+  ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; li { background: #fff; border: 1px solid rgba(17,17,17,.08); border-radius: 10px; padding: .65rem .75rem; display: grid; gap: .2rem; } span { font-weight: 700; } small { color: #6b7280; } }
+  &__support { justify-self: start; background: #111; color: #fff; border-radius: 999px; padding: .6rem 1rem; font-size: .85rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+}

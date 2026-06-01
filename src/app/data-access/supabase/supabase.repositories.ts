@@ -53,6 +53,18 @@ export class SupabaseAuthRepository extends SupabaseRepositoryBase implements Au
     return data.user;
   }
 
+  async resetPasswordForEmail(email: string, redirectTo?: string) {
+    const { error } = await this.client().auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+    if (error) throw error;
+  }
+
+  async updatePassword(password: string) {
+    const { error } = await this.client().auth.updateUser({ password });
+    if (error) throw error;
+  }
+
   async signOut() {
     const { error } = await this.client().auth.signOut();
     if (error) throw error;
@@ -79,15 +91,31 @@ export class SupabaseProfileRepository extends SupabaseRepositoryBase implements
     return data;
   }
 
-  async isAdmin() {
-    const { data, error } = await this.client().rpc('is_admin');
+  async upsertProfile(profile: Inserts<'profiles'>) {
+    const { data, error } = await this.client()
+      .from('profiles')
+      .upsert(profile, { onConflict: 'id' })
+      .select('*')
+      .single();
     if (error) throw error;
+    return data;
+  }
+
+  async isAdmin() {
+    const client = this.client() as unknown as {
+      rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    };
+    const { data, error } = await client.rpc('is_admin');
+    if (error) throw error as Error;
     return Boolean(data);
   }
 
   async isSuperAdmin() {
-    const { data, error } = await this.client().rpc('is_super_admin');
-    if (error) throw error;
+    const client = this.client() as unknown as {
+      rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    };
+    const { data, error } = await client.rpc('is_super_admin');
+    if (error) throw error as Error;
     return Boolean(data);
   }
 
@@ -298,8 +326,96 @@ export class SupabaseOrderRepository extends SupabaseRepositoryBase implements O
     return createdOrder;
   }
 
+  async createGuestCheckout(params: {
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string | null;
+    shipping_address: string;
+    city: string;
+    province: string;
+    notes: string | null;
+    total_amount: number;
+    subtotal: number;
+    shipping_amount: number;
+    currency: string;
+    payment_method: string;
+    status: string;
+    items: Array<{
+      product_id: string | null;
+      product_name: string;
+      sku: string | null;
+      unit_price: number;
+      quantity: number;
+      line_total: number;
+      size?: string | null;
+      color?: string | null;
+    }>;
+  }) {
+    const client = this.client() as unknown as {
+      rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    };
+    const { data, error } = await client.rpc('create_guest_order', {
+      payload: params,
+    });
+    if (error) throw error as Error;
+    const row = Array.isArray(data) ? data[0] : data;
+    const typedRow = row as { order_id?: string; order_number?: string } | null;
+    if (!typedRow?.order_id) throw new Error('Guest order creation returned an invalid payload.');
+    return { order_id: typedRow.order_id, order_number: typedRow.order_number || '' };
+  }
+
   async listMine() {
     const { data, error } = await this.client().from('orders').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async findByOrderNumberAndPhone(orderNumber: string, phone: string) {
+    const client = this.client() as unknown as {
+      rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    };
+    const { data, error } = await client.rpc('track_order_public', {
+      lookup_order_number: orderNumber.trim(),
+      lookup_phone: phone.trim(),
+    });
+    if (error) throw error as Error;
+    const row = Array.isArray(data) ? data[0] : null;
+    if (!row || typeof row !== 'object') return null;
+    return row as {
+      order_number: string;
+      status: string;
+      payment_method: string | null;
+      city: string | null;
+      province: string | null;
+      total_amount: number;
+      tracking_number: string | null;
+      courier_name: string | null;
+      dispatch_date: string | null;
+      delivered_date: string | null;
+      created_at: string;
+    };
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('orders').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async getById(id: string) {
+    const { data, error } = await this.client().from('orders').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async listItems(orderId: string) {
+    const { data, error } = await this.client().from('order_items').select('*').eq('order_id', orderId).order('created_at', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'orders'>) {
+    const { data, error } = await this.client().from('orders').update(changes).eq('id', id).select('*').single();
     if (error) throw error;
     return data;
   }

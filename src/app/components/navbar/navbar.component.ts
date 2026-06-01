@@ -1,4 +1,4 @@
-import { Component, HostListener, signal, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { Component, HostListener, signal, inject, PLATFORM_ID, OnInit, computed } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,6 +6,7 @@ import { CartService } from '../../services/cart.service';
 import { LayoutService } from '../../core/services/layout.service';
 import { StorefrontContentService } from '../../services/storefront-content.service';
 import { filter } from 'rxjs';
+import { AdminSessionService } from '../../services/admin-session.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,14 +21,23 @@ export class NavbarComponent implements OnInit {
   private router = inject(Router);
   layoutService = inject(LayoutService);
   readonly content = inject(StorefrontContentService);
+  readonly session = inject(AdminSessionService);
   
   isTop = signal(true);
   isMenuOpen = signal(false);
+  isAccountMenuOpen = signal(false);
   isHomePage = signal(true);
   isFocusMode = this.layoutService.isFocusMode;
   cartCount = this.cartService.count;
+  authResolved = computed(() => this.session.authStatus() !== 'loading');
+  isLoggedIn = this.session.isAuthenticated;
+  isAdmin = this.session.isAdmin;
+  isCustomer = computed(() => this.isLoggedIn() && !this.isAdmin());
+  displayName = this.session.displayName;
+  roleLabel = computed(() => this.session.role().replace('_', ' '));
 
   ngOnInit() {
+    void this.session.ensureInitialized();
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
@@ -39,6 +49,7 @@ export class NavbarComponent implements OnInit {
       this.layoutService.setFocusMode(focusRoutes.some(route => url.startsWith(route)));
       
       this.isMenuOpen.set(false); // Close menu on navigation
+      this.isAccountMenuOpen.set(false);
       
       // Reset scroll state
       if (isPlatformBrowser(this.platformId)) {
@@ -56,5 +67,13 @@ export class NavbarComponent implements OnInit {
 
   toggleMenu() {
     this.isMenuOpen.update(v => !v);
+  }
+
+  toggleAccountMenu() {
+    this.isAccountMenuOpen.update(value => !value);
+  }
+
+  async signOut() {
+    await this.session.signOut('/login');
   }
 }

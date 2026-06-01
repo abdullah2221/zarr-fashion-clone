@@ -17,5 +17,5 @@ export const adminGuard: CanActivateFn = async (_route, state) => {
 
   return sessionService.isAdmin()
     ? true
-    : router.createUrlTree(['/'], { queryParams: { denied: 'admin' } });
+    : router.createUrlTree(['/account'], { queryParams: { denied: 'admin' } });
 };

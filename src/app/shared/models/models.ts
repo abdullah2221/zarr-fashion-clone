@@ -7,6 +7,7 @@ export interface ProductImage {
 
 export interface Product {
   id: number;
+  catalogId?: string;
   brand: string;
   name: string;
   price: string;

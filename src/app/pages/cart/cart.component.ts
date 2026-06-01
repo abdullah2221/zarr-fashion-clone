@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { PricePipe } from '../../shared/pipes/price.pipe';
@@ -22,6 +22,7 @@ export class CartComponent implements OnInit {
   private metaService = inject(MetaService);
   items = this.cartService.items;
   total = this.cartService.total;
+  promoNotice = signal<string | null>(null);
 
   campaignChips = ['Eid Collection', 'Ramadan Sale', 'Selling Fast', 'Limited Stock'];
   trustItems: TrustBadgeItem[] = [
@@ -39,5 +40,9 @@ export class CartComponent implements OnInit {
       noindex: true
     });
     this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
+  }
+
+  applyPromo() {
+    this.promoNotice.set('Promo codes are not active yet. COD checkout will use the displayed total.');
   }
 }

@@ -185,6 +185,7 @@ export class ProductService {
 
     return {
       id: product.legacy_id,
+      catalogId: product.id,
       brand: product.brand || 'UR-Fashion',
       name: product.name,
       price,

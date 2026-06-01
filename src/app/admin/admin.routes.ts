@@ -9,6 +9,8 @@ import { AdminDashboardComponent } from './pages/admin-dashboard.component';
 import { AdminVerifyComponent } from './pages/admin-verify.component';
 import { AdminProductEditorPageComponent } from './pages/products/admin-product-editor-page.component';
 import { AdminProductsPageComponent } from './pages/products/admin-products-page.component';
+import { AdminOrderDetailPageComponent } from './pages/orders/admin-order-detail-page.component';
+import { AdminOrdersPageComponent } from './pages/orders/admin-orders-page.component';
 import { AdminSettingsPageComponent } from './pages/settings/admin-settings-page.component';
 
 export const ADMIN_ROUTES: Routes = [
@@ -25,6 +27,8 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'products/:id', component: AdminProductEditorPageComponent, title: 'Edit Product | UR-Fashion Admin' },
       { path: 'categories', component: AdminCategoriesPageComponent, title: 'Categories | UR-Fashion Admin' },
       { path: 'campaigns', component: AdminCampaignsPageComponent, title: 'Campaigns | UR-Fashion Admin' },
+      { path: 'orders', component: AdminOrdersPageComponent, title: 'Orders | UR-Fashion Admin' },
+      { path: 'orders/:id', component: AdminOrderDetailPageComponent, title: 'Order Detail | UR-Fashion Admin' },
       { path: 'settings', component: AdminSettingsPageComponent, title: 'Settings | UR-Fashion Admin', canActivate: [superAdminGuard] },
     ],
   },

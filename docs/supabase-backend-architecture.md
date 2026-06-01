@@ -47,13 +47,15 @@ A helper SQL function such as `public.is_admin()` should centralize admin checks
 - Browser-only auth persistence is enabled only in the browser.
 - Repositories should tolerate an unconfigured client during local development; the existing UI remains on local/mock services until integration work begins.
 
-## Local fallback retained in phase 1
+## Local fallback and live customer features
 - Cart remains localStorage-backed.
-- Wishlist remains localStorage-backed in the current UI service.
-- Product rendering remains mock-data-backed through the existing `ProductService`.
+- Wishlist is localStorage-backed for guests and Supabase-backed for logged-in customers, with local wishlist merge after login.
+- Product rendering prefers live Supabase catalog data through `ProductService`, with static catalog fallback if Supabase is unavailable.
 - `LocalCartRepository`, `LocalWishlistRepository`, and `LocalProductRepository` are prepared as explicit fallback adapters for later composition.
 
 ## Storefront read migration
 - Run `schema.sql`, then `rls-policies.sql`, then `storage.sql`, then `seed.sql`.
+- Apply phase migrations in order: `phase-2a-orders-migration-recommendations.sql`, `phase-3-checkout-guest-rpc.sql`, `phase-3a-fix-orders-cod-nullability.sql`, `phase-4-auth-security-rls.sql`, and `phase-5-order-tracking-rpc.sql`.
+- Reload PostgREST after RPC or schema migrations with `notify pgrst, 'reload schema';`.
 - Upload category and product image files into the `product-images` bucket using the object paths referenced by `seed.sql`.
 - When `SUPABASE_URL` and `SUPABASE_ANON_KEY` are configured, the storefront prefers Supabase reads; if configuration is absent or live reads fail, it falls back to local static data.

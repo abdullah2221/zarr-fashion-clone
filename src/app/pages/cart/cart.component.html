@@ -34,7 +34,8 @@
             <h2 class="cart__summary-title">Order Summary</h2>
             <div class="cart__promo-box">
               <label for="promo">Promo code</label>
-              <div><input id="promo" placeholder="EID30" aria-label="Promo code"><button type="button">Apply</button></div>
+              <div><input id="promo" placeholder="EID30" aria-label="Promo code"><button type="button" (click)="applyPromo()">Apply</button></div>
+              @if (promoNotice()) { <p class="cart__promo-note">{{ promoNotice() }}</p> }
             </div>
             <div class="cart__summary-rows">
               <div class="cart__summary-row"><span>Subtotal</span><span>{{total() | currency:'PKR':'symbol-narrow':'1.0-0'}}</span></div>

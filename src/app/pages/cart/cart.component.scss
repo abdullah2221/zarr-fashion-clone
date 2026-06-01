@@ -152,6 +152,13 @@
     }
   }
 
+  &__promo-note {
+    margin: $spacing-3 0 0;
+    color: $color-gray-600;
+    font-size: $font-size-xs;
+    line-height: 1.5;
+  }
+
   &__checkout-btn {
     display: inline-flex;
     align-items: center;

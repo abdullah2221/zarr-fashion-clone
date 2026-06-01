@@ -3,6 +3,8 @@ import { Product } from '../shared/models/models';
 
 export interface CartItem extends Product {
   quantity: number;
+  selectedSize?: string;
+  selectedColor?: string;
 }
 
 @Injectable({
@@ -29,14 +31,30 @@ export class CartService {
     this.persistToStorage();
   }
 
-  addToCart(product: Product) {
+  addToCart(product: Product, options?: { size?: string; color?: string }) {
     this.cartItems.update(items => {
-      const existingItem = items.find(i => i.id === product.id);
+      const existingItem = items.find(i =>
+        i.id === product.id &&
+        (i.selectedSize || '') === (options?.size || '') &&
+        (i.selectedColor || '') === (options?.color || '')
+      );
       if (existingItem) {
-        return items.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+        return items.map(i =>
+          i.id === existingItem.id &&
+          (i.selectedSize || '') === (options?.size || '') &&
+          (i.selectedColor || '') === (options?.color || '')
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
+        );
       }
       // Ensure 'image' property exists for templates
-      const newItem = { ...product, quantity: 1, image: product.imageUrl };
+      const newItem: CartItem = {
+        ...product,
+        quantity: 1,
+        image: product.imageUrl,
+        selectedSize: options?.size || undefined,
+        selectedColor: options?.color || undefined,
+      };
       return [...items, newItem];
     });
   }
@@ -54,6 +72,21 @@ export class CartService {
     }
     this.cartItems.update(items => 
       items.map(i => i.id === id ? { ...i, quantity } : i)
+    );
+  }
+
+  updateSelection(productId: number | string, selection: { size?: string; color?: string }) {
+    const id = typeof productId === 'string' ? Number(productId) : productId;
+    this.cartItems.update(items =>
+      items.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              selectedSize: selection.size ?? item.selectedSize,
+              selectedColor: selection.color ?? item.selectedColor,
+            }
+          : item
+      )
     );
   }
 

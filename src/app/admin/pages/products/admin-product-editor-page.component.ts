@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -19,6 +19,12 @@ import { Tables } from '../../../data-access/models/database.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminProductEditorPageComponent {
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any): void {
+    if (this.form.dirty && !this.saving()) {
+      $event.returnValue = true;
+    }
+  }
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -97,7 +103,16 @@ export class AdminProductEditorPageComponent {
     this.warning.set(null);
 
     if (this.form.invalid) {
-      this.error.set('Please complete the required product fields before saving.');
+      this.error.set('Please complete all required storefront fields before submitting.');
+      
+      // Auto-focus and scroll to the first invalid field
+      setTimeout(() => {
+        const firstInvalidControl = document.querySelector('.ng-invalid:not(form)');
+        if (firstInvalidControl) {
+          firstInvalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (firstInvalidControl as HTMLElement).focus();
+        }
+      }, 100);
       return;
     }
 
@@ -124,12 +139,50 @@ export class AdminProductEditorPageComponent {
     this.saving.set(true);
     try {
       const savedProduct = await this.service.saveProduct(this.product(), value, this.imageDrafts());
+      // Explicitly mark the form as pristine to bypass beforeunload check
+      this.form.markAsPristine();
       await this.router.navigate(['/admin/products', savedProduct.id], { queryParams: { saved: '1' } });
-    } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'Unable to save product.');
+    } catch (err: any) {
+      this.error.set(this.mapSupabaseError(err));
     } finally {
       this.saving.set(false);
     }
+  }
+
+  mapSupabaseError(err: any): string {
+    if (!err) return 'An unexpected database error occurred while saving the product.';
+    
+    const message = err.message || '';
+    const code = err.code || '';
+    const details = err.details || '';
+    
+    // Unique key violation (23505)
+    if (code === '23505' || message.includes('unique constraint') || details.includes('already exists')) {
+      if (details.includes('slug') || message.includes('slug')) {
+        return 'A product with this slug already exists. Please choose a different, unique URL slug.';
+      }
+      if (details.includes('sku') || message.includes('sku')) {
+        return 'A product with this SKU already exists. Please choose a different, unique SKU.';
+      }
+      return 'Unique constraint violation. Duplicate values are not permitted for key fields.';
+    }
+
+    // Row-level security / Permission denied (42501)
+    if (code === '42501' || message.includes('permission denied') || message.includes('row-level security')) {
+      return 'Permission denied. Only authorized store administrators and super administrators can modify the catalog.';
+    }
+
+    // Storage quotas or RLS for storage
+    if (message.includes('storage') || message.includes('bucket') || message.includes('upload')) {
+      return 'Media storage upload failure. Ensure images are below 5MB and your administrator account has active RLS write policies.';
+    }
+
+    // Network timeout / connection issues
+    if (message.includes('fetch') || message.includes('network') || err.status === 0) {
+      return 'Network connection failure. Please check your internet connection and try saving again.';
+    }
+
+    return err.message || 'Unable to save the product. Please correct any inputs and try again.';
   }
 
   onImagesChanged(images: AdminImageDraft[]) {
