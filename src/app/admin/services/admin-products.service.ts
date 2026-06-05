@@ -290,7 +290,11 @@ export class AdminProductsService {
   private async syncImages(product: Tables<'products'>, images: AdminImageDraft[]) {
     const activeImages = this.normalizeImageDrafts(images.filter(image => !image.markedForDeletion));
     const existingImages = activeImages.filter(image => image.id);
-    const newImages = activeImages.filter(image => image.file);
+    const newImages = activeImages.filter(image => !image.id);
+    // Images with a real File → upload to Supabase Storage bucket
+    const fileImages = newImages.filter(image => !!image.file);
+    // Images with a remote http/https URL → store the URL directly as storage_path, no bucket upload
+    const remoteImages = newImages.filter(image => !image.file && this.isRemoteUrl(image.previewUrl));
     const productFolder = `products/${product.legacy_id || product.id}`;
 
     for (const image of images.filter(image => image.markedForDeletion && image.id && image.storagePath)) {
@@ -306,12 +310,24 @@ export class AdminProductsService {
       });
     }
 
-    for (const image of newImages) {
+    // Upload real file images to Supabase Storage
+    for (const image of fileImages) {
       const path = image.sortOrder === 0 ? `${productFolder}/main.jpg` : `${productFolder}/gallery-${image.sortOrder}.jpg`;
       await this.storageRepository.uploadProductImage(path, image.file!, { upsert: true });
       await this.productRepository.createImage({
         product_id: product.id,
         storage_path: path,
+        alt_text: image.altText,
+        is_primary: image.isPrimary,
+        sort_order: image.sortOrder,
+      });
+    }
+
+    // Save remote URL images directly — no upload, store the URL as storage_path
+    for (const image of remoteImages) {
+      await this.productRepository.createImage({
+        product_id: product.id,
+        storage_path: image.previewUrl,   // Full https://… URL stored directly
         alt_text: image.altText,
         is_primary: image.isPrimary,
         sort_order: image.sortOrder,
@@ -328,7 +344,11 @@ export class AdminProductsService {
         });
       }
     }
+  }
 
+  /** Returns true if the given string is a full http/https URL (remote placeholder or CDN). */
+  private isRemoteUrl(url: string): boolean {
+    return url.startsWith('http://') || url.startsWith('https://');
   }
 
   private async deleteImageRecord(id: string, storagePath: string) {

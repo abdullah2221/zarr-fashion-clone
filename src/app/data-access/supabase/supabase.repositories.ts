@@ -463,11 +463,17 @@ export class SupabaseFeedbackRepository extends SupabaseRepositoryBase implement
 export class SupabaseStorageRepository extends SupabaseRepositoryBase implements StorageRepository {
   private static readonly PRODUCT_IMAGES_BUCKET = 'product-images';
 
-  getProductImageUrl(path: string) {
+  /** Returns a usable image URL from either a Supabase storage path or a full remote URL.
+   *  If `path` starts with http/https it is a remote placeholder/CDN URL and is
+   *  returned as-is — no Supabase bucket call is made.
+   *  Local storage paths are resolved through the product-images bucket as normal.
+   */
+  getProductImageUrl(path: string): string {
+    if (this.isRemoteUrl(path)) return path;
     return this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).getPublicUrl(path).data.publicUrl;
   }
 
-  getPublicImageUrl(path: string) {
+  getPublicImageUrl(path: string): string {
     return this.getProductImageUrl(path);
   }
 
@@ -483,13 +489,23 @@ export class SupabaseStorageRepository extends SupabaseRepositoryBase implements
     return this.uploadProductImage(path, file, options);
   }
 
+  /** Removes a product image from Supabase Storage.
+   *  If the path is a remote URL (placeholder/CDN), this is a no-op —
+   *  remote URLs are never stored in our bucket.
+   */
   async removeProductImage(path: string) {
+    if (this.isRemoteUrl(path)) return;
     const { error } = await this.client().storage.from(SupabaseStorageRepository.PRODUCT_IMAGES_BUCKET).remove([path]);
     if (error) throw error;
   }
 
   async removePublicImage(path: string) {
     await this.removeProductImage(path);
+  }
+
+  /** Returns true if the path is an absolute http/https URL (remote placeholder or CDN). */
+  private isRemoteUrl(path: string): boolean {
+    return path.startsWith('http://') || path.startsWith('https://');
   }
 }
 
