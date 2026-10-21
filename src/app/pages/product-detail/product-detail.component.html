@@ -38,7 +38,6 @@
           </div>
           <p class="product-detail__brand">{{ p.brand }}</p>
           <h1 class="product-detail__title">{{p.name}}</h1>
-          @if (p.rating) { <div class="product-detail__rating"><span>★★★★★</span> {{ p.rating }} / 5 · {{ p.reviewCount || 0 }} reviews</div> }
           <div class="product-detail__price-row">
             <span class="product-detail__price">{{ p.price | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span>
             @if (p.originalPrice) { <span class="product-detail__original">{{ p.originalPrice | appPrice | currency:'PKR':'symbol-narrow':'1.0-0' }}</span> }

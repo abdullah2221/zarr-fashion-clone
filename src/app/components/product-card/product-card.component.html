@@ -38,10 +38,6 @@
     <app-product-badge-row [product]="product()"></app-product-badge-row>
     <div class="product-card__topline">
       <span class="product-card__brand">{{ product().brand }}</span>
-      <span class="product-card__rating" [class.product-card__rating--empty]="!product().rating" [attr.aria-hidden]="!product().rating">
-        <mat-icon>star</mat-icon>
-        {{ product().rating || '0.0' }}
-      </span>
     </div>
     <h3 class="product-card__name">{{ product().name }}</h3>
     <div class="product-card__price-wrapper">

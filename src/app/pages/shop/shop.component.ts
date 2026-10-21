@@ -109,12 +109,25 @@ export class ShopComponent {
     this.maxPrice.set(15000);
   }
 
+  readonly activeCategory = computed(() => {
+    const slug = this.slug();
+    if (!slug) return null;
+    return this.productService.getCategories()().find(category => category.slug === slug) || null;
+  });
+
   pageLabel = computed(() => this.formatSlug(this.slug()) || 'Zeenat Collections');
-  pageTitle = computed(() => this.slug() ? `${this.formatSlug(this.slug())} Collection` : 'Shop premium fashion for every Pakistani season');
-  pageIntro = computed(() => this.slug()
-    ? `Explore ${this.formatSlug(this.slug()).toLowerCase()} picks from Zeenat with premium styling, COD support and nationwide delivery.`
-    : 'Discover lawn, unstitched suits, ready-to-wear, wedding edits and sale picks with COD and nationwide delivery.'
-  );
+  pageTitle = computed(() => {
+    const category = this.activeCategory();
+    if (category) return category.name;
+    return this.slug() ? `${this.formatSlug(this.slug())} Collection` : 'Shop premium fashion for every Pakistani season';
+  });
+  pageIntro = computed(() => {
+    const category = this.activeCategory();
+    if (category?.subtitle) return category.subtitle;
+    return this.slug()
+      ? `Explore ${this.formatSlug(this.slug()).toLowerCase()} picks from Zeenat with premium styling, COD support and nationwide delivery.`
+      : 'Discover lawn, unstitched suits, ready-to-wear, wedding edits and sale picks with COD and nationwide delivery.';
+  });
 
   constructor() {
     effect(() => {

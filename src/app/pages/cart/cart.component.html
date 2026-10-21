@@ -39,9 +39,9 @@
             </div>
             <div class="cart__summary-rows">
               <div class="cart__summary-row"><span>Subtotal</span><span>{{total() | currency:'PKR':'symbol-narrow':'1.0-0'}}</span></div>
-              <div class="cart__summary-row"><span>Shipping</span><span class="free">Complimentary</span></div>
+              <div class="cart__summary-row"><span>Shipping</span><span [class.free]="deliveryFee() === 0">{{ deliveryFee() > 0 ? (deliveryFee() | currency:'PKR':'symbol-narrow':'1.0-0') : 'Complimentary' }}</span></div>
               <div class="cart__summary-row"><span>Cash on Delivery</span><span>Available</span></div>
-              <div class="cart__summary-row cart__summary-row--total"><span>Estimated Total</span><span>{{total() | currency:'PKR':'symbol-narrow':'1.0-0'}}</span></div>
+              <div class="cart__summary-row cart__summary-row--total"><span>Estimated Total</span><span>{{estimatedTotal() | currency:'PKR':'symbol-narrow':'1.0-0'}}</span></div>
             </div>
             <a routerLink="/checkout" class="cart__checkout-btn">PROCEED TO CHECKOUT</a>
             <div class="cart__summary-footer"><p><mat-icon>lock</mat-icon> Secure SSL Checkout</p><p><mat-icon>payments</mat-icon> COD available across Pakistan</p><p><mat-icon>support_agent</mat-icon> Support-led exchange assistance</p><p><mat-icon>chat</mat-icon> WhatsApp support available</p></div>

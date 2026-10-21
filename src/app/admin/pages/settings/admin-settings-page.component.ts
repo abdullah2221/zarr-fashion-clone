@@ -26,6 +26,7 @@ export class AdminSettingsPageComponent {
     supportEmail: ['', [Validators.email]],
     supportPhone: [''],
     freeDeliveryThreshold: [4999, [Validators.required, Validators.min(0)]],
+    deliveryFee: [0, [Validators.required, Validators.min(0)]],
     deliveryMessage: [''],
     codMessage: [''],
     exchangePolicySummary: [''],

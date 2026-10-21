@@ -17,7 +17,19 @@ interface SeoOptions {
 })
 export class MetaService {
   private static readonly SITE_NAME = 'Zeenat';
-  private static readonly SITE_URL = 'https://www.ur-fashion.pk';
+  private static readonly FALLBACK_SITE_URL = 'https://www.ur-fashion.pk';
+
+  // Canonical/share URLs follow the APP_URL baked into runtime-config.js at
+  // deploy time; until the host sets it, the historical placeholder applies.
+  private readonly siteUrl = ((): string => {
+    const runtime = (globalThis as { __UR_FASHION_CONFIG__?: Record<string, string | undefined> }).__UR_FASHION_CONFIG__;
+    const fromRuntime = runtime?.['APP_URL']?.trim();
+    return (fromRuntime || MetaService.FALLBACK_SITE_URL).replace(/\/$/, '');
+  })();
+
+  absoluteUrl(path: string): string {
+    return this.toAbsoluteUrl(path);
+  }
 
   private title = inject(Title);
   private meta = inject(Meta);
@@ -99,6 +111,6 @@ export class MetaService {
 
   private toAbsoluteUrl(path: string) {
     const normalized = path.startsWith('/') ? path : `/${path}`;
-    return `${MetaService.SITE_URL}${normalized}`;
+    return `${this.siteUrl}${normalized}`;
   }
 }

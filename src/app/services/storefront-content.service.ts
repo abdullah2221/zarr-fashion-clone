@@ -17,6 +17,7 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
   supportEmail: 'support@ur-fashion.pk',
   supportPhone: '+92 300 0000000',
   freeDeliveryThreshold: 4999,
+  deliveryFee: 0,
   deliveryMessage: 'Delivery across Pakistan with premium packaging and fast dispatch on active catalog items.',
   codMessage: 'Cash on Delivery is available on eligible orders across Pakistan.',
   exchangePolicySummary: 'Easy exchange support is available for eligible items in original condition.',

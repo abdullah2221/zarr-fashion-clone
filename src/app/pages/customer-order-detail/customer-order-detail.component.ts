@@ -32,7 +32,8 @@ export class CustomerOrderDetailComponent {
   });
   readonly statusTimeline = computed(() => {
     const order = this.order();
-    const current = order?.status || 'pending';
+    const rawStatus = order?.status || 'pending';
+    const current = rawStatus === 'processing' ? 'packed' : rawStatus;
     const all = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
     return all.map(status => ({ status, done: all.indexOf(current) >= all.indexOf(status) }));
   });

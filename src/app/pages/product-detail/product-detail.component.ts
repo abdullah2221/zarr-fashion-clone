@@ -111,15 +111,8 @@ export class ProductDetailComponent {
             price: priceValue,
             availability: 'https://schema.org/InStock',
             itemCondition: 'https://schema.org/NewCondition',
-            url: `https://www.ur-fashion.pk/product/${p.id}`
-          },
-          aggregateRating: p.rating
-            ? {
-                '@type': 'AggregateRating',
-                ratingValue: p.rating,
-                reviewCount: p.reviewCount || 1
-              }
-            : undefined
+            url: this.metaService.absoluteUrl(`/product/${p.id}`)
+          }
         };
         this.metaService.setJsonLd('seo-product-schema', productSchema);
 
@@ -127,10 +120,10 @@ export class ProductDetailComponent {
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.ur-fashion.pk/' },
-            { '@type': 'ListItem', position: 2, name: 'Shop', item: 'https://www.ur-fashion.pk/shop' },
-            { '@type': 'ListItem', position: 3, name: p.category || 'Collection', item: `https://www.ur-fashion.pk/category/${p.categorySlug}` },
-            { '@type': 'ListItem', position: 4, name: p.name, item: `https://www.ur-fashion.pk/product/${p.id}` }
+            { '@type': 'ListItem', position: 1, name: 'Home', item: this.metaService.absoluteUrl('/') },
+            { '@type': 'ListItem', position: 2, name: 'Shop', item: this.metaService.absoluteUrl('/shop') },
+            { '@type': 'ListItem', position: 3, name: p.category || 'Collection', item: this.metaService.absoluteUrl(`/category/${p.categorySlug}`) },
+            { '@type': 'ListItem', position: 4, name: p.name, item: this.metaService.absoluteUrl(`/product/${p.id}`) }
           ]
         };
         this.metaService.setJsonLd('seo-breadcrumb-schema', breadcrumb);

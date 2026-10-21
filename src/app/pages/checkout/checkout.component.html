@@ -126,8 +126,8 @@
           </div>
           <div class="checkout-page__totals">
             <p><span>Subtotal</span><strong>{{ subtotal() | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
-            <p><span>Shipping</span><strong>Free</strong></p>
-            <p class="total"><span>Total</span><strong>{{ subtotal() | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
+            <p><span>Shipping</span><strong>{{ deliveryFee() > 0 ? (deliveryFee() | currency:'PKR':'symbol-narrow':'1.0-0') : 'Free' }}</strong></p>
+            <p class="total"><span>Total</span><strong>{{ total() | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
           </div>
         </aside>
       </div>

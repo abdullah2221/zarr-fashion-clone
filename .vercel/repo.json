@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_9ctLg1CZXlsPlodxofEqmTdyjIyq",
+      "name": "zarr-fashion-clone",
+      "directory": ".",
+      "orgId": "team_bo3BwNioxpSy1ARMoNp9GfHT"
+    }
+  ]
+}

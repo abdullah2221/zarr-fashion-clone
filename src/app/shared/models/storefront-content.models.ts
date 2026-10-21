@@ -44,6 +44,7 @@ export interface StorefrontSettings {
   supportEmail: string;
   supportPhone: string;
   freeDeliveryThreshold: number;
+  deliveryFee: number;
   deliveryMessage: string;
   codMessage: string;
   exchangePolicySummary: string;

@@ -5,6 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MetaService } from '../../core/services/meta.service';
 import { CheckoutService } from '../../services/checkout.service';
+import { StorefrontContentService } from '../../services/storefront-content.service';
+import { estimateDeliveryFee } from '../../shared/utils/delivery.utils';
 import { PricePipe } from '../../shared/pipes/price.pipe';
 
 @Component({
@@ -23,6 +25,12 @@ export class CheckoutComponent {
 
   readonly items = this.checkout.cartItems;
   readonly subtotal = this.checkout.subtotal;
+
+  private readonly content = inject(StorefrontContentService);
+  readonly deliveryFee = computed(() =>
+    estimateDeliveryFee(this.subtotal(), this.content.settings().freeDeliveryThreshold, this.content.settings().deliveryFee),
+  );
+  readonly total = computed(() => this.subtotal() + this.deliveryFee());
   readonly itemCount = this.checkout.itemCount;
   readonly error = this.checkout.error;
   readonly loading = this.checkout.isLoading;

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { PricePipe } from '../../shared/pipes/price.pipe';
@@ -8,6 +8,8 @@ import { EmptyStateComponent } from '../../components/empty-state/empty-state.co
 import { CampaignChipsComponent } from '../../components/campaign-chips/campaign-chips.component';
 import { TrustBadgeStripComponent, TrustBadgeItem } from '../../components/trust-badge-strip/trust-badge-strip.component';
 import { MetaService } from '../../core/services/meta.service';
+import { StorefrontContentService } from '../../services/storefront-content.service';
+import { estimateDeliveryFee } from '../../shared/utils/delivery.utils';
 
 @Component({
   selector: 'app-cart',
@@ -22,6 +24,12 @@ export class CartComponent implements OnInit {
   private metaService = inject(MetaService);
   items = this.cartService.items;
   total = this.cartService.total;
+
+  private readonly content = inject(StorefrontContentService);
+  readonly deliveryFee = computed(() =>
+    estimateDeliveryFee(this.total(), this.content.settings().freeDeliveryThreshold, this.content.settings().deliveryFee),
+  );
+  readonly estimatedTotal = computed(() => this.total() + this.deliveryFee());
   promoNotice = signal<string | null>(null);
 
   campaignChips = ['Eid Collection', 'Ramadan Sale', 'Selling Fast', 'Limited Stock'];

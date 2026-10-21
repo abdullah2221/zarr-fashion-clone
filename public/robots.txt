@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.ur-fashion.pk/sitemap.xml
+Sitemap: https://zarr-fashion-clone.vercel.app/sitemap.xml
 

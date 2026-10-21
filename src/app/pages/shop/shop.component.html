@@ -3,6 +3,9 @@
     <span class="eyebrow">{{ pageLabel() }}</span>
     <h1>{{ pageTitle() }}</h1>
     <p>{{ pageIntro() }}</p>
+    @if (activeCategory()?.imageUrl) {
+      <img class="shop-page__hero-image" [src]="activeCategory()!.imageUrl" [alt]="activeCategory()!.name" loading="lazy" />
+    }
     <app-campaign-chips [chips]="campaignChips()"></app-campaign-chips>
   </div>
 

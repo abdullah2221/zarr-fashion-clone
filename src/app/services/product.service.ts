@@ -136,15 +136,26 @@ export class ProductService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    try {
-      const [categories, products] = await Promise.all([
-        this.supabaseCategories.listActive(),
-        this.supabaseProducts.listActive(),
+    // A stalled (not failed) database request must never leave shoppers on
+    // skeleton cards forever: race the load against a ceiling and let the
+    // existing catch fall back to the saved catalogue.
+    const withTimeout = <T>(promise: Promise<T>): Promise<T> =>
+      Promise.race([
+        promise,
+        new Promise<never>((_resolve, reject) =>
+          setTimeout(() => reject(new Error('Live catalog request timed out.')), 8000),
+        ),
       ]);
 
-      const productImageEntries = await Promise.all(
+    try {
+      const [categories, products] = await withTimeout(Promise.all([
+        this.supabaseCategories.listActive(),
+        this.supabaseProducts.listActive(),
+      ]));
+
+      const productImageEntries = await withTimeout(Promise.all(
         products.map(async product => [product.id, await this.supabaseProducts.getImages(product.id)] as const)
-      );
+      ));
       const imagesByProduct = new Map(productImageEntries);
 
       this.categoriesSignal.set(categories.map(category => this.mapCategory(category)));
