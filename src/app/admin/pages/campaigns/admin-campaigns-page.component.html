@@ -1,0 +1,127 @@
+<section class="admin-campaigns">
+  <div class="admin-campaigns__hero">
+    <div>
+      <span class="eyebrow">Marketing Control</span>
+      <h1>Campaigns & Banners</h1>
+      <p>Manage hero banners, seasonal campaign cards, sale strips, and storefront messaging placements from one clean admin surface.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="admin-campaigns__alert admin-campaigns__alert--error">{{ error() }}</p>
+  }
+  @if (success()) {
+    <p class="admin-campaigns__alert admin-campaigns__alert--success">{{ success() }}</p>
+  }
+
+  <div class="admin-campaigns__layout">
+    <section class="admin-campaigns__column">
+      <div class="admin-campaigns__section-head">
+        <div>
+          <span class="admin-campaigns__kicker">Hero Banners</span>
+          <h2>Homepage slider banners</h2>
+        </div>
+        <app-admin-action-button icon="add" label="New banner" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="selectBanner(null)" />
+      </div>
+
+      <div class="admin-campaigns__list">
+        @for (item of service.bannerList(); track item.record.id) {
+          <article class="admin-campaigns__item" [class.is-selected]="selectedBanner()?.record?.id === item.record.id">
+            <button type="button" class="admin-campaigns__item-main" (click)="selectBanner(item)">
+              <img [src]="item.imageUrl" [alt]="item.record.title">
+              <div>
+                <strong>{{ item.record.title }}</strong>
+                <span>{{ item.placement }}</span>
+              </div>
+            </button>
+            <div class="admin-campaigns__item-actions">
+              <app-admin-status-badge [text]="item.record.is_active ? 'Active' : 'Inactive'" [tone]="item.record.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+              <app-admin-action-button icon="delete" label="Delete banner" tone="danger" (pressed)="deleteBanner(item)" />
+            </div>
+          </article>
+        }
+      </div>
+
+      <form class="admin-campaigns__editor" [formGroup]="bannerForm" (ngSubmit)="saveBanner()">
+        <div class="admin-campaigns__grid">
+          <label><span>Title *</span><input formControlName="title"></label>
+          <label><span>Subtitle</span><input formControlName="subtitle"></label>
+          <label><span>CTA text</span><input formControlName="ctaText"></label>
+          <label><span>Secondary CTA</span><input formControlName="secondaryCtaText"></label>
+          <label><span>Campaign type</span><input formControlName="campaignType"></label>
+          <label><span>Placement</span><select formControlName="placement"><option value="home-hero">Home hero</option><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option></select></label>
+          <label class="admin-campaigns__field"><span>Description</span><textarea formControlName="description"></textarea></label>
+          <label><span>Link URL</span><input formControlName="linkUrl"></label>
+          <label><span>Sort order</span><input type="number" formControlName="sortOrder"></label>
+          <label><span>Start date</span><input type="date" formControlName="startDate"></label>
+          <label><span>End date</span><input type="date" formControlName="endDate"></label>
+          <label class="admin-campaigns__check"><input type="checkbox" formControlName="isActive"><span>Banner is active</span></label>
+        </div>
+
+        <div class="admin-campaigns__media">
+          <div class="admin-campaigns__preview">
+            @if (bannerPreview()) { <img [src]="bannerPreview()" alt="Banner preview"> } @else { <div><mat-icon>image</mat-icon><span>No banner image selected</span></div> }
+          </div>
+          <label class="admin-campaigns__upload"><input type="file" accept="image/*" (change)="onBannerImageSelected($event)"><mat-icon>upload</mat-icon><span>Upload banner image</span></label>
+        </div>
+
+        <app-admin-action-button icon="save" [label]="savingBanner() ? 'Saving banner' : 'Save banner'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingBanner()" />
+      </form>
+    </section>
+
+    <section class="admin-campaigns__column">
+      <div class="admin-campaigns__section-head">
+        <div>
+          <span class="admin-campaigns__kicker">Campaign Placements</span>
+          <h2>Seasonal cards and shop promos</h2>
+        </div>
+        <app-admin-action-button icon="add" label="New campaign" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="selectCampaign(null)" />
+      </div>
+
+      <div class="admin-campaigns__list">
+        @for (item of service.campaignList(); track item.record.id) {
+          <article class="admin-campaigns__item" [class.is-selected]="selectedCampaign()?.record?.id === item.record.id">
+            <button type="button" class="admin-campaigns__item-main" (click)="selectCampaign(item)">
+              <img [src]="item.imageUrl || '/images/product-placeholder.svg'" [alt]="item.title">
+              <div>
+                <strong>{{ item.title }}</strong>
+                <span>{{ item.placement }}</span>
+              </div>
+            </button>
+            <div class="admin-campaigns__item-actions">
+              <app-admin-status-badge [text]="item.record.is_active ? 'Active' : 'Inactive'" [tone]="item.record.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+              <app-admin-action-button icon="delete" label="Delete campaign" tone="danger" (pressed)="deleteCampaign(item)" />
+            </div>
+          </article>
+        }
+      </div>
+
+      <form class="admin-campaigns__editor" [formGroup]="campaignForm" (ngSubmit)="saveCampaign()">
+        <div class="admin-campaigns__grid">
+          <label><span>Title *</span><input formControlName="title"></label>
+          <label><span>Slug *</span><input formControlName="slug"></label>
+          <label><span>Subtitle</span><input formControlName="subtitle"></label>
+          <label><span>CTA text</span><input formControlName="ctaText"></label>
+          <label><span>Campaign type</span><input formControlName="campaignType"></label>
+          <label><span>Placement</span><select formControlName="placement"><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option><option value="offer-grid">Offer grid</option><option value="footer-chip">Footer chip</option><option value="product-badge">Product badge</option></select></label>
+          <label class="admin-campaigns__field"><span>Description</span><textarea formControlName="description"></textarea></label>
+          <label><span>Link URL</span><input formControlName="linkUrl"></label>
+          <label><span>Tag label</span><input formControlName="tag"></label>
+          <label><span>Sort order</span><input type="number" formControlName="sortOrder"></label>
+          <label><span>Start date</span><input type="date" formControlName="startDate"></label>
+          <label><span>End date</span><input type="date" formControlName="endDate"></label>
+          <label class="admin-campaigns__check"><input type="checkbox" formControlName="active"><span>Campaign is active</span></label>
+        </div>
+
+        <div class="admin-campaigns__media">
+          <div class="admin-campaigns__preview">
+            @if (campaignPreview()) { <img [src]="campaignPreview()" alt="Campaign preview"> } @else { <div><mat-icon>image</mat-icon><span>No campaign image selected</span></div> }
+          </div>
+          <label class="admin-campaigns__upload"><input type="file" accept="image/*" (change)="onCampaignImageSelected($event)"><mat-icon>upload</mat-icon><span>Upload campaign image</span></label>
+        </div>
+
+        <app-admin-action-button icon="save" [label]="savingCampaign() ? 'Saving campaign' : 'Save campaign'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingCampaign()" />
+      </form>
+    </section>
+  </div>
+</section>

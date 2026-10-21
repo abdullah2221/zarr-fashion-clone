@@ -1,0 +1,24 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.carousel {
+  background-color: $color-white;
+  overflow: hidden;
+
+  &__header { @include premium-container($container-lg); margin-bottom: $spacing-8; display: flex; justify-content: space-between; align-items: flex-end; gap: $spacing-6; }
+  &__title-group { display: flex; flex-direction: column; gap: $spacing-3; }
+  &__title { font-family: $font-family-serif; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.05; margin: 0; font-weight: 500; letter-spacing: -.04em; }
+  &__tabs { display: flex; gap: $spacing-6; border-bottom: 1px solid $color-gray-200; }
+  &__tab { font-size: $font-size-xs; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding-bottom: $spacing-2; border-bottom: 2px solid transparent; color: $color-gray-500; @include transition; &--active, &:hover { border-bottom-color: $color-black; color: $color-black; } }
+  &__view-all { display: none; font-size: $font-size-xs; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid currentColor; @include respond-to('md') { display: inline-flex; } }
+  &__wrapper { @include premium-container($container-lg); position: relative; }
+  &__side-banner { background: linear-gradient(145deg, $color-black, $color-rosewood); color: $color-white; padding: $spacing-8; display: flex; flex-direction: column; justify-content: center; z-index: 10; margin-bottom: $spacing-8; min-height: 260px; span { color: $color-primary-light; font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; margin-bottom: $spacing-3; } @include respond-to('lg') { position: absolute; left: $spacing-8; top: 0; width: 280px; height: calc(100% - #{$spacing-8}); margin-bottom: 0; } }
+  &__banner-title { font-family: $font-family-serif; font-size: $font-size-3xl; font-style: italic; line-height: 1.05; margin: 0 0 $spacing-4; }
+  &__banner-text { font-size: $font-size-sm; line-height: 1.7; color: $color-gray-300; margin-bottom: $spacing-8; }
+  &__banner-link { font-size: $font-size-xs; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: $color-primary-light; }
+  &__track-wrapper { position: relative; width: 100%; overflow: hidden; }
+  &__track { display: flex; align-items: stretch; gap: $spacing-4; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: $spacing-8; @include respond-to('md') { gap: $spacing-6; } @include respond-to('lg') { &--with-banner { padding-left: 312px; } } }
+  &__item { flex: none; display: flex; width: 72vw; max-width: 245px; scroll-snap-align: start; @include respond-to('md') { width: 280px; max-width: none; } }
+  &__item app-product-card { width: 100%; height: 100%; }
+  &__nav { display: none; position: absolute; top: 42%; transform: translateY(-50%); width: 3rem; height: 3rem; background-color: rgba(255,255,255,.9); box-shadow: $shadow-md; border-radius: $border-radius-full; @include flex-center; color: $color-black; z-index: 20; @include transition; @include respond-to('lg') { display: flex; } &:hover { background-color: $color-black; color: $color-white; } &--left { left: 0; &.carousel__nav--offset { left: 292px; } } &--right { right: 0; } }
+}

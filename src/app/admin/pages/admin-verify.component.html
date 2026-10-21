@@ -1,0 +1,74 @@
+<section class="verify">
+  <div class="verify__hero">
+    <div>
+      <span class="eyebrow">Verification Console</span>
+      <h2>Live access and policy probes</h2>
+      <p>Run real Supabase permission checks through the current authenticated session and confirm what this admin can safely read or change under live RLS.</p>
+    </div>
+    <div class="verify__hero-pill">
+      <mat-icon>shield</mat-icon>
+      <span>{{ session.isSuperAdmin() ? 'Super admin session' : 'Admin session' }}</span>
+    </div>
+  </div>
+
+  <div class="verify__status-grid">
+    <article class="verify__status-card">
+      <span>Email</span>
+      <strong>{{ session.user()?.email || 'Not signed in' }}</strong>
+    </article>
+    <article class="verify__status-card">
+      <span>Profile role</span>
+      <strong>{{ session.profile()?.role || 'No profile loaded' }}</strong>
+    </article>
+    <article class="verify__status-card">
+      <span>Auth status</span>
+      <strong>{{ session.authStatus() }}</strong>
+    </article>
+    <article class="verify__status-card">
+      <span>Admin access</span>
+      <strong [attr.data-state]="session.isAdmin() ? 'success' : 'error'">{{ session.isAdmin() ? 'Granted' : 'Denied' }}</strong>
+    </article>
+    <article class="verify__status-card">
+      <span>Super admin</span>
+      <strong [attr.data-state]="session.isSuperAdmin() ? 'success' : 'warning'">{{ session.isSuperAdmin() ? 'Granted' : 'Denied' }}</strong>
+    </article>
+  </div>
+
+  <div class="verify__probes">
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test product read</h3><p>Reads active products using the current authenticated session.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().productRead.status === 'running'" (pressed)="runProbe('productRead')" />
+      <p class="verify__result" [attr.data-state]="results().productRead.status">{{ results().productRead.message }}</p>
+    </article>
+
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test product write permission</h3><p>Creates and deletes a temporary inactive product record if the session is allowed.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().productWrite.status === 'running'" (pressed)="runProbe('productWrite')" />
+      <p class="verify__result" [attr.data-state]="results().productWrite.status">{{ results().productWrite.message }}</p>
+    </article>
+
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test category write permission</h3><p>Creates and deletes a temporary inactive category record if the session is allowed.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().categoryWrite.status === 'running'" (pressed)="runProbe('categoryWrite')" />
+      <p class="verify__result" [attr.data-state]="results().categoryWrite.status">{{ results().categoryWrite.message }}</p>
+    </article>
+
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test admin_settings read</h3><p>Attempts to read admin-managed store settings under the live session.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().settingsRead.status === 'running'" (pressed)="runProbe('settingsRead')" />
+      <p class="verify__result" [attr.data-state]="results().settingsRead.status">{{ results().settingsRead.message }}</p>
+    </article>
+
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test admin_settings write permission</h3><p>Creates and deletes a temporary settings key if the session is allowed.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().settingsWrite.status === 'running'" (pressed)="runProbe('settingsWrite')" />
+      <p class="verify__result" [attr.data-state]="results().settingsWrite.status">{{ results().settingsWrite.message }}</p>
+    </article>
+
+    <article class="verify__probe">
+      <div class="verify__probe-copy"><h3>Test profile role update permission</h3><p>Uses the live `is_super_admin()` policy helper so role-management access is verified without mutating a real profile.</p></div>
+      <app-admin-action-button icon="play_circle" label="Run probe" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="results().profileRoleUpdate.status === 'running'" (pressed)="runProbe('profileRoleUpdate')" />
+      <p class="verify__result" [attr.data-state]="results().profileRoleUpdate.status">{{ results().profileRoleUpdate.message }}</p>
+    </article>
+  </div>
+</section>

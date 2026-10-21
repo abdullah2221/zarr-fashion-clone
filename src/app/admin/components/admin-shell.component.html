@@ -1,0 +1,116 @@
+<div class="admin-shell" [class.admin-shell--collapsed]="sidebarCollapsed()">
+  <aside class="admin-shell__sidebar" [class.admin-shell__sidebar--open]="drawerOpen()">
+    <div class="admin-shell__brand">
+      <div class="admin-shell__brand-mark" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="admin-shell__brand-copy">
+        <span class="eyebrow">Zeenat</span>
+        <strong>Admin Panel</strong>
+      </div>
+
+      <div class="admin-shell__brand-actions">
+        <button type="button" class="admin-shell__icon-btn admin-shell__desktop-toggle" (click)="toggleSidebar()" [attr.aria-label]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+          <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+        </button>
+        <button type="button" class="admin-shell__icon-btn admin-shell__mobile-only" (click)="toggleDrawer()" aria-label="Close admin navigation">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-shell__nav-section">
+      <span class="admin-shell__section-label">Navigation</span>
+      <nav class="admin-shell__nav" aria-label="Admin navigation">
+        @for (item of navItems; track item.label) {
+          @if (item.path) {
+            <a [routerLink]="item.path" routerLinkActive="active" class="admin-shell__nav-link">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          } @else {
+            <div class="admin-shell__nav-link admin-shell__nav-link--soon">
+              <mat-icon>{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+              <small>soon</small>
+            </div>
+          }
+        }
+      </nav>
+    </div>
+
+    <div class="admin-shell__support">
+      <span class="admin-shell__section-label">Support</span>
+      <div class="admin-shell__support-card">
+        <mat-icon>support_agent</mat-icon>
+        <div>
+          <strong>Need help?</strong>
+          <p>Catalog, settings, and policy checks stay here so the team can work faster.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-shell__account">
+      <div class="admin-shell__account-copy">
+        <strong>{{ session.displayName() }}</strong>
+        <span>{{ session.user()?.email || session.profile()?.email || 'No email loaded' }}</span>
+      </div>
+      <span class="admin-shell__role-badge">{{ roleLabel() }}</span>
+      <button type="button" class="admin-shell__signout" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  @if (drawerOpen()) {
+    <button type="button" class="admin-shell__backdrop" (click)="toggleDrawer()" aria-label="Close admin navigation"></button>
+  }
+
+  <div class="admin-shell__content">
+    <header class="admin-shell__topbar">
+      <div class="admin-shell__topbar-main">
+        <button type="button" class="admin-shell__icon-btn admin-shell__mobile-only" (click)="toggleDrawer()" aria-label="Open admin navigation">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <label class="admin-shell__search" aria-label="Search admin">
+          <mat-icon>search</mat-icon>
+          <input [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" placeholder="Search products, categories, settings">
+        </label>
+      </div>
+
+      <div class="admin-shell__topbar-actions">
+        <button type="button" class="admin-shell__icon-btn" aria-label="Notifications">
+          <mat-icon>notifications_none</mat-icon>
+          <span class="admin-shell__notify-dot"></span>
+        </button>
+        <button type="button" class="admin-shell__icon-btn" aria-label="Settings shortcut">
+          <mat-icon>settings</mat-icon>
+        </button>
+        <div class="admin-shell__identity">
+          <div class="admin-shell__avatar" aria-hidden="true">{{ userInitials() }}</div>
+          <div>
+            <strong>{{ session.displayName() }}</strong>
+            <span>{{ roleLabel() }}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-shell__page">
+      <section class="admin-shell__page-head">
+        <div>
+          <div class="admin-shell__crumbs">
+            @for (crumb of breadcrumbs(); track crumb; let last = $last) {
+              <span [class.is-current]="last">{{ crumb }}</span>
+            }
+          </div>
+          <h1>{{ pageTitle() }}</h1>
+        </div>
+      </section>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

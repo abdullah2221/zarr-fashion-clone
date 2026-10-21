@@ -1,0 +1,14 @@
+// Convert px to rem
+@function rem($px) {
+  @return ($px / 16px) * 1rem;
+}
+
+// Get color from map (if needed, but using direct variables for now)
+// Lighten/Darken helpers
+@function color-lighten($color, $percent) {
+  @return lighten($color, $percent);
+}
+
+@function color-darken($color, $percent) {
+  @return darken($color, $percent);
+}

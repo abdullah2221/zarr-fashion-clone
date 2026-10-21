@@ -1,0 +1,600 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.static-page {
+  app-campaign-chips {
+    display: block;
+    margin-bottom: $spacing-5;
+  }
+
+  app-trust-badge-strip {
+    display: block;
+    margin-bottom: $spacing-6;
+  }
+
+  background: linear-gradient(180deg, $color-ivory 0%, $color-white 34%);
+  padding: $spacing-14 0 $spacing-20;
+
+  &__hero {
+    @include premium-container($container-md);
+    text-align: center;
+    padding: $spacing-10 0 $spacing-8;
+
+    h1 {
+      font-family: $font-family-serif;
+      font-size: clamp(2.35rem, 6vw, 5.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      font-weight: 500;
+      margin: $spacing-3 auto $spacing-4;
+      max-width: 900px;
+    }
+
+    p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: $color-gray-600;
+      line-height: 1.8;
+    }
+  }
+
+  &__icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto $spacing-5;
+    border-radius: 50%;
+    background: $color-black;
+    color: $color-primary;
+    @include flex-center;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  &__cta,
+  &__support-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    margin-top: $spacing-7;
+    padding: 0 $spacing-8;
+    background: $color-black;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    @include transition;
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  &__container { @include premium-container($container-lg); }
+
+  &__market-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-bottom: $spacing-5;
+
+    span {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 $spacing-3;
+      border: 1px solid $color-gray-200;
+      background: $color-white;
+      color: $color-gray-700;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+  }
+
+  &__trust-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-bottom: $spacing-6;
+    background: rgba($color-black, .1);
+
+    @include respond-to('lg') { grid-template-columns: repeat(4, 1fr); }
+
+    span {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      padding: 0 $spacing-3;
+      background: $color-white;
+      color: $color-gray-700;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      min-width: 0;
+    }
+
+    mat-icon {
+      color: $color-primary-dark;
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  &__contact-strip {
+    display: grid;
+    gap: 1px;
+    margin-bottom: $spacing-8;
+    background: rgba($color-black, .08);
+
+    @include respond-to('md') { grid-template-columns: repeat(3, 1fr); }
+
+    div {
+      background: $color-white;
+      padding: $spacing-5;
+      display: grid;
+      gap: $spacing-1;
+    }
+
+    strong {
+      font-size: $font-size-xs;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    span { color: $color-gray-600; }
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-5;
+
+    @include respond-to('md') { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('lg') { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  &__card {
+    min-height: 220px;
+    padding: $spacing-7;
+    background: $color-white;
+    border: 1px solid rgba($color-black, .06);
+    box-shadow: $shadow-sm;
+    @include transition;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-card-hover;
+    }
+
+    mat-icon {
+      color: $color-primary-dark;
+      margin-bottom: $spacing-5;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-weight: 500;
+      margin-bottom: $spacing-3;
+    }
+
+    p {
+      color: $color-gray-600;
+      line-height: 1.75;
+    }
+  }
+
+  &__support {
+    margin-top: $spacing-10;
+    padding: $spacing-7;
+    background: $color-black;
+    color: $color-white;
+    display: grid;
+    gap: $spacing-6;
+    align-items: center;
+
+    @include respond-to('md') {
+      grid-template-columns: 1fr auto;
+      padding: $spacing-8;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      margin: $spacing-2 0;
+    }
+
+    p {
+      color: $color-gray-300;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  &__support-link {
+    margin-top: 0;
+    background: $color-white;
+    color: $color-black;
+  }
+}
+
+.static-page {
+  &__form-shell,
+  &__empty-state {
+    margin-bottom: $spacing-8;
+    padding: $spacing-6;
+    background: $color-white;
+    border: 1px solid rgba($color-black, .06);
+    box-shadow: $shadow-premium;
+
+    @include respond-to('md') {
+      padding: $spacing-8;
+    }
+  }
+
+  &__form-header {
+    display: flex;
+    gap: $spacing-4;
+    align-items: flex-start;
+    margin-bottom: $spacing-6;
+
+    mat-icon {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border-radius: 50%;
+      background: $color-black;
+      color: $color-primary;
+      @include flex-center;
+      font-size: 22px;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      margin: 0 0 $spacing-1;
+      font-weight: 500;
+    }
+
+    p {
+      color: $color-gray-600;
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+
+  &__form-grid {
+    display: grid;
+    gap: $spacing-3;
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wide {
+      @include respond-to('md') { grid-column: 1 / -1; }
+    }
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid $color-gray-200;
+    padding: 0 $spacing-4;
+    color: $color-black;
+    background: $color-white;
+
+    &::placeholder {
+      color: $color-gray-400;
+    }
+  }
+
+  textarea {
+    min-height: 130px;
+    resize: vertical;
+    padding-top: $spacing-4;
+  }
+
+  &__form-shell button,
+  &__empty-state a {
+    min-height: 50px;
+    margin-top: $spacing-5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 $spacing-7;
+    background: $color-black;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    @include transition;
+
+    &:hover { background: $color-primary-dark; }
+  }
+
+  &__form-shell button[disabled] {
+    opacity: .64;
+    cursor: wait;
+  }
+
+  &__auth-message {
+    margin-top: $spacing-4;
+    padding: $spacing-3 $spacing-4;
+    background: $color-ivory;
+    border-left: 4px solid $color-primary-dark;
+    color: $color-gray-700;
+    line-height: 1.6;
+  }
+
+  &__auth-message--error {
+    border-left-color: $color-error;
+    color: $color-rosewood;
+  }
+
+  &__empty-state {
+    text-align: center;
+
+    mat-icon {
+      font-size: 44px;
+      width: 44px;
+      height: 44px;
+      color: $color-primary-dark;
+      margin-bottom: $spacing-4;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 500;
+      margin-bottom: $spacing-2;
+    }
+
+    p {
+      max-width: 560px;
+      margin: 0 auto;
+      color: $color-gray-600;
+      line-height: 1.7;
+    }
+  }
+}
+
+.static-page {
+  &__mini-products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-3;
+    max-width: 520px;
+    margin: $spacing-6 auto 0;
+
+    span {
+      aspect-ratio: 3 / 4;
+      display: block;
+    }
+  }
+
+  &__state-tags {
+    margin-top: $spacing-5;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $spacing-2;
+
+    span {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 $spacing-3;
+      background: $color-ivory;
+      border: 1px solid rgba($color-black, .08);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: $color-gray-700;
+    }
+  }
+
+  &__dashboard {
+    margin-bottom: $spacing-8;
+    display: grid;
+    background: $color-white;
+    border: 1px solid rgba($color-black, .06);
+    box-shadow: $shadow-premium;
+
+    @include respond-to('md') {
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+  }
+
+  &__dashboard-nav {
+    padding: $spacing-6;
+    background: $color-black;
+    color: $color-white;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+
+    strong {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-weight: 500;
+      margin-bottom: $spacing-3;
+    }
+
+    a {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba($color-white, .12);
+      color: $color-gray-300;
+      font-size: $font-size-xs;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      @include transition;
+
+      &:hover {
+        color: $color-white;
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  &__dashboard-main {
+    padding: $spacing-6;
+
+    @include respond-to('md') { padding: $spacing-8; }
+  }
+
+  &__profile-card {
+    display: flex;
+    gap: $spacing-4;
+    align-items: center;
+    padding-bottom: $spacing-6;
+    border-bottom: 1px solid $color-gray-100;
+
+    mat-icon {
+      color: $color-primary-dark;
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      margin: 0 0 $spacing-1;
+      font-weight: 500;
+    }
+
+    p { color: $color-gray-600; margin: 0; line-height: 1.6; }
+  }
+
+  &__dashboard-grid {
+    display: grid;
+    gap: $spacing-3;
+    margin-top: $spacing-6;
+
+    @include respond-to('sm') { grid-template-columns: repeat(3, 1fr); }
+
+    div {
+      padding: $spacing-5;
+      background: $color-ivory;
+      display: grid;
+      gap: $spacing-2;
+    }
+
+    span {
+      font-size: $font-size-xs;
+      color: $color-gray-500;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 800;
+    }
+
+    strong {
+      font-family: $font-family-serif;
+      font-size: $font-size-4xl;
+      font-weight: 500;
+    }
+  }
+}
+
+.static-page {
+  &__checkout-preview {
+    display: grid;
+    gap: $spacing-6;
+    align-items: start;
+
+    @include respond-to('lg') {
+      grid-template-columns: minmax(0, 1fr) 360px;
+    }
+
+    .static-page__form-shell { margin-bottom: $spacing-8; }
+  }
+
+  &__payment-cards {
+    display: grid;
+    gap: $spacing-3;
+    margin-top: $spacing-5;
+
+    @include respond-to('sm') { grid-template-columns: repeat(2, 1fr); }
+
+    button {
+      margin: 0;
+      justify-content: flex-start;
+      gap: $spacing-2;
+      background: $color-white;
+      color: $color-black;
+      border: 1px solid $color-gray-200;
+      @include transition;
+
+      &:hover {
+        border-color: $color-black;
+      }
+
+      &.active {
+        border-color: $color-primary-dark;
+        background: $color-ivory;
+      }
+    }
+  }
+
+  &__checkout-summary {
+    padding: $spacing-6;
+    background: $color-black;
+    color: $color-white;
+    box-shadow: $shadow-premium;
+
+    @include respond-to('lg') {
+      position: sticky;
+      top: 126px;
+    }
+
+    h2 {
+      font-family: $font-family-serif;
+      font-size: $font-size-2xl;
+      font-weight: 500;
+      margin-bottom: $spacing-5;
+    }
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      gap: $spacing-4;
+      padding: $spacing-3 0;
+      border-bottom: 1px solid rgba($color-white, .12);
+      color: $color-gray-300;
+
+      strong { color: $color-white; }
+
+      &.total {
+        color: $color-white;
+        font-size: $font-size-lg;
+        font-weight: 800;
+      }
+    }
+
+    p {
+      display: flex;
+      gap: $spacing-2;
+      align-items: flex-start;
+      margin-top: $spacing-5;
+      color: $color-primary-light;
+      line-height: 1.6;
+      font-size: $font-size-sm;
+    }
+  }
+}

@@ -1,0 +1,9 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.customer-orders {
+  padding: 3rem 0 4rem;
+  &__container { max-width: 980px; margin: 0 auto; padding: 0 1rem; display: grid; gap: 1rem; }
+  header h1 { margin: .25rem 0; font-family: $font-family-serif; }
+  &__error { margin: 0; color: #b91c1c; }
+  &__list { display: grid; gap: .7rem; article { border: 1px solid rgba(17,17,17,.1); border-radius: 12px; background: #fff; padding: .8rem; display: grid; gap: .45rem; } p { margin: 0; display: flex; justify-content: space-between; gap: .75rem; } span { color: $color-gray-600; } a { justify-self: start; font-size: .84rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: $color-black; border-bottom: 1px solid rgba(17, 17, 17, .25); } }
+}

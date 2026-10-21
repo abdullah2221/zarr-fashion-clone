@@ -1,0 +1,334 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: $z-index-fixed;
+  @include transition(all, $transition-base);
+
+  &--transparent {
+    background-color: transparent;
+    color: $color-white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  &--scrolled {
+    background-color: rgba($color-white, 0.96);
+    backdrop-filter: blur(18px);
+    color: $color-black;
+    box-shadow: $shadow-md;
+    border-bottom: 1px solid rgba($color-black, 0.06);
+
+    .navbar__announcement {
+      background: $color-black;
+      color: $color-white;
+    }
+  }
+
+  &__announcement {
+    min-height: 34px;
+    padding: $spacing-2 $spacing-4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    background: rgba($color-black, 0.82);
+    color: $color-white;
+
+    &-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: $color-primary;
+    }
+
+    &-extra {
+      display: none;
+      color: $color-primary-light;
+
+      @include respond-to('md') { display: inline; }
+    }
+  }
+
+  &__container { @include premium-container($container-lg); }
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 62px;
+  }
+
+  &__mobile-toggle {
+    display: flex;
+    flex: 1;
+    @include respond-to('lg') { display: none; }
+  }
+
+  &__icon-btn {
+    padding: $spacing-2;
+    @include touch-target;
+    @include flex-center;
+    @include transition(color);
+    color: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    &:hover { color: $color-primary; transform: translateY(-1px); }
+
+    &--desktop {
+      display: none;
+      @include respond-to('sm') { display: flex; }
+    }
+
+    mat-icon {
+      font-size: 23px;
+      width: 23px;
+      height: 23px;
+      display: block;
+    }
+
+    .navbar__icon-label {
+      display: none;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-left: $spacing-1;
+      @include respond-to('lg') { display: block; }
+    }
+  }
+
+  &__nav {
+    display: none;
+    flex: 1;
+    gap: clamp(1rem, 1.7vw, 1.75rem);
+    font-size: $font-size-xs;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    @include respond-to('lg') { display: flex; }
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    min-height: $touch-target;
+    @include transition(color);
+    position: relative;
+
+    &:hover, &.active { color: $color-primary; }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: currentColor;
+      @include transition(width);
+    }
+
+    &:hover::after,
+    &.active::after { width: 100%; }
+
+    &--campaign { color: $color-primary-light; }
+    &--back { font-weight: 700; }
+  }
+
+  &--scrolled &__link--campaign { color: $color-primary-dark; }
+
+  &__logo-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    @include respond-to('lg') { flex: none; }
+  }
+
+  &__logo {
+    font-family: $font-family-serif;
+    font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 1;
+  }
+
+  &__logo-accent { color: $color-primary; letter-spacing: 0.14em; }
+  &__logo-divider { color: $color-primary; margin: 0 1px; }
+  &__logo-text { margin-top: 2px; letter-spacing: 0.06em; }
+
+  &__actions {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    gap: $spacing-2;
+    position: relative;
+    @include respond-to('sm') { gap: $spacing-4; }
+  }
+
+  &__auth-loading {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $color-gray-500;
+    display: none;
+    @include respond-to('sm') { display: inline-flex; }
+  }
+
+  &__signin { display: none; @include respond-to('sm') { display: flex; } }
+  &__cart-btn { position: relative; }
+
+  &__cart-count {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: 10px;
+    width: 1rem;
+    height: 1rem;
+    @include flex-center;
+    border-radius: $border-radius-full;
+    font-weight: 800;
+  }
+
+  &__mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: $color-white;
+    color: $color-black;
+    box-shadow: $shadow-xl;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform-origin: top;
+    @include transition(all, $transition-base);
+
+    &--open {
+      max-height: 640px;
+      opacity: 1;
+    }
+  }
+
+  &__mobile-inner {
+    padding: $spacing-6 $spacing-4 $spacing-8;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    text-align: left;
+    border-top: 1px solid $color-gray-100;
+  }
+
+  &__mobile-link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 $spacing-2;
+    font-size: $font-size-sm;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    @include transition;
+    &:hover { color: $color-primary-dark; transform: translateX(4px); }
+    &--sale { color: $color-accent; }
+    &--button { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; }
+  }
+
+  &__account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: $color-white;
+    border: 1px solid rgba($color-black, .08);
+    box-shadow: $shadow-lg;
+    display: none;
+    z-index: $z-index-dropdown;
+
+    &--open { display: grid; }
+
+    a, button {
+      min-height: 42px;
+      padding: 0 $spacing-3;
+      display: flex;
+      align-items: center;
+      font-size: $font-size-sm;
+      color: $color-gray-700;
+      border: 0;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover { background: $color-ivory; }
+    }
+  }
+
+  &__account-head {
+    padding: $spacing-3;
+    border-bottom: 1px solid $color-gray-200;
+    display: grid;
+    gap: 2px;
+
+    strong {
+      font-size: $font-size-sm;
+      line-height: 1.3;
+      color: $color-black;
+    }
+
+    small {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: $color-gray-500;
+    }
+  }
+
+  &__mobile-trust {
+    display: grid;
+    gap: $spacing-2;
+    padding: $spacing-4 $spacing-2;
+    font-size: $font-size-xs;
+    color: $color-gray-600;
+
+    span { display: flex; align-items: center; gap: $spacing-2; }
+    mat-icon { font-size: 18px; width: 18px; height: 18px; color: $color-primary-dark; }
+  }
+
+  &__mobile-cta {
+    @include flex-center;
+    min-height: 48px;
+    background: $color-black;
+    color: $color-white;
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: $spacing-2;
+  }
+
+  &__divider {
+    height: 1px;
+    width: 100%;
+    background-color: $color-gray-100;
+    margin: $spacing-2 0;
+  }
+}

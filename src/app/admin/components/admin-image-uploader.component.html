@@ -1,0 +1,62 @@
+<section class="admin-image-uploader">
+  <div class="admin-image-uploader__toolbar">
+    <label class="admin-image-uploader__action" aria-label="Upload main image">
+      <input type="file" accept="image/*" (change)="onMainSelected($event)" [disabled]="disabled()">
+      <mat-icon>upload</mat-icon>
+      <span>Upload main image</span>
+    </label>
+
+    <label class="admin-image-uploader__action admin-image-uploader__action--secondary" aria-label="Upload gallery images">
+      <input type="file" accept="image/*" multiple (change)="onGallerySelected($event)" [disabled]="disabled()">
+      <mat-icon>imagesmode</mat-icon>
+      <span>Add gallery images</span>
+    </label>
+  </div>
+  
+  @if (error()) {
+    <div class="admin-image-uploader__alert admin-image-uploader__alert--error">
+      <mat-icon>warning</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
+  @if (success()) {
+    <div class="admin-image-uploader__alert admin-image-uploader__alert--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ success() }}</span>
+    </div>
+  }
+
+  @if (!images().length) {
+    <div class="admin-image-uploader__empty">
+      <mat-icon>image</mat-icon>
+      <p>No images selected yet. Add a main image first, then optional gallery images.</p>
+    </div>
+  } @else {
+    <div class="admin-image-uploader__grid">
+      @for (image of images().filter(image => !image.markedForDeletion); track image.id || image.storagePath || image.previewUrl; let index = $index) {
+        <article class="admin-image-uploader__card">
+          <div class="admin-image-uploader__preview">
+            <img [src]="image.previewUrl" [alt]="image.altText || 'Product image preview'">
+            @if (index === 0) {
+              <span class="admin-image-uploader__primary">Primary</span>
+            }
+          </div>
+
+          <div class="admin-image-uploader__meta">
+            <label>
+              <span>Alt text</span>
+              <input [ngModel]="image.altText" (ngModelChange)="updateAltText(index, $event)" [disabled]="disabled()">
+            </label>
+          </div>
+
+          <div class="admin-image-uploader__controls">
+            <app-admin-action-button icon="star" label="Set as primary image" [tone]="index === 0 ? 'success' : 'neutral'" [disabled]="disabled() || index === 0" (pressed)="setPrimary(index)" />
+            <app-admin-action-button icon="drag_indicator" label="Move image earlier" [disabled]="disabled() || index === 0" (pressed)="move(index, -1)" />
+            <app-admin-action-button icon="swap_vert" label="Move image later" [disabled]="disabled() || index === images().filter(image => !image.markedForDeletion).length - 1" (pressed)="move(index, 1)" />
+            <app-admin-action-button icon="delete" label="Delete image" tone="danger" [disabled]="disabled()" (pressed)="remove(index)" />
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

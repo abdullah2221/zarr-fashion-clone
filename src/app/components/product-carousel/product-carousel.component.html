@@ -1,0 +1,35 @@
+<section class="carousel">
+  <div class="carousel__header">
+    <div class="carousel__title-group">
+      <span class="eyebrow">Curated picks</span>
+      <h2 class="carousel__title">{{ title() }}</h2>
+      <div class="carousel__tabs">
+        <button class="carousel__tab carousel__tab--active">Women</button>
+        <button class="carousel__tab">Men</button>
+        <button class="carousel__tab">Kids</button>
+      </div>
+    </div>
+    <a routerLink="/shop" class="carousel__view-all">View all</a>
+  </div>
+  
+  <div class="carousel__wrapper">
+    @if (sideBannerTitle()) {
+      <aside class="carousel__side-banner">
+        <span>Limited Drop</span>
+        <h3 class="carousel__banner-title">{{ sideBannerTitle() }}</h3>
+        <p class="carousel__banner-text">{{ sideBannerText() }}</p>
+        <a routerLink="/shop" class="carousel__banner-link">View All</a>
+      </aside>
+    }
+    
+    <div class="carousel__track-wrapper">
+      <div #scrollContainer class="carousel__track hide-scrollbar" [class.carousel__track--with-banner]="sideBannerTitle() !== undefined">
+        @for (product of products(); track product.id) {
+          <div class="carousel__item"><app-product-card [product]="product"></app-product-card></div>
+        }
+      </div>
+      <button (click)="scrollLeft()" class="carousel__nav carousel__nav--left" [class.carousel__nav--offset]="sideBannerTitle() !== undefined" aria-label="Scroll left"><mat-icon>chevron_left</mat-icon></button>
+      <button (click)="scrollRight()" class="carousel__nav carousel__nav--right" aria-label="Scroll right"><mat-icon>chevron_right</mat-icon></button>
+    </div>
+  </div>
+</section>

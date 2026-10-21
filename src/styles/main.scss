@@ -1,0 +1,17 @@
+// Abstracts
+@use 'abstracts/variables' as *;
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+// Base
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/base';
+@use 'base/animations';       
+
+// Utilities
+@use 'utilities/spacing';
+@use 'utilities/display';
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+

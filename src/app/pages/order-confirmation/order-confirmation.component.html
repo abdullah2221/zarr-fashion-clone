@@ -1,0 +1,35 @@
+<section class="order-confirmation">
+  <div class="order-confirmation__container">
+    @if (confirmation(); as order) {
+      <div class="order-confirmation__card">
+        <mat-icon>verified</mat-icon>
+        <span class="eyebrow">Order Placed</span>
+        <h1>Thank you for shopping with Zeenat</h1>
+        <p>Your Cash on Delivery order is now in <strong>Pending</strong> verification.</p>
+        <div class="order-confirmation__meta">
+          <p><span>Order number</span><strong>{{ order.orderNumber }}</strong></p>
+          <p><span>Customer</span><strong>{{ order.customerName }}</strong></p>
+          <p><span>Phone</span><strong>{{ order.phone }}</strong></p>
+          <p><span>Delivery</span><strong>{{ order.city }}, {{ order.province }}</strong></p>
+          <p><span>Total</span><strong>{{ order.total | currency:'PKR':'symbol-narrow':'1.0-0' }}</strong></p>
+          <p><span>Placed on</span><strong>{{ order.createdAtIso | date:'medium' }}</strong></p>
+        </div>
+        <div class="order-confirmation__next">
+          <h2>Next steps</h2>
+          <p>Our team will contact you shortly to verify your COD order and dispatch details.</p>
+        </div>
+        <div class="order-confirmation__actions">
+          <a routerLink="/shop">Continue shopping</a>
+          <a routerLink="/contact">Need support?</a>
+        </div>
+      </div>
+    } @else {
+      <div class="order-confirmation__card">
+        <mat-icon>info</mat-icon>
+        <h1>Order confirmation unavailable</h1>
+        <p>We could not load this order confirmation from local session.</p>
+        <a routerLink="/shop">Back to shop</a>
+      </div>
+    }
+  </div>
+</section>

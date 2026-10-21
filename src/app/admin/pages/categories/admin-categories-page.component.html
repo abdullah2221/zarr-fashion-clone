@@ -1,0 +1,251 @@
+<section class="admin-categories">
+  <div class="admin-categories__hero">
+    <div>
+      <span class="eyebrow">Navigation Control</span>
+      <h1>Categories</h1>
+      <p>Shape how the storefront is organized, which collections stay visible, and how category imagery appears across shop and landing experiences.</p>
+    </div>
+
+    <div class="admin-categories__hero-actions">
+      <div class="admin-categories__mini-stats">
+        @for (stat of categoryStats(); track stat.label) {
+          <article>
+            <span>{{ stat.label }}</span>
+            <strong>{{ stat.value }}</strong>
+          </article>
+        }
+      </div>
+
+      <app-admin-action-button icon="add" label="New category" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="resetForm()" />
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="admin-categories__alert admin-categories__alert--error">{{ error() }}</p>
+  }
+  @if (success()) {
+    <p class="admin-categories__alert admin-categories__alert--success">{{ success() }}</p>
+  }
+  @if (note()) {
+    <p class="admin-categories__alert">{{ note() }}</p>
+  }
+
+  <div class="admin-categories__layout">
+    <section class="admin-categories__list-card">
+      <div class="admin-categories__section-head">
+        <div>
+          <span class="admin-categories__section-kicker">Directory</span>
+          <h2>Browse categories</h2>
+        </div>
+        @if (hasFilters()) {
+          <app-admin-action-button icon="filter_alt_off" label="Clear filters" appearance="soft" [showLabel]="true" [size]="'touch'" (pressed)="clearFilters()" />
+        }
+      </div>
+
+      <div class="admin-categories__filters">
+        <label class="admin-categories__search-field">
+          <span>Search</span>
+          <div>
+            <mat-icon>search</mat-icon>
+            <input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Name, slug, description">
+          </div>
+        </label>
+
+        <label>
+          <span>Sort</span>
+          <select [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+            <option value="sort-order">Sort order</option>
+            <option value="name">Name</option>
+            <option value="active-first">Active first</option>
+          </select>
+        </label>
+      </div>
+
+      @if (isLoading()) {
+        <div class="admin-categories__empty-state">
+          <mat-icon>hourglass_top</mat-icon>
+          <h3>Loading categories</h3>
+          <p>Fetching live category records and linked product counts from Supabase.</p>
+        </div>
+      } @else if (!categories().length) {
+        <div class="admin-categories__empty-state">
+          <mat-icon>{{ hasFilters() ? 'search_off' : 'category' }}</mat-icon>
+          <h3>{{ hasFilters() ? 'No matching categories' : 'No categories yet' }}</h3>
+          <p>{{ hasFilters() ? 'Try a broader search or reset the sort and search filters.' : 'Create your first category to organize the storefront catalog.' }}</p>
+        </div>
+      } @else {
+        <div class="admin-categories__list">
+          @for (item of categories(); track item.record.id) {
+            <article class="admin-categories__item" [class.is-selected]="selectedCategory()?.id === item.record.id">
+              <button type="button" class="admin-categories__item-main" (click)="selectCategory(item.record)">
+                <img [src]="item.imageUrl" [alt]="item.record.name">
+                <div>
+                  <strong>{{ item.record.name }}</strong>
+                  <span>{{ item.record.slug }}</span>
+                  <small>{{ item.productCount }} linked products</small>
+                </div>
+              </button>
+
+              <div class="admin-categories__item-meta">
+                <app-admin-status-badge [text]="item.record.is_active ? 'Active' : 'Inactive'" [tone]="item.record.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+                <small>Sort {{ item.record.sort_order }}</small>
+                <div class="admin-categories__item-actions">
+                  <app-admin-action-button [routerLink]="['/category', item.record.slug]" icon="visibility" label="View category" />
+                  <app-admin-action-button icon="edit" label="Edit category" (pressed)="selectCategory(item.record)" />
+                  <app-admin-action-button
+                    [icon]="item.record.is_active ? 'pause_circle' : 'check_circle'"
+                    [label]="item.record.is_active ? 'Deactivate category' : 'Activate category'"
+                    [tone]="item.record.is_active ? 'warning' : 'success'"
+                    [disabled]="busy()"
+                    (pressed)="toggleActive(item.record, !item.record.is_active)"
+                  />
+                  <app-admin-action-button icon="delete" label="Delete category" tone="danger" [disabled]="busy()" (pressed)="deleteCategory(item.record)" />
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <form [formGroup]="form" class="admin-categories__editor" (ngSubmit)="save()">
+      <section class="admin-categories__editor-main">
+        <div class="admin-categories__section-head">
+          <div>
+            <span class="admin-categories__section-kicker">Category Editor</span>
+            <h2>{{ selectedCategory() ? 'Edit category' : 'Create category' }}</h2>
+          </div>
+          @if (selectedCategory()) {
+            <button type="button" class="admin-categories__ghost-button" (click)="resetForm()">Start fresh</button>
+          }
+        </div>
+
+        <article class="admin-categories__panel">
+          <div class="admin-categories__panel-head">
+            <div>
+              <h3>Basics</h3>
+              <p>Define how this category appears in navigation, listings, and collection pages.</p>
+            </div>
+          </div>
+
+          <div class="admin-categories__grid">
+            <label>
+              <span>Name *</span>
+              <input formControlName="name">
+            </label>
+
+            <label>
+              <span>Slug *</span>
+              <input formControlName="slug">
+            </label>
+
+            <label>
+              <span>Sort order</span>
+              <input type="number" formControlName="sortOrder">
+            </label>
+
+            <label class="admin-categories__check">
+              <input type="checkbox" formControlName="isActive">
+              <div>
+                <strong>Visible on storefront</strong>
+                <small>Inactive categories stay hidden from public category browsing.</small>
+              </div>
+            </label>
+
+            <label class="admin-categories__field">
+              <span>Description</span>
+              <textarea formControlName="description"></textarea>
+            </label>
+          </div>
+        </article>
+
+        <article class="admin-categories__panel">
+          <div class="admin-categories__panel-head">
+            <div>
+              <h3>SEO Planning</h3>
+              <p>These fields are visible for planning, but the current live schema still needs dedicated columns before they can be persisted.</p>
+            </div>
+          </div>
+
+          <div class="admin-categories__grid">
+            <label>
+              <span>SEO title</span>
+              <input formControlName="seoTitle">
+            </label>
+
+            <label>
+              <span>Campaign label</span>
+              <input formControlName="campaignLabel">
+            </label>
+
+            <label class="admin-categories__field">
+              <span>SEO description</span>
+              <textarea formControlName="seoDescription"></textarea>
+            </label>
+          </div>
+        </article>
+      </section>
+
+      <aside class="admin-categories__editor-side">
+        <article class="admin-categories__panel admin-categories__panel--sticky">
+          <div class="admin-categories__panel-head">
+            <div>
+              <h3>Category image</h3>
+              <p>Upload a clean square cover that works across the shop grid and promotional surfaces.</p>
+            </div>
+          </div>
+
+          <div class="admin-categories__image-preview">
+            @if (imagePreview()) {
+              <img [src]="imagePreview()" [alt]="form.controls.name.value || 'Category preview'">
+            } @else {
+              <div>
+                <mat-icon>image</mat-icon>
+                <span>No category image selected</span>
+              </div>
+            }
+          </div>
+
+          <label class="admin-categories__upload" aria-label="{{ selectedCategory()?.image_path ? 'Replace category image' : 'Upload category image' }}">
+            <input type="file" accept="image/*" (change)="onImageSelected($event)">
+            <mat-icon>upload</mat-icon>
+            <span>{{ selectedCategory()?.image_path ? 'Replace image' : 'Upload image' }}</span>
+          </label>
+        </article>
+
+        <article class="admin-categories__panel">
+          <div class="admin-categories__panel-head">
+            <div>
+              <h3>Publish controls</h3>
+              <p>Save changes, update status, or remove this category from the live catalog.</p>
+            </div>
+          </div>
+
+          <div class="admin-categories__status-box">
+            <span class="admin-categories__status-label">Status</span>
+            <app-admin-status-badge [text]="form.controls.isActive.value ? 'Active' : 'Inactive'" [tone]="form.controls.isActive.value ? 'success' : 'muted'"></app-admin-status-badge>
+          </div>
+
+          <div class="admin-categories__side-actions">
+            <app-admin-action-button icon="save" [label]="saving() ? 'Saving category' : 'Save category'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="saving()" />
+
+            @if (selectedCategory()) {
+              <app-admin-action-button
+                [icon]="selectedCategory()!.is_active ? 'pause_circle' : 'check_circle'"
+                [label]="selectedCategory()!.is_active ? 'Deactivate category' : 'Activate category'"
+                [tone]="selectedCategory()!.is_active ? 'warning' : 'success'"
+                appearance="soft"
+                [showLabel]="true"
+                [size]="'touch'"
+                [disabled]="busy()"
+                (pressed)="toggleActive(selectedCategory()!, !selectedCategory()!.is_active)"
+              />
+
+              <app-admin-action-button icon="delete" label="Delete category" tone="danger" appearance="soft" [showLabel]="true" [size]="'touch'" [disabled]="busy()" (pressed)="deleteCategory(selectedCategory()!)" />
+            }
+          </div>
+        </article>
+      </aside>
+    </form>
+  </div>
+</section>

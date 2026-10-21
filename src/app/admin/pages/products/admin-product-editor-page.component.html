@@ -1,0 +1,261 @@
+<section class="admin-product-editor">
+  <div class="admin-product-editor__hero">
+    <div>
+      <span class="eyebrow">Product Editor</span>
+      <h1>{{ isNew() ? 'Create product' : 'Edit product' }}</h1>
+      <p>Control pricing, publishing, fashion attributes, and the product image gallery without breaking the storefront mapping.</p>
+    </div>
+    <div class="admin-product-editor__hero-actions">
+      <app-admin-action-button icon="arrow_back" label="Back to products" appearance="soft" [showLabel]="true" [size]="'touch'" [routerLink]="['/admin/products']" />
+      <app-admin-action-button icon="save" [label]="saving() ? 'Saving product' : 'Save product'" appearance="solid" [showLabel]="true" [size]="'touch'" [disabled]="saving()" (pressed)="save()" />
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="admin-product-editor__alert admin-product-editor__alert--error">{{ error() }}</p>
+  }
+  @if (warning()) {
+    <p class="admin-product-editor__alert">{{ warning() }}</p>
+  }
+  @if (success()) {
+    <p class="admin-product-editor__alert admin-product-editor__alert--success">{{ success() }}</p>
+  }
+
+  @if (loading()) {
+    <section class="admin-product-editor__loading-state">
+      <mat-icon>hourglass_top</mat-icon>
+      <h2>Loading product editor</h2>
+      <p>Preparing the live product record, category options, and gallery state.</p>
+    </section>
+  } @else {
+    <form class="admin-product-editor__layout" [formGroup]="form" (ngSubmit)="save()">
+      <div class="admin-product-editor__main">
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <div class="admin-product-editor__section-title">
+              <h2>Basic information</h2>
+              @if ((form.controls.name.invalid && form.controls.name.touched) || (form.controls.slug.invalid && form.controls.slug.touched) || (form.controls.sku.invalid && form.controls.sku.touched)) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
+            <p>Name, slug, SKU, description, and the core identity the storefront uses.</p>
+          </div>
+
+          <div class="admin-product-editor__grid admin-product-editor__grid--two">
+            <label>
+              <span>Name *</span>
+              <input formControlName="name" [class.invalid-field]="form.controls.name.invalid && form.controls.name.touched">
+              @if (form.controls.name.invalid && form.controls.name.touched) {
+                <small class="admin-product-editor__field-error">Product name is required.</small>
+              }
+            </label>
+            <label>
+              <span>Slug *</span>
+              <input formControlName="slug" [class.invalid-field]="form.controls.slug.invalid && form.controls.slug.touched">
+              @if (form.controls.slug.invalid && form.controls.slug.touched) {
+                <small class="admin-product-editor__field-error">A unique slug is required.</small>
+              }
+            </label>
+            <label>
+              <span>SKU *</span>
+              <input formControlName="sku" [class.invalid-field]="form.controls.sku.invalid && form.controls.sku.touched">
+              @if (form.controls.sku.invalid && form.controls.sku.touched) {
+                <small class="admin-product-editor__field-error">SKU is required for admin operations.</small>
+              }
+            </label>
+            <label>
+              <span>Brand</span>
+              <input formControlName="brand">
+            </label>
+          </div>
+
+          <label class="admin-product-editor__field">
+            <span>Description</span>
+            <textarea formControlName="description"></textarea>
+          </label>
+        </section>
+
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <div class="admin-product-editor__section-title">
+              <h2>Pricing & inventory</h2>
+              @if ((form.controls.regularPrice.invalid && form.controls.regularPrice.touched) || (form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched)) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
+            <p>Keep the commercial details clean so the storefront displays correct pricing, stock, and availability.</p>
+          </div>
+
+          <div class="admin-product-editor__grid admin-product-editor__grid--two">
+            <label>
+              <span>Regular / original price *</span>
+              <input type="number" min="1" formControlName="regularPrice" [class.invalid-field]="form.controls.regularPrice.invalid && form.controls.regularPrice.touched">
+              @if (form.controls.regularPrice.invalid && form.controls.regularPrice.touched) {
+                <small class="admin-product-editor__field-error">Regular price is required and must be at least Rs 1.</small>
+              }
+            </label>
+            <label>
+              <span>Sale price</span>
+              <input type="number" min="0" formControlName="salePrice">
+            </label>
+            <label>
+              <span>Stock quantity *</span>
+              <input type="number" min="0" formControlName="stockQuantity" [class.invalid-field]="form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched">
+              @if (form.controls.stockQuantity.invalid && form.controls.stockQuantity.touched) {
+                <small class="admin-product-editor__field-error">Stock quantity is required and must be 0 or more.</small>
+              }
+            </label>
+            <label>
+              <span>Delivery note</span>
+              <input formControlName="deliveryNote" placeholder="Dispatches in 3-5 working days">
+            </label>
+          </div>
+
+          <div class="admin-product-editor__checks">
+            <label><input type="checkbox" formControlName="codAvailable"> COD available</label>
+            <label><input type="checkbox" formControlName="exchangeEligible"> Exchange eligible</label>
+          </div>
+        </section>
+
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <h2>Pakistani fashion fields</h2>
+            <p>Collection, fabric, badges, and merchandising details tailored for Zeenat’s seasonal catalog.</p>
+          </div>
+
+          <div class="admin-product-editor__grid admin-product-editor__grid--two">
+            <label>
+              <span>Collection</span>
+              <select formControlName="collection">
+                <option value="">Select collection</option>
+                @for (option of collectionOptions; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Badge</span>
+              <select formControlName="badge">
+                <option value="">No badge</option>
+                @for (option of badgeOptions; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Product type</span>
+              <select formControlName="productType">
+                <option value="">Select type</option>
+                @for (option of productTypeOptions; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Season</span>
+              <select formControlName="season">
+                <option value="">Select season</option>
+                @for (option of seasonOptions; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>Fabric / fabric type</span>
+              <input formControlName="fabric">
+            </label>
+            <label>
+              <span>Campaign tags</span>
+              <input formControlName="campaignTags" placeholder="Eid, Selling Fast, Summer Lawn">
+            </label>
+            <label>
+              <span>Sizes</span>
+              <input formControlName="sizes" placeholder="S, M, L or Unstitched, 3 Pc">
+            </label>
+            <label>
+              <span>Colors</span>
+              <input formControlName="colors" placeholder="Ivory, Emerald, Rose Pink">
+            </label>
+          </div>
+
+          <div class="admin-product-editor__checks">
+            <label><input type="checkbox" formControlName="isReadyToWear"> Ready-to-wear</label>
+            <label><input type="checkbox" formControlName="isLawnCollection"> Lawn collection</label>
+            <label><input type="checkbox" formControlName="isEidCollection"> Eid collection</label>
+            <label><input type="checkbox" formControlName="isWeddingFormal"> Wedding/Formal</label>
+          </div>
+        </section>
+
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <h2>SEO fields</h2>
+            <p>Saved into product metadata for upcoming storefront SEO enrichment without changing the live table shape.</p>
+          </div>
+
+          <div class="admin-product-editor__grid">
+            <label>
+              <span>SEO title</span>
+              <input formControlName="seoTitle">
+            </label>
+            <label class="admin-product-editor__field">
+              <span>SEO description</span>
+              <textarea formControlName="seoDescription"></textarea>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <aside class="admin-product-editor__side">
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <div class="admin-product-editor__section-title">
+              <h2>Publish controls</h2>
+              @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+                <span class="admin-product-editor__section-badge admin-product-editor__section-badge--error">Needs Attention</span>
+              }
+            </div>
+            <p>Use this sidebar to control status, category, storefront emphasis, and final save actions.</p>
+          </div>
+
+          <div class="admin-product-editor__side-stack">
+            <div class="admin-product-editor__publish-box">
+              <strong>{{ isNew() ? 'Draft product' : 'Existing product' }}</strong>
+              <small>{{ form.controls.slug.value || 'Slug will appear here' }}</small>
+            </div>
+
+            <label>
+              <span>Category *</span>
+              <select formControlName="categoryId" [class.invalid-field]="form.controls.categoryId.invalid && form.controls.categoryId.touched">
+                <option value="">Select a category</option>
+                @for (category of categories(); track category.id) {
+                  <option [value]="category.id">{{ category.name }}</option>
+                }
+              </select>
+              @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+                <small class="admin-product-editor__field-error">Please select a storefront category.</small>
+              }
+            </label>
+
+            <div class="admin-product-editor__checks admin-product-editor__checks--stacked">
+              <label><input type="checkbox" formControlName="isActive"> Publish product</label>
+              <label><input type="checkbox" formControlName="isFeatured"> Feature in storefront</label>
+            </div>
+
+            <div class="admin-product-editor__save-box">
+              <app-admin-action-button icon="save" [label]="saving() ? 'Saving product' : 'Save product'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="saving()" />
+              <app-admin-action-button icon="arrow_back" label="Back to products" appearance="soft" [showLabel]="true" [size]="'touch'" [routerLink]="['/admin/products']" />
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-product-editor__panel">
+          <div class="admin-product-editor__panel-head">
+            <h2>Image gallery</h2>
+            <p>Main image, gallery uploads, primary selection, alt text, and gallery order.</p>
+          </div>
+          <app-admin-image-uploader [images]="imageDrafts()" [disabled]="saving()" (imagesChange)="onImagesChanged($event)"></app-admin-image-uploader>
+        </section>
+      </aside>
+    </form>
+  }
+</section>

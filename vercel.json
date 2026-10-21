@@ -1,4 +1,1 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.csr.html" }]
-}
+{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"pnpm build","framework":"angular","functions":{"api/index.js":{"includeFiles":"dist/app/**"}},"installCommand":"pnpm install","outputDirectory":"dist/app/browser","rewrites":[{"destination":"/api/index","source":"/(.*)"}]}

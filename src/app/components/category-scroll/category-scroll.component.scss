@@ -1,0 +1,177 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.category-scroll {
+  background: linear-gradient(180deg, $color-ivory 0%, $color-white 100%);
+  overflow: hidden;
+
+  &__heading {
+    @include premium-container($container-md);
+    text-align: center;
+    margin-bottom: $spacing-8;
+
+    p {
+      max-width: 650px;
+      margin: $spacing-4 auto 0;
+      color: $color-gray-600;
+      line-height: 1.7;
+    }
+  }
+
+  &__title {
+    font-family: $font-family-serif;
+    @include fluid-heading(2.2rem, 4.5vw, 4.5rem);
+    font-weight: 500;
+    margin: $spacing-2 0 0;
+    letter-spacing: -.04em;
+  }
+
+  &__tabs {
+    display: flex;
+    gap: $spacing-3;
+    margin-bottom: $spacing-8;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 $spacing-4;
+  }
+
+  &__tab {
+    min-height: 42px;
+    padding: $spacing-2 $spacing-7;
+    border: 1px solid $color-gray-300;
+    background-color: rgba($color-white, .7);
+    font-size: $font-size-xs;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    @include transition;
+
+    &:hover, &--active {
+      background-color: $color-black;
+      color: $color-white;
+      border-color: $color-black;
+    }
+  }
+
+  &__container { width: 100%; padding: 0 $spacing-4; }
+
+  &__slider {
+    display: flex;
+    overflow-x: auto;
+    max-width: $container-lg;
+    margin: 0 auto;
+    gap: $spacing-4;
+    scroll-snap-type: x mandatory;
+    padding: $spacing-2 0 $spacing-8;
+    @include respond-to('md') { gap: $spacing-6; }
+  }
+
+  &__item {
+    flex: none;
+    width: min(72vw, 230px);
+    scroll-snap-align: center;
+    color: inherit;
+    @include respond-to('md') { width: 240px; }
+    @include respond-to('lg') { width: 260px; }
+
+    &:hover {
+      .category-scroll__image { transform: scale(1.07); }
+      .category-scroll__overlay { opacity: .44; }
+      .category-scroll__shop { transform: translateY(0); opacity: 1; }
+    }
+  }
+
+  &__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    margin-bottom: $spacing-4;
+    background: $color-cream;
+    box-shadow: $shadow-sm;
+  }
+
+  &__image { @include image-cover; @include transition(transform, $transition-luxe); }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.72));
+    opacity: .32;
+    @include transition(opacity);
+  }
+
+  &__shop {
+    position: absolute;
+    left: $spacing-4;
+    right: $spacing-4;
+    bottom: $spacing-4;
+    min-height: 42px;
+    @include flex-center;
+    background: rgba($color-white, .92);
+    color: $color-black;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    opacity: 1;
+    @include transition;
+    @include respond-to('lg') { transform: translateY(12px); opacity: 0; }
+  }
+
+  &__item-name {
+    text-align: center;
+    font-size: $font-size-sm;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: $color-black;
+    margin: 0;
+  }
+
+  &__item-subtitle {
+    margin: $spacing-1 0 0;
+    text-align: center;
+    color: $color-gray-500;
+    font-size: $font-size-xs;
+  }
+}
+
+.category-scroll {
+  &__notice {
+    max-width: $container-md;
+    margin: 0 auto $spacing-4;
+    padding: $spacing-3 $spacing-4;
+    color: $color-gray-700;
+    background: rgba($color-rosewood, .08);
+    font-size: $font-size-sm;
+  }
+
+  &__image-placeholder,
+  &__skeleton {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: linear-gradient(110deg, $color-cream 8%, $color-white 18%, $color-cream 33%);
+    background-size: 200% 100%;
+    animation: category-shimmer 1.2s linear infinite;
+  }
+
+  &__skeleton {
+    flex: none;
+    width: min(72vw, 230px);
+  }
+
+  &__empty {
+    min-width: min(72vw, 320px);
+    display: grid;
+    place-items: center;
+    color: $color-gray-600;
+    background: $color-ivory;
+    padding: $spacing-8;
+  }
+}
+
+@keyframes category-shimmer {
+  to { background-position-x: -200%; }
+}

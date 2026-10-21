@@ -1,0 +1,186 @@
+<section class="auth-page">
+  <div class="auth-page__container">
+    <!-- Desktop Side Panel: Elegant Boutique Story & Trust Points -->
+    <div class="auth-page__sidebar">
+      <div class="brand-showcase">
+        <span class="brand-eyebrow">The Atelier</span>
+        <h2 class="brand-title">UR-FASHION</h2>
+        <div class="brand-divider"></div>
+        <p class="brand-tagline">Experience the epitome of modern Eastern & fusion wear. Sign in to your exclusive wardrobe space.</p>
+      </div>
+
+      <div class="trust-features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <div class="feature-text">
+            <h3>100% Secure Account</h3>
+            <p>Your orders, profile details, and address books are guarded with bank-grade encryption.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>local_shipping</mat-icon>
+          </div>
+          <div class="feature-text">
+            <h3>Nationwide Tracking</h3>
+            <p>Seamlessly track Cash on Delivery (COD) shipments to any corner of Pakistan.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>swap_horizontal_circle</mat-icon>
+          </div>
+          <div class="feature-text">
+            <h3>Easy 7-Day Exchange</h3>
+            <p>Change your mind? Our hassle-free exchange policy makes return & size swaps effortless.</p>
+          </div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">
+            <mat-icon>chat_bubble</mat-icon>
+          </div>
+          <div class="feature-text">
+            <h3>WhatsApp Care</h3>
+            <p>Direct assistance via WhatsApp at +92-300-0000000 for order inquiries & quick guidance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <span>EST. 2024 — Lahore, Pakistan</span>
+      </div>
+    </div>
+
+    <!-- Login Auth Card -->
+    <div class="auth-page__card-container">
+      <form class="auth-page__card" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="card-header">
+          <span class="auth-eyebrow">Welcome Back</span>
+          <h1 class="card-title">Sign In to Your Space</h1>
+          <p class="card-subtitle">Access your wishlist, checkout faster, and track ongoing orders with ease.</p>
+        </div>
+
+        <!-- System Notices -->
+        @if (notice()) {
+          <div class="auth-page__notice animate-fade-in">
+            <mat-icon>info</mat-icon>
+            <span>{{ notice() }}</span>
+          </div>
+        }
+        @if (error()) {
+          <div class="auth-page__error animate-fade-in">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <!-- Inputs Container -->
+        <div class="form-fields">
+          <!-- Email Input -->
+          <div class="form-group" [class.form-group--error]="form.controls.email.touched && form.controls.email.invalid">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <mat-icon class="input-icon">mail_outline</mat-icon>
+              <input 
+                id="email" 
+                formControlName="email" 
+                type="email" 
+                placeholder="e.g. customer@ur-fashion.pk" 
+                autocomplete="email"
+                required
+              >
+            </div>
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <p class="field-error">
+                <span *ngIf="form.controls.email.hasError('required')">Email is required.</span>
+                <span *ngIf="form.controls.email.hasError('email')">Please enter a valid email address.</span>
+              </p>
+            }
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group" [class.form-group--error]="form.controls.password.touched && form.controls.password.invalid">
+            <div class="label-row">
+              <label for="password" class="form-label">Password</label>
+            </div>
+            <div class="input-wrapper">
+              <mat-icon class="input-icon">lock_open</mat-icon>
+              <input 
+                id="password" 
+                formControlName="password" 
+                [type]="showPassword() ? 'text' : 'password'" 
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+              >
+              <button 
+                type="button" 
+                class="password-toggle-btn" 
+                (click)="showPassword.set(!showPassword())"
+                aria-label="Toggle password visibility"
+              >
+                <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </div>
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <p class="field-error">
+                <span *ngIf="form.controls.password.hasError('required')">Password is required.</span>
+                <span *ngIf="form.controls.password.hasError('minlength')">Password must be at least 6 characters.</span>
+              </p>
+            }
+          </div>
+
+          <!-- Controls (Remember & Forgot) -->
+          <div class="form-controls-row">
+            <label class="custom-checkbox">
+              <input type="checkbox" formControlName="rememberMe">
+              <span class="checkmark"></span>
+              <span class="checkbox-label">Keep me signed in</span>
+            </label>
+            <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          class="submit-button" 
+          [disabled]="isSubmitting() || form.invalid"
+          [class.submit-button--loading]="isSubmitting()"
+        >
+          <span class="btn-text" *ngIf="!isSubmitting()">Sign In Securely</span>
+          <div class="spinner-container" *ngIf="isSubmitting()">
+            <div class="gold-spinner"></div>
+            <span>Entering Atelier...</span>
+          </div>
+        </button>
+
+        <!-- Redirect Link -->
+        <div class="auth-redirect">
+          <p>First time shopping with us? <a routerLink="/signup" class="highlight-link">Create an Account</a></p>
+        </div>
+
+        <!-- Trust Badges Block (Stacked beautifully on Mobile inside Card) -->
+        <div class="auth-trust-badges">
+          <div class="badge-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Delivery Nationwide</span>
+          </div>
+          <div class="badge-item">
+            <mat-icon>payments</mat-icon>
+            <span>Cash on Delivery</span>
+          </div>
+          <div class="badge-item">
+            <mat-icon>support_agent</mat-icon>
+            <span>WhatsApp Care</span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
