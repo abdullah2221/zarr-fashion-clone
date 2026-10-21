@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://zarr-fashion-clone.vercel.app/sitemap.xml
-
