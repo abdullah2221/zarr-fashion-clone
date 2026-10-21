@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { parsePriceValue } from '../../shared/utils/price.utils';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductGridComponent } from '../../components/product-grid/product-grid.component';
@@ -63,7 +64,7 @@ export class ShopComponent {
 
     const priceLimit = this.maxPrice();
     list = list.filter(p => {
-      const price = p.priceValue || parseFloat(p.price.replace(/[^\d.]/g, '')) || 0;
+      const price = p.priceValue || parsePriceValue(p.price);
       return price <= priceLimit;
     });
 
@@ -108,10 +109,10 @@ export class ShopComponent {
     this.maxPrice.set(15000);
   }
 
-  pageLabel = computed(() => this.formatSlug(this.slug()) || 'UR-Fashion Collections');
+  pageLabel = computed(() => this.formatSlug(this.slug()) || 'Zeenat Collections');
   pageTitle = computed(() => this.slug() ? `${this.formatSlug(this.slug())} Collection` : 'Shop premium fashion for every Pakistani season');
   pageIntro = computed(() => this.slug()
-    ? `Explore ${this.formatSlug(this.slug()).toLowerCase()} picks from UR-Fashion with premium styling, COD support and nationwide delivery.`
+    ? `Explore ${this.formatSlug(this.slug()).toLowerCase()} picks from Zeenat with premium styling, COD support and nationwide delivery.`
     : 'Discover lawn, unstitched suits, ready-to-wear, wedding edits and sale picks with COD and nationwide delivery.'
   );
 
@@ -121,7 +122,7 @@ export class ShopComponent {
       const categoryLabel = slug ? this.formatSlug(slug) : '';
       const title = slug ? `${categoryLabel} Collection` : 'Shop All';
       const description = slug
-        ? `Shop ${categoryLabel} styles at UR-Fashion with COD, seasonal campaign picks, and delivery across Pakistan.`
+        ? `Shop ${categoryLabel} styles at Zeenat with COD, seasonal campaign picks, and delivery across Pakistan.`
         : this.content.settings().defaultSeoDescription;
       const path = slug ? `/category/${slug}` : '/shop';
 

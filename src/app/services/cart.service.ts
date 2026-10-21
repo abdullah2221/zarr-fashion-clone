@@ -1,4 +1,5 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
+import { parsePriceValue } from '../shared/utils/price.utils';
 import { Product } from '../shared/models/models';
 
 export interface CartItem extends Product {
@@ -22,7 +23,7 @@ export class CartService {
 
   total = computed(() => {
     return this.cartItems().reduce((acc, item) => {
-      const price = parseFloat(item.price.replace(/[^\d.]/g, '')) || 0;
+      const price = parsePriceValue(item.price);
       return acc + (price * item.quantity);
     }, 0);
   });

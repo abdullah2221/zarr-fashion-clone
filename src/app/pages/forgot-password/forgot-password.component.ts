@@ -30,7 +30,7 @@ export class ForgotPasswordComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Forgot Password',
-      description: 'Reset your UR-Fashion account password.',
+      description: 'Reset your Zeenat account password.',
       path: '/forgot-password',
       noindex: true,
     });

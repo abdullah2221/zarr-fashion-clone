@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { parsePriceValue } from '../utils/price.utils';
 
 @Pipe({
   name: 'appPrice',
@@ -9,8 +10,6 @@ export class PricePipe implements PipeTransform {
     if (value === undefined) return 0;
     if (typeof value === 'number') return value;
     
-    // Extract numbers and decimal point
-    const numericValue = value.replace(/[^\d.]/g, '');
-    return parseFloat(numericValue) || 0;
+    return parsePriceValue(value);
   }
 }

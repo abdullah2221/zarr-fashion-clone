@@ -34,7 +34,7 @@ export class AccountComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Account',
-      description: 'Manage your UR-Fashion customer profile and orders.',
+      description: 'Manage your Zeenat customer profile and orders.',
       path: '/account',
       noindex: true,
     });

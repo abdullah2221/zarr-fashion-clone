@@ -61,33 +61,36 @@ export interface CampaignRepository {
   delete(id: string): Promise<void>;
 }
 
+export interface CheckoutOrderParams {
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  shipping_address: string;
+  city: string;
+  province: string;
+  notes: string | null;
+  // Only product ids and quantities are sent. Prices, totals, status and
+  // the order number are computed by the database (phase 6) and any money
+  // fields a caller adds here are ignored by the server.
+  items: Array<{
+    product_id: string;
+    quantity: number;
+    size?: string | null;
+    color?: string | null;
+  }>;
+}
+
+export interface CheckoutOrderResult {
+  order_id: string;
+  order_number: string;
+  subtotal: number;
+  shipping_amount: number;
+  total_amount: number;
+}
+
 export interface OrderRepository {
-  create(order: Inserts<'orders'>, items: Omit<Inserts<'order_items'>, 'order_id'>[]): Promise<Tables<'orders'>>;
-  createGuestCheckout(params: {
-    customer_name: string;
-    customer_phone: string;
-    customer_email: string | null;
-    shipping_address: string;
-    city: string;
-    province: string;
-    notes: string | null;
-    total_amount: number;
-    subtotal: number;
-    shipping_amount: number;
-    currency: string;
-    payment_method: string;
-    status: string;
-    items: Array<{
-      product_id: string | null;
-      product_name: string;
-      sku: string | null;
-      unit_price: number;
-      quantity: number;
-      line_total: number;
-      size?: string | null;
-      color?: string | null;
-    }>;
-  }): Promise<{ order_id: string; order_number: string }>;
+  createGuestCheckout(params: CheckoutOrderParams): Promise<CheckoutOrderResult>;
+  createCustomerCheckout(params: CheckoutOrderParams): Promise<CheckoutOrderResult>;
   listMine(): Promise<Tables<'orders'>[]>;
   findByOrderNumberAndPhone(orderNumber: string, phone: string): Promise<{
     order_number: string;

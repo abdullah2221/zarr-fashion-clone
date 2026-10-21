@@ -42,7 +42,7 @@ export class CheckoutComponent {
   constructor() {
     this.metaService.setSeo({
       title: 'Checkout',
-      description: 'Complete your Cash on Delivery checkout for UR-Fashion.',
+      description: 'Complete your Cash on Delivery checkout for Zeenat.',
       path: '/checkout',
       noindex: true,
     });

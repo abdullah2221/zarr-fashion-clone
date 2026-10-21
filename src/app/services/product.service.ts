@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { parsePriceValue } from '../shared/utils/price.utils';
 import { Product, Category, ProductImage } from '../shared/models/models';
 import { CATEGORIES, POPULAR_PRODUCTS, PRODUCTS, SALE_PRODUCTS } from '../data/data';
 import { SupabaseClientService } from '../core/supabase/supabase-client.service';
@@ -186,7 +187,7 @@ export class ProductService {
     return {
       id: product.legacy_id,
       catalogId: product.id,
-      brand: product.brand || 'UR-Fashion',
+      brand: product.brand || 'Zeenat',
       name: product.name,
       price,
       priceValue: product.price,
@@ -320,7 +321,7 @@ export class ProductService {
 
   private getPriceValue(product: Product) {
     if (typeof product.priceValue === 'number') return product.priceValue;
-    return parseFloat(product.price.replace(/[^\d.]/g, '')) || 0;
+    return parsePriceValue(product.price);
   }
 
   private featuredScore(product: Product) {

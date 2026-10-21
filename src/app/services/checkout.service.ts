@@ -66,83 +66,48 @@ export class CheckoutService {
     this.errorSignal.set(null);
     try {
       const normalizedItems = await this.validateAndNormalizeItems(this.cartItems());
-      const subtotal = normalizedItems.reduce((sum, item) => sum + item.lineTotal, 0);
-      const shippingAmount = 0;
-      const totalAmount = subtotal + shippingAmount;
       const now = new Date();
-      const orderNumber = this.generateOrderNumber(now);
-      const status = 'pending';
-      const paymentMethod = 'cod';
 
-      const addressPayload = {
-        orderNumber,
-        customerName: form.customerName.trim(),
-        customerPhone: form.phone.trim(),
-        customerEmail: form.email.trim() || null,
-        address: form.address.trim(),
+      // Phase 6: amounts are computed by the database, never trusted from
+      // the browser. Only product ids and quantities are sent; the server
+      // looks up real prices, applies the delivery policy from admin
+      // settings, forces status 'pending' and generates the order number.
+      const itemsPayload = normalizedItems.map(item => {
+        if (!item.productId) {
+          throw new Error(`Product "${item.productName}" is no longer available.`);
+        }
+        return {
+          product_id: item.productId,
+          quantity: item.quantity,
+          ...(item.size ? { size: item.size } : {}),
+          ...(item.color ? { color: item.color } : {}),
+        };
+      });
+
+      const checkoutParams = {
+        customer_name: form.customerName.trim(),
+        customer_phone: form.phone.trim(),
+        customer_email: form.email.trim() || null,
+        shipping_address: form.address.trim(),
         city: form.city.trim(),
         province: form.province.trim(),
-        paymentMethod,
-        verificationStatus: 'pending',
+        notes: form.notes.trim() || null,
+        items: itemsPayload,
       };
 
-      const itemsPayload = normalizedItems.map(item => ({
-        product_id: item.productId,
-        product_name: item.productName,
-        sku: item.sku,
-        unit_price: item.unitPrice,
-        quantity: item.quantity,
-        line_total: item.lineTotal,
-        ...(item.size ? { size: item.size } : {}),
-        ...(item.color ? { color: item.color } : {}),
-      }));
-
       const user = await this.authRepository.getCurrentUser().catch(() => null);
-
-      let orderId = '';
-      let persistedOrderNumber = orderNumber;
-
-      if (user) {
-        const order = await this.orderRepository.create({
-          user_id: user.id,
-          status: 'pending',
-          subtotal,
-          shipping_amount: shippingAmount,
-          total_amount: totalAmount,
-          currency: 'PKR',
-          shipping_address: addressPayload,
-          notes: form.notes.trim() || null,
-        }, itemsPayload);
-        orderId = order.id;
-      } else {
-        const result = await this.orderRepository.createGuestCheckout({
-          customer_name: form.customerName.trim(),
-          customer_phone: form.phone.trim(),
-          customer_email: form.email.trim() || null,
-          shipping_address: form.address.trim(),
-          city: form.city.trim(),
-          province: form.province.trim(),
-          notes: form.notes.trim() || null,
-          total_amount: totalAmount,
-          subtotal,
-          shipping_amount: shippingAmount,
-          currency: 'PKR',
-          payment_method: 'cod',
-          status,
-          items: itemsPayload,
-        });
-        orderId = result.order_id;
-        persistedOrderNumber = result.order_number || orderNumber;
-      }
+      const result = user
+        ? await this.orderRepository.createCustomerCheckout(checkoutParams)
+        : await this.orderRepository.createGuestCheckout(checkoutParams);
 
       const confirmation: CheckoutSuccessPayload = {
-        orderId,
-        orderNumber: persistedOrderNumber,
+        orderId: result.order_id,
+        orderNumber: result.order_number,
         customerName: form.customerName.trim(),
         phone: form.phone.trim(),
         city: form.city.trim(),
         province: form.province.trim(),
-        total: totalAmount,
+        total: result.total_amount,
         itemsCount: normalizedItems.reduce((sum, item) => sum + item.quantity, 0),
         createdAtIso: now.toISOString(),
       };
@@ -230,7 +195,7 @@ export class CheckoutService {
     if (!raw) return fallback;
 
     const message = raw.toLowerCase();
-    if (message.includes('create_guest_order')) {
+    if (message.includes('create_guest_order') || message.includes('create_customer_order')) {
       return 'Checkout service is not fully available yet. Please contact support or try again shortly.';
     }
     if (message.includes('tracking_number') && message.includes('null')) {
@@ -251,13 +216,6 @@ export class CheckoutService {
     return '';
   }
 
-  private generateOrderNumber(date: Date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const code = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return `URF-${y}${m}${d}-${code}`;
-  }
 
   private setConfirmation(value: CheckoutSuccessPayload) {
     this.confirmationSignal.set(value);

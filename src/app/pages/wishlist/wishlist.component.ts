@@ -121,7 +121,7 @@ export class WishlistComponent implements OnInit {
   ngOnInit() {
     this.metaService.setSeo({
       title: 'Wishlist',
-      description: 'Your saved UR-Fashion pieces for Eid, lawn, and wedding season.',
+      description: 'Your saved Zeenat pieces for Eid, lawn, and wedding season.',
       path: '/wishlist',
       noindex: true
     });

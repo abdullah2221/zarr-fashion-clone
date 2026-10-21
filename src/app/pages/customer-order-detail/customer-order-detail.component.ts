@@ -46,7 +46,7 @@ export class CustomerOrderDetailComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Order Detail',
-      description: 'View your UR-Fashion order detail, delivery progress, and COD updates.',
+      description: 'View your Zeenat order detail, delivery progress, and COD updates.',
       path: '/orders',
       noindex: true,
     });

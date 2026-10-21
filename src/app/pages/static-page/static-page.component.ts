@@ -45,7 +45,7 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
     ctaLink: '/shop',
     formType: 'wishlist',
     sections: [
-      { icon: 'favorite', title: 'No saved items yet', body: 'Tap the heart on any product card to shortlist your favourite UR-Fashion pieces.' },
+      { icon: 'favorite', title: 'No saved items yet', body: 'Tap the heart on any product card to shortlist your favourite Zeenat pieces.' },
       { icon: 'notifications', title: 'Sale-ready planning', body: 'Use wishlist as a shopping shortlist for Eid drops, lawn launches and limited-time sale campaigns.' }
     ]
   },
@@ -77,7 +77,7 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
     ]
   },
   account: {
-    eyebrow: 'My UR-Fashion',
+    eyebrow: 'My Zeenat',
     title: 'Account & Profile',
     intro: 'Central customer area for profile details, saved addresses, wishlist and recent orders.',
     icon: 'account_circle',
@@ -105,12 +105,12 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
   },
   contact: {
     eyebrow: 'Customer care',
-    title: 'Contact UR-Fashion',
+    title: 'Contact Zeenat',
     intro: 'Support should be easy to find, especially for COD, exchange and delivery questions.',
     icon: 'support_agent',
     formType: 'contact',
     sections: [
-      { icon: 'call', title: 'Phone & WhatsApp', body: 'Message UR-Fashion on WhatsApp for order, delivery and exchange support during business hours.' },
+      { icon: 'call', title: 'Phone & WhatsApp', body: 'Message Zeenat on WhatsApp for order, delivery and exchange support during business hours.' },
       { icon: 'mail', title: 'Email support', body: 'Use support@ur-fashion.pk for order, return and partnership inquiries.' },
       { icon: 'schedule', title: 'Support hours', body: 'Confirm launch support hours once operations are finalized, then keep them consistent across contact surfaces.' }
     ],
@@ -122,8 +122,8 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
   },
   about: {
     eyebrow: 'Our story',
-    title: 'About UR-Fashion',
-    intro: 'UR-Fashion is positioned as a premium Pakistani fashion storefront for seasonal wardrobes, festive dressing and everyday confidence.',
+    title: 'About Zeenat',
+    intro: 'Zeenat is positioned as a premium Pakistani fashion storefront for seasonal wardrobes, festive dressing and everyday confidence.',
     icon: 'auto_awesome',
     sections: [
       { icon: 'style', title: 'Premium fashion curation', body: 'A focused edit of lawn, unstitched suits, ready-to-wear, wedding looks and accessories.' },
@@ -146,7 +146,7 @@ const CONTENT: Record<PageKey, StaticPageContent> = {
   'privacy-policy': {
     eyebrow: 'Legal',
     title: 'Privacy Policy',
-    intro: 'Explain how UR-Fashion collects, uses and protects customer data for orders, delivery and support.',
+    intro: 'Explain how Zeenat collects, uses and protects customer data for orders, delivery and support.',
     icon: 'policy',
     sections: [
       { title: 'Information collected', body: 'Name, phone, email, address, order details and browsing interactions needed for e-commerce operations.' },
@@ -216,7 +216,7 @@ export class StaticPageComponent implements OnInit {
         description: content.intro,
         path: this.router.url,
         noindex: noindexPages.includes(key),
-        keywords: `UR-Fashion, ${content.title}, Pakistani fashion`
+        keywords: `Zeenat, ${content.title}, Pakistani fashion`
       });
       this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
     });

@@ -35,7 +35,7 @@ export class LoginComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Login',
-      description: 'Sign in to UR-Fashion for account, COD tracking, and faster checkout.',
+      description: 'Sign in to Zeenat for account, COD tracking, and faster checkout.',
       path: '/login',
       noindex: true,
     });

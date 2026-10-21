@@ -1,4 +1,4 @@
--- UR-Fashion Phase 2A: Admin Orders Management schema recommendations
+-- Zeenat Phase 2A: Admin Orders Management schema recommendations
 -- Non-breaking strategy: additive changes only, no destructive operations.
 -- Run in a controlled environment and regenerate TS database types afterward.
 

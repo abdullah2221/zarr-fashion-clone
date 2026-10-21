@@ -13,7 +13,8 @@ import {
   ProductRepository,
   StorageRepository,
   WishlistRepository,
-} from '../repositories/repositories';
+  CheckoutOrderParams,
+  CheckoutOrderResult,} from '../repositories/repositories';
 
 abstract class SupabaseRepositoryBase {
   protected readonly clientService = inject(SupabaseClientService);
@@ -315,53 +316,42 @@ export class SupabaseCampaignRepository extends SupabaseRepositoryBase implement
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseOrderRepository extends SupabaseRepositoryBase implements OrderRepository {
-  async create(order: Inserts<'orders'>, items: Omit<Inserts<'order_items'>, 'order_id'>[]) {
-    const { data: createdOrder, error: orderError } = await this.client().from('orders').insert(order).select('*').single();
-    if (orderError) throw orderError;
 
-    const orderItems = items.map(item => ({ ...item, order_id: createdOrder.id }));
-    const { error: itemsError } = await this.client().from('order_items').insert(orderItems);
-    if (itemsError) throw itemsError;
-
-    return createdOrder;
-  }
-
-  async createGuestCheckout(params: {
-    customer_name: string;
-    customer_phone: string;
-    customer_email: string | null;
-    shipping_address: string;
-    city: string;
-    province: string;
-    notes: string | null;
-    total_amount: number;
-    subtotal: number;
-    shipping_amount: number;
-    currency: string;
-    payment_method: string;
-    status: string;
-    items: Array<{
-      product_id: string | null;
-      product_name: string;
-      sku: string | null;
-      unit_price: number;
-      quantity: number;
-      line_total: number;
-      size?: string | null;
-      color?: string | null;
-    }>;
-  }) {
+  private async callCheckoutRpc(
+    fn: 'create_guest_order' | 'create_customer_order',
+    params: CheckoutOrderParams,
+  ): Promise<CheckoutOrderResult> {
     const client = this.client() as unknown as {
       rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
     };
-    const { data, error } = await client.rpc('create_guest_order', {
+    const { data, error } = await client.rpc(fn, {
       payload: params,
     });
     if (error) throw error as Error;
     const row = Array.isArray(data) ? data[0] : data;
-    const typedRow = row as { order_id?: string; order_number?: string } | null;
-    if (!typedRow?.order_id) throw new Error('Guest order creation returned an invalid payload.');
-    return { order_id: typedRow.order_id, order_number: typedRow.order_number || '' };
+    const typedRow = row as {
+      order_id?: string;
+      order_number?: string;
+      subtotal?: number | string;
+      shipping_amount?: number | string;
+      total_amount?: number | string;
+    } | null;
+    if (!typedRow?.order_id) throw new Error('Order creation returned an invalid payload.');
+    return {
+      order_id: typedRow.order_id,
+      order_number: typedRow.order_number || '',
+      subtotal: Number(typedRow.subtotal ?? 0),
+      shipping_amount: Number(typedRow.shipping_amount ?? 0),
+      total_amount: Number(typedRow.total_amount ?? 0),
+    };
+  }
+
+  async createGuestCheckout(params: CheckoutOrderParams) {
+    return this.callCheckoutRpc('create_guest_order', params);
+  }
+
+  async createCustomerCheckout(params: CheckoutOrderParams) {
+    return this.callCheckoutRpc('create_customer_order', params);
   }
 
   async listMine() {

@@ -24,7 +24,7 @@ export class CustomerOrdersComponent {
   constructor() {
     this.meta.setSeo({
       title: 'My Orders',
-      description: 'Track your UR-Fashion order history and status.',
+      description: 'Track your Zeenat order history and status.',
       path: '/orders',
       noindex: true,
     });

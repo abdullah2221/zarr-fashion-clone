@@ -14,7 +14,7 @@ import { MetaService } from '../../core/services/meta.service';
         <mat-icon>travel_explore</mat-icon>
         <span class="eyebrow">404</span>
         <h1>Page Not Found</h1>
-        <p>The page may have moved, expired, or never existed. Explore UR-Fashion collections from the homepage.</p>
+        <p>The page may have moved, expired, or never existed. Explore Zeenat collections from the homepage.</p>
         <a routerLink="/" class="not-found__cta">Go To Home</a>
       </div>
     </section>
@@ -76,7 +76,7 @@ export class NotFoundComponent implements OnInit {
   ngOnInit() {
     this.metaService.setSeo({
       title: '404 Not Found',
-      description: 'The requested page could not be found on UR-Fashion.',
+      description: 'The requested page could not be found on Zeenat.',
       path: '/404',
       noindex: true
     });

@@ -32,7 +32,7 @@ export class OrderTrackingComponent {
       case 'shipped':
         return 'Your order has been shipped. Keep your phone available for delivery updates.';
       case 'delivered':
-        return 'Your order has been delivered. Thank you for shopping with UR-Fashion.';
+        return 'Your order has been delivered. Thank you for shopping with Zeenat.';
       case 'cancelled':
         return 'This order was cancelled. Contact support if you need help placing a new order.';
       case 'returned':
@@ -50,7 +50,7 @@ export class OrderTrackingComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Track Order',
-      description: 'Track your UR-Fashion order using order number and phone.',
+      description: 'Track your Zeenat order using order number and phone.',
       path: '/track-order',
       noindex: true,
     });

@@ -24,7 +24,7 @@ export class OrderConfirmationComponent {
   constructor() {
     this.metaService.setSeo({
       title: 'Order Confirmation',
-      description: 'Your UR-Fashion order has been placed successfully.',
+      description: 'Your Zeenat order has been placed successfully.',
       path: `/order-confirmation/${this.orderId}`,
       noindex: true,
     });

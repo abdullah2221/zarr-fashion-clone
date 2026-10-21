@@ -29,5 +29,5 @@ export function mapProfile(profile: Tables<'profiles'> | null): UserProfile | nu
 }
 
 export function displayName(user: User | null, profile: UserProfile | null) {
-  return profile?.fullName || user?.email || 'UR-Fashion Admin';
+  return profile?.fullName || user?.email || 'Zeenat Admin';
 }

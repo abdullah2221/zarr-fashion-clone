@@ -38,7 +38,7 @@ export class SignupComponent {
   constructor() {
     this.meta.setSeo({
       title: 'Signup',
-      description: 'Create your UR-Fashion customer account for order tracking and faster checkout.',
+      description: 'Create your Zeenat customer account for order tracking and faster checkout.',
       path: '/signup',
       noindex: true,
     });

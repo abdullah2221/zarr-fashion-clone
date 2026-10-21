@@ -12,7 +12,7 @@ import {
 import { SupabaseClientService } from '../core/supabase/supabase-client.service';
 
 const DEFAULT_SETTINGS: StorefrontSettings = {
-  storeName: 'UR-Fashion',
+  storeName: 'Zeenat',
   whatsappNumber: '0320 0000000',
   supportEmail: 'support@ur-fashion.pk',
   supportPhone: '+92 300 0000000',
@@ -21,7 +21,7 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
   codMessage: 'Cash on Delivery is available on eligible orders across Pakistan.',
   exchangePolicySummary: 'Easy exchange support is available for eligible items in original condition.',
   socialLinks: {},
-  defaultSeoTitle: 'UR-Fashion | Premium Pakistani Fashion',
+  defaultSeoTitle: 'Zeenat | Premium Pakistani Fashion',
   defaultSeoDescription: 'Premium Pakistani fashion for Eid, lawn season, weddings, and everyday elegance with Cash on Delivery and nationwide delivery.',
   campaignChips: ['Trending in Pakistan', 'Eid Collection', 'Ramadan Sale', 'Summer Lawn', 'Wedding/Formal', 'Ready to Wear', 'Unstitched', 'Stitched'],
   trustBadges: [
@@ -31,9 +31,9 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
     { icon: 'autorenew', label: 'Easy exchange', detail: 'Simple support-led process' },
   ],
   contactPageIntro: 'Support should be easy to find, especially for COD, exchange and delivery questions.',
-  aboutPageIntro: 'UR-Fashion is positioned as a premium Pakistani fashion storefront for seasonal wardrobes, festive dressing and everyday confidence.',
+  aboutPageIntro: 'Zeenat is positioned as a premium Pakistani fashion storefront for seasonal wardrobes, festive dressing and everyday confidence.',
   faqIntro: 'Answers to common shopping, delivery, COD and exchange questions.',
-  privacySummary: 'Explain how UR-Fashion collects, uses and protects customer data for orders, delivery and support.',
+  privacySummary: 'Explain how Zeenat collects, uses and protects customer data for orders, delivery and support.',
   termsSummary: 'Set expectations for product availability, pricing, campaigns, checkout, delivery and use of the website.',
   returnExchangeSummary: 'Clear exchange guidance improves confidence for online fashion buyers, especially for size and fabric concerns.',
   bannerOverrides: {},

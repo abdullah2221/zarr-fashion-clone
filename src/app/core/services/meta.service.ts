@@ -16,7 +16,7 @@ interface SeoOptions {
   providedIn: 'root'
 })
 export class MetaService {
-  private static readonly SITE_NAME = 'UR-Fashion';
+  private static readonly SITE_NAME = 'Zeenat';
   private static readonly SITE_URL = 'https://www.ur-fashion.pk';
 
   private title = inject(Title);

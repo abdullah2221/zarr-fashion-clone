@@ -50,7 +50,7 @@ export class AdminProductEditorPageComponent {
     name: ['', [Validators.required]],
     slug: ['', [Validators.required]],
     sku: ['', [Validators.required]],
-    brand: ['UR-Fashion', [Validators.required]],
+    brand: ['Zeenat', [Validators.required]],
     description: [''],
     categoryId: ['', [Validators.required]],
     regularPrice: [null as number | null, [Validators.required, Validators.min(1)]],

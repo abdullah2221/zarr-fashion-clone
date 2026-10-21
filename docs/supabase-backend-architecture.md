@@ -1,4 +1,4 @@
-# UR-Fashion Supabase Backend Architecture
+# Zeenat Supabase Backend Architecture
 
 ## Planned tables
 - `profiles`

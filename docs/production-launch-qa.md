@@ -1,4 +1,4 @@
-# UR-Fashion Production Launch QA
+# Zeenat Production Launch QA
 
 ## Environment
 - `SUPABASE_URL`: live Supabase project URL.

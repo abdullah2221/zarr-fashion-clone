@@ -35,7 +35,7 @@ export class CartComponent implements OnInit {
   ngOnInit() {
     this.metaService.setSeo({
       title: 'Your Cart',
-      description: 'Review your UR-Fashion cart before checkout with COD and delivery details.',
+      description: 'Review your Zeenat cart before checkout with COD and delivery details.',
       path: '/cart',
       noindex: true
     });

@@ -1,5 +1,5 @@
 -- ============================================================
--- schema.sql — UR-Fashion Supabase schema (idempotent)
+-- schema.sql — Zeenat Supabase schema (idempotent)
 -- ============================================================
 -- Safe to re-run at any time on an existing database.
 -- Uses IF NOT EXISTS / DO $$ guards throughout so nothing

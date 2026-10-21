@@ -1,4 +1,4 @@
-# UR-Fashion | Premium Pakistani Fashion E-commerce
+# Zeenat | Premium Pakistani Fashion E-commerce
 
 A medium-scale Angular fashion e-commerce storefront tailored for premium Pakistani fashion shopping.
 

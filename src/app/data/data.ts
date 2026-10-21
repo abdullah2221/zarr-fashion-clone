@@ -48,7 +48,7 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const FEATURED_COLLECTIONS = [
-  { id: 1, name: 'Eid Noor Festive', brand: 'UR-Fashion Atelier', imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=800' },
+  { id: 1, name: 'Eid Noor Festive', brand: 'Zeenat Atelier', imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=800' },
   { id: 2, name: 'Summer Lawn Studio', brand: 'LAWN EDIT', imageUrl: 'https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?auto=format&fit=crop&q=80&w=800' },
   { id: 3, name: 'Mehndi & Barat Picks', brand: 'WEDDING', imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800' },
   { id: 4, name: 'Azadi Green Edit', brand: '14 AUGUST', imageUrl: 'https://images.unsplash.com/photo-1603344797033-f0f4f587ab60?auto=format&fit=crop&q=80&w=800' }
@@ -127,7 +127,7 @@ export const POPULAR_PRODUCTS: Product[] = [
   },
   {
     id: 15,
-    brand: 'UR-Fashion Studio',
+    brand: 'Zeenat Studio',
     name: 'PRINTED MAXI DRESS',
     price: 'Rs. 7,999',
     imageUrl: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?auto=format&fit=crop&q=80&w=700',

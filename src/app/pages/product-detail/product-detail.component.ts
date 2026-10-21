@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, computed, effect, signal } from '@angular/core';
+import { parsePriceValue } from '../../shared/utils/price.utils';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
@@ -94,7 +95,7 @@ export class ProductDetailComponent {
           type: 'product'
         });
 
-        const priceValue = parseFloat(p.price.replace(/[^\d.]/g, '')) || 0;
+        const priceValue = parsePriceValue(p.price);
         const productSchema = {
           '@context': 'https://schema.org',
           '@type': 'Product',
