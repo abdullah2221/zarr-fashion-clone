@@ -121,7 +121,7 @@ export class AdminCampaignsService {
   async saveBanner(current: AdminBannerListItem | null, value: AdminBannerEditorValue, imageFile: File | null) {
     let imagePath = current?.record.image_path || null;
     if (imageFile) {
-      imagePath = await this.storageRepository.uploadPublicImage(this.bannerImagePath(current?.record.id || 'new', imageFile.name), imageFile, { upsert: true });
+      imagePath = await this.storageRepository.uploadPublicImage(this.bannerImagePath(current?.record.id || crypto.randomUUID(), imageFile.name), imageFile, { upsert: true });
     }
 
     const payload: Inserts<'banners'> = {

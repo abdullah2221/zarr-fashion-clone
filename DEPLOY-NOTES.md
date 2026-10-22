@@ -1,5 +1,37 @@
 # Deployment notes — Phase 3: real SSR on Vercel + admin spacing (prepared 21 Oct 2026)
 
+## ⚠️ v4 — 22 Oct 2026 (this package; supersedes v3)
+
+Two small fixes on top of v3 — **deploy exactly the same way as v3: unzip
+FULLY into a NEW folder and deploy from there (`npx vercel --prod`). Do not
+mix files from the v3 and v4 packages.**
+
+1. **Mobile hero crop** (`src/app/components/hero/hero.component.scss`, CSS
+   only): on portrait phones the hero image is centre-cropped to a narrow
+   band of the 16:9 banner, which cut the subject (composed on the right of
+   all three current banners) out of the frame — phones showed mostly empty
+   wall. Inside the existing `max-width: 767px` mobile range the image now
+   uses `object-position: 78% center`, shifting the visible band onto the
+   subject. Desktop rendering is **unchanged** — the rule lives entirely
+   inside the mobile media query, and before/after desktop renders are
+   pixel-identical (proof in `PHASE-4-RESULTS.md`).
+2. **Admin banner uploader** (`src/app/admin/services/admin-campaigns.service.ts`,
+   one expression): creating a banner uploaded its image to the fixed path
+   `banners/new.jpg`, so every new banner overwrote the previous banner's
+   image and all banner records ended up showing the same picture. A create
+   now uploads to `banners/<random-uuid>.<ext>` — unique per banner.
+   Editing an existing banner is unchanged (still `banners/<record-id>.<ext>`).
+   The three existing banners were already repaired separately (their images
+   live at `banners/hero-1.jpg`, `hero-2.jpg`, `hero-3.jpg`); v4 just stops
+   the bug from recurring.
+
+**What v4 does NOT fix:** SSR rendering on Vercel — production still serves
+the client-rendered app shell (the open v3 diagnosis). v4 does not attempt
+it; that remains a separate item. Nothing else differs from v3:
+`supabase/`, `package.json` and `pnpm-lock.yaml` are byte-identical to the
+v3 package. Verified: production build PASS, vitest 7/7. Full evidence:
+`PHASE-4-RESULTS.md` (delivered alongside this package).
+
 ## ⚠️ v3 — 22 Oct 2026 (this package; supersedes v2)
 
 One further fix on top of v2, in one file (`src/app/app.config.ts`): the

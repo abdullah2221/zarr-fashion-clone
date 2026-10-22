@@ -27,6 +27,14 @@
     object-position: center;
     transition: transform 7s ease-out;
     &--zoom { transform: scale(1.06); }
+
+    // Mobile portrait: cover-cropping the 16:9 banner to a narrow centre
+    // band cuts out the subject, which the current banners compose on the
+    // right side (~60–95% x). Shift the visible band onto the subject.
+    // Desktop is unchanged (object-position: center above).
+    @media (max-width: 767px) {
+      object-position: 78% center;
+    }
   }
 
   &__overlay {
