@@ -21,7 +21,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     description: 'Shop unstitched 2-piece and 3-piece edits made for heat, humidity and effortless styling.',
     ctaText: 'SHOP LAWN',
     secondaryCtaText: 'EXPLORE UNSTITCHED',
-    campaignTag: 'Flat 30% Off'
+    campaignTag: 'Summer Edit'
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     description: 'Curated occasionwear with premium finishes, rich colour and timeless sparkle.',
     ctaText: 'SHOP WEDDING',
     secondaryCtaText: 'BEST SELLERS',
-    campaignTag: 'Limited Stock'
+    campaignTag: 'Wedding Edit'
   }
 ];
 
@@ -45,13 +45,6 @@ export const CATEGORIES: Category[] = [
   { id: '6', slug: 'stitched', name: 'MODEST WEAR', subtitle: 'Elegant coverage', imageUrl: 'https://images.unsplash.com/photo-1605763240000-7e93b172d754?auto=format&fit=crop&q=80&w=700' },
   { id: '7', slug: 'footwear', name: 'FOOTWEAR', subtitle: 'Polished finish', imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=700' },
   { id: '8', slug: 'sale', name: 'ACCESSORIES', subtitle: 'Complete the look', imageUrl: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=700' },
-];
-
-export const FEATURED_COLLECTIONS = [
-  { id: 1, name: 'Eid Noor Festive', brand: 'Zeenat Atelier', imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=800' },
-  { id: 2, name: 'Summer Lawn Studio', brand: 'LAWN EDIT', imageUrl: 'https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?auto=format&fit=crop&q=80&w=800' },
-  { id: 3, name: 'Mehndi & Barat Picks', brand: 'WEDDING', imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800' },
-  { id: 4, name: 'Azadi Green Edit', brand: '14 AUGUST', imageUrl: 'https://images.unsplash.com/photo-1603344797033-f0f4f587ab60?auto=format&fit=crop&q=80&w=800' }
 ];
 
 export const POPULAR_PRODUCTS: Product[] = [

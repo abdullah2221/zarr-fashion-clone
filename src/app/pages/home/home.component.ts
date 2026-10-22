@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, AfterViewInit, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, AfterViewInit, computed, inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HeroComponent } from '../../components/hero/hero.component';
@@ -10,6 +10,7 @@ import { OffersComponent } from '../../components/offers/offers.component';
 import { ProductService } from '../../services/product.service';
 import { MetaService } from '../../core/services/meta.service';
 import { StorefrontContentService } from '../../services/storefront-content.service';
+import { SitePagesService } from '../../services/site-pages.service';
 import { animate, inView } from 'motion';
 
 @Component({
@@ -34,11 +35,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private productService = inject(ProductService);
   private metaService = inject(MetaService);
   readonly content = inject(StorefrontContentService);
+  readonly pages = inject(SitePagesService);
+
+  /** Ordered homepage sections from Admin > Pages (page slug 'home'). */
+  readonly sections = computed(() => this.pages.homeSections());
 
   popularProducts = this.productService.getPopularProducts();
   saleProducts = this.productService.getSaleProducts();
 
   ngOnInit() {
+    void this.pages.ensureLoaded('home');
     this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
     this.metaService.setSeo({
       title: 'Home',

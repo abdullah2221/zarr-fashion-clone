@@ -1,5 +1,102 @@
 # Deployment notes — Phase 3: real SSR on Vercel + admin spacing (prepared 21 Oct 2026)
 
+## ⚠️ v6 — 22 Oct 2026 (this package; supersedes v5) — DYNAMIC CMS: PAGE BUILDER, FEATURED VIA CAMPAIGNS, TRUTHFUL FALLBACKS REMOVED
+
+**Deploy exactly the same way as v5: unzip FULLY into a NEW folder and
+deploy from there (`npx vercel --prod`). This package CONTAINS the v5
+SSR fix (and the v3 scroll fix and both v4 fixes), so deploy v6
+INSTEAD of v5 if v5 is not live yet. No Vercel setting changes.**
+
+**ONE DATABASE STEP (new): run `supabase/phase-7-site-pages.sql` in
+Supabase Dashboard -> SQL Editor -> Run — ideally BEFORE deploying
+v6.** It creates two new tables (`site_pages`, `page_sections`) and
+seeds them with the site's current copy, word for word. It is safe to
+re-run (it never overwrites your later edits). If you deploy first and
+run it after, nothing breaks: until it runs, the homepage renders its
+built-in default layout and the info pages (About, Contact, FAQ,
+Privacy, Terms, Returns) show a neutral "Content coming soon" note
+instead of their copy.
+
+What v6 changes:
+
+1. **Page builder (new Admin > Pages).** The homepage is now an
+   ordered list of section blocks stored in the database — reorder
+   them (sort order), hide them (visibility toggle), and edit the
+   blocks that carry their own text (testimonials, brands + stats
+   band, newsletter, sale carousel side banner, and every static
+   page's content). Card content stays where it already lives:
+   banners, campaigns, products, categories and Settings — each
+   section in the Pages editor says which screen owns its content.
+2. **Featured Collections is CMS-driven** (Admin > Campaigns,
+   placement "Featured collections"): title, subtitle (the small
+   label), image, link, sort order, active — the same flow as the
+   hero banners. No tiles in the CMS -> the section is hidden; there
+   is no hardcoded fallback any more. **After deploying, create the
+   4 approved tiles** (checklist in PHASE-6-RESULTS.md) — upload the
+   approved files from `sections-fix/upload/featured-1..4`.
+3. **Stats band + brands are editable** in Admin > Pages (the
+   "Brands + stats band" section of the Home page): background image
+   and alt text, the stat value/label pairs, and the brand wordmark
+   list. The current values were carried over exactly as-is —
+   including the "50,000+ PRODUCTS" line, which is unchanged and
+   remains your decision.
+4. **All invented fallbacks removed (truthful content).** The offers
+   grid, the homepage campaign cards, and the shop banner band no
+   longer substitute hardcoded promotions when the campaigns table
+   has none — those sections simply render nothing until you create
+   real campaigns. The shop page's sidebar likewise no longer shows
+   an invented "Summer Lawn Live" headline. The hero's built-in
+   fallback slides (only seen if the banners table were ever empty)
+   no longer carry a "Flat 30% Off" tag. The mobile menu's sale link
+   now reads "Sale", matching the desktop nav.
+5. **Mobile guard:** offer cards get a dark background at <=767px so
+   a failed campaign image can never produce white-on-white text.
+
+
+## ⚠️ v5 — 22 Oct 2026 (this package; supersedes v4) — SSR ON VERCEL FIXED
+
+One fix on top of v4, in one file (`src/server.ts`) — **deploy exactly the
+same way as v4: unzip FULLY into a NEW folder and deploy from there
+(`npx vercel --prod`). Do not mix files from the v4 and v5 packages. No
+Vercel setting changes are needed — the fix is entirely in the code.**
+
+**Symptom:** production (v3/v4 code) answered every route 200, but with the
+empty 3,341-byte client shell — no server-rendered content, no
+`ng-server-context="ssr"` marker — even though the same build renders full
+SSR when run locally and the Express function was clearly in the path.
+
+**Root cause (proven by local experiment, see `PHASE-5-RESULTS.md`):**
+@angular/ssr "deopts" a request to client-side rendering whenever it
+carries an `x-forwarded-*` header that is not on its trusted-proxy list —
+a fail-safe for requests arriving through an unconfigured proxy. The
+default trust list contains only `x-forwarded-host` and
+`x-forwarded-proto`. **Vercel's edge always adds `x-forwarded-for` and
+`x-forwarded-port`**, so on Vercel 100% of requests deopted and the engine
+served `index.csr.html` for every route. Local runs send no such headers,
+which is why local proof always showed SSR.
+
+**Fix:** the `AngularNodeAppEngine` in `src/server.ts` now declares
+`trustProxyHeaders: ['x-forwarded-for', 'x-forwarded-host',
+'x-forwarded-port', 'x-forwarded-proto', 'x-forwarded-prefix']` — the five
+standard forwarding headers Vercel's edge sets. **The SSRF host allowlist
+is unchanged and still enforced** (an unknown Host or X-Forwarded-Host
+still returns 400 — verified).
+
+**Proof (Vercel-style invocation of `api/index.js` locally, with the exact
+header set Vercel's edge sends):** before the fix, `/`, `/shop` and
+`/product/12` all returned the 3,341-byte shell; after the fix they return
+full SSR (161 KB / 54.7 KB / 44.7 KB, SSR marker present, real product
+content — e.g. the /product/12 title "SANA SAFINAZ UNSTITCHED MAHAY LAWN
+3 PIECE SUIT"), static files serve byte-identical, and the framework's
+`trustProxyHeaders` warnings are gone from the log. Production build PASS,
+vitest 7/7. Nothing else differs from v4: `supabase/`, `package.json` and
+`pnpm-lock.yaml` are byte-identical to the v4 package. Full evidence:
+`PHASE-5-RESULTS.md` (delivered alongside this package).
+
+**After deploying:** hard-refresh a product page and use "View source" —
+you should see the full rendered HTML (product names, prices) instead of
+the near-empty shell, and Google-indexable SSR content on every route.
+
 ## ⚠️ v4 — 22 Oct 2026 (this package; supersedes v3)
 
 Two small fixes on top of v3 — **deploy exactly the same way as v3: unzip

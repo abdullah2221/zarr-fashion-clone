@@ -7,7 +7,8 @@ export type AdminCampaignPlacement =
   | 'shop-banner'
   | 'product-badge'
   | 'footer-chip'
-  | 'offer-grid';
+  | 'offer-grid'
+  | 'featured-collections';
 
 export interface AdminBannerEditorValue {
   title: string;

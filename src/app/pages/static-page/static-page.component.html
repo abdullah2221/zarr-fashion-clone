@@ -85,15 +85,24 @@
       }
     }
 
-    <div class="static-page__grid">
-      @for (section of page().sections; track section.title) {
+    @if (isMissing()) {
+      <div class="static-page__grid">
         <article class="static-page__card">
-          @if (section.icon) { <mat-icon>{{ section.icon }}</mat-icon> }
-          <h2>{{ section.title }}</h2>
-          <p>{{ section.body }}</p>
+          <h2>Content coming soon</h2>
+          <p>This page is being prepared. Please check back shortly.</p>
         </article>
-      }
-    </div>
+      </div>
+    } @else {
+      <div class="static-page__grid">
+        @for (section of page().sections; track section.title) {
+          <article class="static-page__card">
+            @if (section.icon) { <mat-icon>{{ section.icon }}</mat-icon> }
+            <h2>{{ section.title }}</h2>
+            <p>{{ section.body }}</p>
+          </article>
+        }
+      </div>
+    }
 
     <div class="static-page__support">
       <div>

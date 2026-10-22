@@ -66,6 +66,7 @@ export interface StorefrontContentState {
   heroSlides: HeroSlide[];
   homeCampaigns: StorefrontCampaignCard[];
   offerCampaigns: StorefrontCampaignCard[];
+  featuredCollections: StorefrontCampaignCard[];
   shopBanner: StorefrontCampaignCard | null;
   settings: StorefrontSettings;
 }

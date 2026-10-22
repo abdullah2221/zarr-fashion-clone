@@ -61,6 +61,20 @@ export interface CampaignRepository {
   delete(id: string): Promise<void>;
 }
 
+export interface SitePageRepository {
+  listActivePages(): Promise<Tables<'site_pages'>[]>;
+  listAllPages(): Promise<Tables<'site_pages'>[]>;
+  getPageBySlug(slug: string): Promise<Tables<'site_pages'> | null>;
+  createPage(page: Inserts<'site_pages'>): Promise<Tables<'site_pages'>>;
+  updatePage(id: string, changes: Updates<'site_pages'>): Promise<Tables<'site_pages'>>;
+  deletePage(id: string): Promise<void>;
+  listActiveSections(pageId: string): Promise<Tables<'page_sections'>[]>;
+  listAllSections(pageId: string): Promise<Tables<'page_sections'>[]>;
+  createSection(section: Inserts<'page_sections'>): Promise<Tables<'page_sections'>>;
+  updateSection(id: string, changes: Updates<'page_sections'>): Promise<Tables<'page_sections'>>;
+  deleteSection(id: string): Promise<void>;
+}
+
 export interface CheckoutOrderParams {
   customer_name: string;
   customer_phone: string;

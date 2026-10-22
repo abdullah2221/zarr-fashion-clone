@@ -40,81 +40,6 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
   bannerOverrides: {},
 };
 
-const DEFAULT_HOME_CAMPAIGNS: StorefrontCampaignCard[] = [
-  {
-    id: 'home-campaign-eid',
-    title: 'Eid Luxe Formals',
-    description: 'Premium festive silhouettes with statement dupattas and occasion-ready finishing.',
-    linkUrl: '/category/eid-edit',
-    ctaText: 'Shop Eid Collection',
-    placement: 'home-section',
-    isActive: true,
-    sortOrder: 0,
-    tag: 'Selling Fast',
-  },
-  {
-    id: 'home-campaign-lawn',
-    title: 'Summer Lawn Essentials',
-    description: 'Breathable unstitched and stitched lawn sets curated for high-heat Pakistani days.',
-    linkUrl: '/category/lawn',
-    ctaText: 'Explore Lawn',
-    placement: 'home-section',
-    isActive: true,
-    sortOrder: 1,
-    tag: 'Limited Stock',
-  },
-  {
-    id: 'home-campaign-wedding',
-    title: 'Wedding & Mehndi Edit',
-    description: 'From dholki to walima, discover rich tones, festive embroidery, and formal glam.',
-    linkUrl: '/category/wedding',
-    ctaText: 'View Wedding Styles',
-    placement: 'home-section',
-    isActive: true,
-    sortOrder: 2,
-    tag: 'Trending in Pakistan',
-  },
-];
-
-const DEFAULT_OFFER_CAMPAIGNS: StorefrontCampaignCard[] = [
-  {
-    id: 'offer-eid',
-    title: 'Eid Noor Collection',
-    subtitle: 'Eid 2026',
-    description: 'Festive formals and premium pret for family gatherings.',
-    imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=900',
-    linkUrl: '/shop',
-    ctaText: 'Shop Eid Edit',
-    placement: 'offer-grid',
-    isActive: true,
-    sortOrder: 0,
-  },
-  {
-    id: 'offer-lawn',
-    title: 'Flat 30% Off',
-    subtitle: 'Summer Lawn',
-    description: 'Breathable prints and unstitched essentials for warmer days.',
-    imageUrl: 'https://images.unsplash.com/photo-1583391733958-d25e07fac04f?auto=format&fit=crop&q=80&w=900',
-    linkUrl: '/shop',
-    ctaText: 'Shop Lawn Sale',
-    placement: 'offer-grid',
-    isActive: true,
-    sortOrder: 1,
-  },
-  {
-    id: 'offer-wedding',
-    title: 'Mehndi to Walima',
-    subtitle: 'Wedding Season',
-    description: 'Elegant occasionwear for every ceremony on your calendar.',
-    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=900',
-    linkUrl: '/shop',
-    ctaText: 'Explore Formals',
-    placement: 'offer-grid',
-    isActive: true,
-    sortOrder: 2,
-  },
-];
-
 @Injectable({ providedIn: 'root' })
 export class StorefrontContentService {
   private readonly clientService = inject(SupabaseClientService);
@@ -154,15 +79,17 @@ export class StorefrontContentService {
     });
   });
 
-  readonly homeCampaigns = computed(() => {
-    const campaigns = this.mappedCampaigns().filter(item => item.placement === 'home-section');
-    return campaigns.length ? campaigns : DEFAULT_HOME_CAMPAIGNS;
-  });
+  readonly homeCampaigns = computed(() =>
+    this.mappedCampaigns().filter(item => item.placement === 'home-section')
+  );
 
-  readonly offerCampaigns = computed(() => {
-    const campaigns = this.mappedCampaigns().filter(item => item.placement === 'offer-grid');
-    return campaigns.length ? campaigns : DEFAULT_OFFER_CAMPAIGNS;
-  });
+  readonly offerCampaigns = computed(() =>
+    this.mappedCampaigns().filter(item => item.placement === 'offer-grid')
+  );
+
+  readonly featuredCollections = computed(() =>
+    this.mappedCampaigns().filter(item => item.placement === 'featured-collections')
+  );
 
   readonly shopBanner = computed(() =>
     this.mappedCampaigns().find(item => item.placement === 'shop-banner') || null
@@ -172,6 +99,7 @@ export class StorefrontContentService {
     heroSlides: this.heroSlides(),
     homeCampaigns: this.homeCampaigns(),
     offerCampaigns: this.offerCampaigns(),
+    featuredCollections: this.featuredCollections(),
     shopBanner: this.shopBanner(),
     settings: this.settingsSignal(),
   }));

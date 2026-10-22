@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FEATURED_COLLECTIONS } from '../../data/data';
+import { StorefrontContentService } from '../../services/storefront-content.service';
 
 @Component({
   selector: 'app-featured-collections',
@@ -10,5 +10,8 @@ import { FEATURED_COLLECTIONS } from '../../data/data';
   styleUrl: './featured-collections.component.scss'
 })
 export class FeaturedCollectionsComponent {
-  collections = FEATURED_COLLECTIONS;
+  private readonly content = inject(StorefrontContentService);
+
+  /** Tiles come from Admin > Campaigns records with placement 'featured-collections'. */
+  readonly collections = this.content.featuredCollections;
 }

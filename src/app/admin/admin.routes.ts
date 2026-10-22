@@ -12,6 +12,7 @@ import { AdminProductsPageComponent } from './pages/products/admin-products-page
 import { AdminOrderDetailPageComponent } from './pages/orders/admin-order-detail-page.component';
 import { AdminOrdersPageComponent } from './pages/orders/admin-orders-page.component';
 import { AdminSettingsPageComponent } from './pages/settings/admin-settings-page.component';
+import { AdminPagesPageComponent } from './pages/pages/admin-pages-page.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -27,6 +28,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'products/:id', component: AdminProductEditorPageComponent, title: 'Edit Product | Zeenat Admin' },
       { path: 'categories', component: AdminCategoriesPageComponent, title: 'Categories | Zeenat Admin' },
       { path: 'campaigns', component: AdminCampaignsPageComponent, title: 'Campaigns | Zeenat Admin' },
+      { path: 'pages', component: AdminPagesPageComponent, title: 'Pages | Zeenat Admin' },
       { path: 'orders', component: AdminOrdersPageComponent, title: 'Orders | Zeenat Admin' },
       { path: 'orders/:id', component: AdminOrderDetailPageComponent, title: 'Order Detail | Zeenat Admin' },
       { path: 'settings', component: AdminSettingsPageComponent, title: 'Settings | Zeenat Admin', canActivate: [superAdminGuard] },

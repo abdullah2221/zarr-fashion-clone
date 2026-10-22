@@ -1,0 +1,153 @@
+<section class="admin-pages">
+  <div class="admin-pages__hero">
+    <div>
+      <span class="eyebrow">Page Builder</span>
+      <h1>Pages & Sections</h1>
+      <p>Every page is an ordered list of reusable section blocks. Reorder sections with the sort order, hide them with the visibility toggle, and edit each section's own content fields. Card content (products, categories, campaigns, banners) keeps its own admin screens — each section below says where its content lives.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="admin-pages__alert admin-pages__alert--error">{{ error() }}</p>
+  }
+  @if (success()) {
+    <p class="admin-pages__alert admin-pages__alert--success">{{ success() }}</p>
+  }
+
+  <div class="admin-pages__layout">
+    <section class="admin-pages__column">
+      <div class="admin-pages__section-head">
+        <div>
+          <span class="admin-pages__kicker">Pages</span>
+          <h2>Site pages</h2>
+        </div>
+        <app-admin-action-button icon="add" label="New page" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="newPage()" />
+      </div>
+
+      <div class="admin-pages__list">
+        @for (page of service.pages(); track page.id) {
+          <article class="admin-pages__item" [class.is-selected]="service.selectedPage()?.id === page.id">
+            <button type="button" class="admin-pages__item-main" (click)="selectPage(page)">
+              <div>
+                <strong>{{ page.title }}</strong>
+                <span>/{{ page.slug }}</span>
+              </div>
+            </button>
+            <div class="admin-pages__item-actions">
+              <app-admin-status-badge [text]="page.is_active ? 'Active' : 'Inactive'" [tone]="page.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+              <app-admin-action-button icon="delete" label="Delete page" tone="danger" (pressed)="deletePage(page)" />
+            </div>
+          </article>
+        }
+      </div>
+
+      <form class="admin-pages__editor" [formGroup]="pageForm" (ngSubmit)="savePage()">
+        <div class="admin-pages__grid">
+          <label><span>Title *</span><input formControlName="title"></label>
+          <label><span>Slug *</span><input formControlName="slug"></label>
+          <label class="admin-pages__check"><input type="checkbox" formControlName="isActive"><span>Page is active</span></label>
+        </div>
+        <app-admin-action-button icon="save" [label]="savingPage() ? 'Saving page' : 'Save page'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingPage()" />
+      </form>
+    </section>
+
+    <section class="admin-pages__column">
+      <div class="admin-pages__section-head">
+        <div>
+          <span class="admin-pages__kicker">Sections</span>
+          <h2>{{ service.selectedPage() ? service.selectedPage()?.title + ' — sections in order' : 'Select a page' }}</h2>
+        </div>
+        <app-admin-action-button icon="add" label="New section" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="selectSection(null)" />
+      </div>
+
+      <div class="admin-pages__list">
+        @for (row of service.sections(); track row.id) {
+          <article class="admin-pages__item" [class.is-selected]="selectedSection()?.id === row.id">
+            <button type="button" class="admin-pages__item-main" (click)="selectSection(row)">
+              <div>
+                <strong>{{ row.sort_order }} · {{ typeInfo(row.section_type).label }}</strong>
+                <span>{{ row.section_type }}</span>
+              </div>
+            </button>
+            <div class="admin-pages__item-actions">
+              <app-admin-status-badge [text]="row.is_active ? 'Visible' : 'Hidden'" [tone]="row.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+              <app-admin-action-button [icon]="row.is_active ? 'visibility_off' : 'visibility'" [label]="row.is_active ? 'Hide section' : 'Show section'" (pressed)="toggleSection(row)" />
+              <app-admin-action-button icon="delete" label="Delete section" tone="danger" (pressed)="deleteSection(row)" />
+            </div>
+          </article>
+        }
+      </div>
+
+      <form class="admin-pages__editor" [formGroup]="sectionForm" (ngSubmit)="saveSection()">
+        <div class="admin-pages__grid">
+          <label><span>Section type *</span>
+            <select formControlName="sectionType" (change)="onSectionTypeChange()">
+              @for (info of sectionTypes; track info.type) {
+                <option [value]="info.type">{{ info.label }}</option>
+              }
+            </select>
+          </label>
+          <label><span>Sort order *</span><input type="number" formControlName="sortOrder"></label>
+          <label class="admin-pages__check"><input type="checkbox" formControlName="isActive"><span>Section is visible</span></label>
+        </div>
+
+        @if (typeInfo(sectionType()).contentOwner) {
+          <p class="admin-pages__note">This section's content is managed in {{ typeInfo(sectionType()).contentOwner }}. Here you only control its position and visibility on this page.</p>
+        }
+
+        @switch (sectionType()) {
+          @case ('carousel-sale') {
+            <div class="admin-pages__grid">
+              <label><span>Side banner title</span><input formControlName="sideBannerTitle"></label>
+              <label class="admin-pages__field"><span>Side banner text</span><textarea formControlName="sideBannerText"></textarea></label>
+            </div>
+          }
+          @case ('testimonials') {
+            <div class="admin-pages__grid">
+              <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
+              <label><span>Heading</span><input formControlName="title"></label>
+              <label class="admin-pages__field"><span>Testimonials</span><textarea formControlName="itemsText"></textarea><small class="admin-pages__help">One per line: Quote | Author</small></label>
+            </div>
+          }
+          @case ('brands-stats') {
+            <div class="admin-pages__grid">
+              <label class="admin-pages__field"><span>Brand wordmarks</span><textarea formControlName="brandsText"></textarea><small class="admin-pages__help">One per line: Name | style-key (the style-key selects the wordmark font style)</small></label>
+              <label><span>Stats eyebrow</span><input formControlName="statsEyebrow"></label>
+              <label class="admin-pages__field"><span>Stat items</span><textarea formControlName="statsItemsText"></textarea><small class="admin-pages__help">One per line: Value | Label</small></label>
+              <label><span>Background image path</span><input formControlName="statsBackgroundPath"></label>
+              <label><span>Background image description (alt)</span><input formControlName="statsBackgroundAlt"></label>
+            </div>
+          }
+          @case ('newsletter') {
+            <div class="admin-pages__grid">
+              <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
+              <label><span>Heading</span><input formControlName="heading"></label>
+              <label><span>Email placeholder</span><input formControlName="emailPlaceholder"></label>
+              <label><span>Button text</span><input formControlName="buttonText"></label>
+              <label class="admin-pages__field"><span>Note under the form</span><textarea formControlName="note"></textarea></label>
+            </div>
+          }
+          @case ('static-content') {
+            <div class="admin-pages__grid">
+              <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
+              <label><span>Icon (Material icon name)</span><input formControlName="icon"></label>
+              <label class="admin-pages__field"><span>Intro</span><textarea formControlName="intro"></textarea></label>
+              <label><span>CTA text</span><input formControlName="ctaText"></label>
+              <label><span>CTA link</span><input formControlName="ctaLink"></label>
+              <label><span>Form block</span>
+                <select formControlName="formType">
+                  <option value="">None</option>
+                  <option value="contact">Contact form</option>
+                </select>
+              </label>
+              <label class="admin-pages__field"><span>Content cards</span><textarea formControlName="sectionsText"></textarea><small class="admin-pages__help">One per line: Icon | Title | Body — the icon may be left empty</small></label>
+              <label class="admin-pages__field"><span>Info strip rows</span><textarea formControlName="secondaryText"></textarea><small class="admin-pages__help">One per line: Label | Value</small></label>
+            </div>
+          }
+        }
+
+        <app-admin-action-button icon="save" [label]="savingSection() ? 'Saving section' : 'Save section'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingSection()" />
+      </form>
+    </section>
+  </div>
+</section>

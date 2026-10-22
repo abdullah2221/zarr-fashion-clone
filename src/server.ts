@@ -51,6 +51,35 @@ const angularApp = new AngularNodeAppEngine({
     '*.vercel.app',
     ...(appUrlHost ? [appUrlHost] : []),
   ],
+  /**
+   * Proxy headers set by Vercel's edge on every request to the serverless
+   * function (Phase 5 fix — without this, SSR never renders on Vercel).
+   *
+   * @angular/ssr treats any `x-forwarded-*` header that is NOT in this list
+   * as a sign the request passed through an unconfigured proxy: it strips
+   * the header and "deopts" the request to client-side rendering, serving
+   * the empty `index.csr.html` shell with HTTP 200 instead of the SSR page
+   * (see `sanitizeRequestHeaders` / `serveClientSidePage` in @angular/ssr).
+   * Angular's default trust list contains only `x-forwarded-host` and
+   * `x-forwarded-proto`, but Vercel's edge also always adds
+   * `x-forwarded-for` and `x-forwarded-port` — so on Vercel every request
+   * deopted and production served the CSR shell for all routes, while
+   * local runs (no `x-forwarded-*` headers at all) rendered full SSR.
+   *
+   * Trusting these five standard headers is safe here: the function is
+   * only reachable through Vercel's edge, which sets/overwrites them, and
+   * the SSRF guard above is unchanged — the `Host` and `X-Forwarded-Host`
+   * header VALUES are still validated against `allowedHosts`, and the
+   * port/proto/prefix values are still format-validated by the engine.
+   * (The `NG_TRUST_PROXY_HEADERS` env var can still override this list.)
+   */
+  trustProxyHeaders: [
+    'x-forwarded-for',
+    'x-forwarded-host',
+    'x-forwarded-port',
+    'x-forwarded-proto',
+    'x-forwarded-prefix',
+  ],
 });
 
 /**

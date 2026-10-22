@@ -10,6 +10,7 @@ import {
   FeedbackRepository,
   OrderRepository,
   ProfileRepository,
+  SitePageRepository,
   ProductRepository,
   StorageRepository,
   WishlistRepository,
@@ -527,6 +528,73 @@ export class SupabaseAdminRepository extends SupabaseRepositoryBase implements A
 
   async deleteSetting(key: string) {
     const { error } = await this.client().from('admin_settings').delete().eq('key', key);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseSitePageRepository extends SupabaseRepositoryBase implements SitePageRepository {
+  async listActivePages() {
+    const { data, error } = await this.client().from('site_pages').select('*').eq('is_active', true).order('slug', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAllPages() {
+    const { data, error } = await this.client().from('site_pages').select('*').order('slug', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async getPageBySlug(slug: string) {
+    const { data, error } = await this.client().from('site_pages').select('*').eq('slug', slug).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async createPage(page: Inserts<'site_pages'>) {
+    const { data, error } = await this.client().from('site_pages').insert(page).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updatePage(id: string, changes: Updates<'site_pages'>) {
+    const { data, error } = await this.client().from('site_pages').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deletePage(id: string) {
+    const { error } = await this.client().from('site_pages').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  async listActiveSections(pageId: string) {
+    const { data, error } = await this.client().from('page_sections').select('*').eq('page_id', pageId).eq('is_active', true).order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAllSections(pageId: string) {
+    const { data, error } = await this.client().from('page_sections').select('*').eq('page_id', pageId).order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async createSection(section: Inserts<'page_sections'>) {
+    const { data, error } = await this.client().from('page_sections').insert(section).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateSection(id: string, changes: Updates<'page_sections'>) {
+    const { data, error } = await this.client().from('page_sections').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteSection(id: string) {
+    const { error } = await this.client().from('page_sections').delete().eq('id', id);
     if (error) throw error;
   }
 }

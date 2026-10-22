@@ -11,7 +11,9 @@
 
   <div class="shop-page__container">
     <aside class="shop-page__promo">
-      <strong>{{ content.shopBanner()?.title || 'Summer Lawn Live' }}</strong>
+      @if (content.shopBanner()) {
+        <strong>{{ content.shopBanner()?.title }}</strong>
+      }
       <span>{{ content.shopBanner()?.description || content.settings().deliveryMessage }}</span>
     </aside>
 

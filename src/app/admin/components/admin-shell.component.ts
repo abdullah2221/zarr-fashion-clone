@@ -45,6 +45,7 @@ export class AdminShellComponent {
     { label: 'Products', icon: 'inventory_2', path: '/admin/products' },
     { label: 'Categories', icon: 'category', path: '/admin/categories' },
     { label: 'Campaigns', icon: 'campaign', path: '/admin/campaigns' },
+    { label: 'Pages', icon: 'article', path: '/admin/pages' },
     { label: 'Orders', icon: 'receipt_long', path: '/admin/orders' },
     { label: 'Settings', icon: 'tune', path: '/admin/settings' },
     { label: 'Customers', icon: 'groups', soon: true },

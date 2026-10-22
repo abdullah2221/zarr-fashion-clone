@@ -1,3 +1,4 @@
+@if (collections().length) {
 <section class="featured">
   <div class="featured__container">
     <div class="featured__header">
@@ -5,16 +6,16 @@
       <h2 class="featured__title">Collections with a reason to shop today</h2>
       <p>Festive drops, sale moments and seasonal essentials placed where shoppers can act quickly.</p>
     </div>
-    
+
     <div class="featured__grid">
-      @for (collection of collections; track collection.id) {
-        <a routerLink="/shop" class="featured__item">
+      @for (collection of collections(); track collection.id) {
+        <a [routerLink]="collection.linkUrl" class="featured__item">
           <div class="featured__image-wrapper">
-            <img [src]="collection.imageUrl" [alt]="collection.name" class="featured__image" loading="lazy" decoding="async" />
+            <img [src]="collection.imageUrl" [alt]="collection.title" class="featured__image" loading="lazy" decoding="async" />
             <div class="featured__overlay"></div>
             <div class="featured__cta-overlay">
-              <span class="featured__cta-label">{{ collection.brand }}</span>
-              <span class="featured__cta-title">{{ collection.name }}</span>
+              <span class="featured__cta-label">{{ collection.subtitle || collection.campaignType }}</span>
+              <span class="featured__cta-title">{{ collection.title }}</span>
               <span class="featured__cta-btn">Live Now</span>
             </div>
           </div>
@@ -23,3 +24,4 @@
     </div>
   </div>
 </section>
+}

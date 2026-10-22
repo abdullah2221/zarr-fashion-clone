@@ -67,6 +67,18 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['campaigns']['Insert']>;
         Relationships: [];
       };
+      site_pages: {
+        Row: { id: string; slug: string; title: string; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id?: string; slug: string; title: string; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['site_pages']['Insert']>;
+        Relationships: [];
+      };
+      page_sections: {
+        Row: { id: string; page_id: string; section_type: string; content: Json; sort_order: number; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id?: string; page_id: string; section_type: string; content?: Json; sort_order?: number; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['page_sections']['Insert']>;
+        Relationships: [];
+      };
       admin_settings: {
         Row: { key: string; value: Json; updated_by: string | null; updated_at: string };
         Insert: { key: string; value: Json; updated_by?: string | null; updated_at?: string };
