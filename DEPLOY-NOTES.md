@@ -1,8 +1,54 @@
 # Deployment notes — Phase 3: real SSR on Vercel + admin spacing (prepared 21 Oct 2026)
 
+## ⚠️ v3 — 22 Oct 2026 (this package; supersedes v2)
+
+One further fix on top of v2, in one file (`src/app/app.config.ts`): the
+router now uses `withInMemoryScrolling({ scrollPositionRestoration: 'top',
+anchorScrolling: 'enabled' })`. Before this, the app had no scroll handling
+at all, so in-app navigation kept the previous page's scroll position —
+tapping a product low on the shop page opened its (long) detail page at the
+bottom instead of the top. With v3, every newly opened page starts at the
+top and the browser Back button still restores the earlier position.
+Verified: production build PASS, vitest 7/7, SSR host checks from the v2
+section re-run green (production host /shop and /product/12 → 200 SSR).
+
 Deployment itself needs owner approval. **Nothing in this package changes the
 live site until you deploy it, and production stays on the Phase 2 static
 setup until every preview check below passes.**
+
+## ⚠️ v2 fix — 22 Oct 2026 (READ FIRST; this supersedes the v1 package)
+
+**What the v1 package did wrong in production:** v1 was deployed to
+production on 22 Oct and every app route (`/shop`, `/product/12`, `/login`,
+`/cart`, `/admin`, …) returned **HTTP 400** with the plain-text body
+`Header "host" with value "zarr-fashion-clone.vercel.app" is not allowed.`
+(Static files and the homepage shell still served 200.) Root cause:
+@angular/ssr validates the `Host`/`X-Forwarded-Host` header of every request
+against an allowlist (an SSRF guard), and the generated app-engine manifest
+only allows `localhost`/`127.0.0.1`. The v1 local proof used a localhost
+Host, so the defect was invisible locally — the preview host check that
+would have caught it never ran.
+
+**What changed in v2 (one file, `src/server.ts`):** the `AngularNodeAppEngine`
+is now constructed with an `allowedHosts` option — @angular/ssr's own
+configuration mechanism — listing `zarr-fashion-clone.vercel.app` exactly,
+`*.vercel.app` (the engine treats a `*.` entry as a domain-suffix match,
+which covers every Vercel preview/deployment URL of this project), plus the
+hostname of `APP_URL` when that variable is set (so a future custom domain
+needs only the env var). `localhost`/`127.0.0.1` remain allowed via the
+build manifest, and the `NG_ALLOWED_HOSTS` env var still overrides the list
+at runtime. The guard itself is **not** disabled: an unrelated Host is still
+rejected with 400 (verified locally). Full evidence: `PHASE-3-V2-FIX.md`.
+
+**Rules for v2 — stricter than v1:**
+1. **Production must be rolled back to the last Phase 2 deployment NOW**
+   (Vercel → Deployments → the Phase 2 production deployment → ⋯ →
+   Instant Rollback) and must stay on Phase 2 until the v2 PREVIEW passes
+   every check in the preview section below — including the preview-host
+   and production-host checks that v1 skipped.
+2. Deploy v2 to a **Preview** deployment only. Never deploy it straight to
+   production.
+3. Do not mix files from the v1 and v2 packages; v2 replaces v1 completely.
 
 ## What is wrong today (recap)
 Production serves only the static browser output (`dist/app/browser`) with a

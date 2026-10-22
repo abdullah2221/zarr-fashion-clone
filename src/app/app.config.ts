@@ -3,7 +3,7 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
-import {provideRouter, withComponentInputBinding, withViewTransitions} from '@angular/router';
+import {provideRouter, withComponentInputBinding, withInMemoryScrolling, withViewTransitions} from '@angular/router';
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(), 
     provideClientHydration(),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
+    provideRouter(routes, withComponentInputBinding(), withViewTransitions(), withInMemoryScrolling({scrollPositionRestoration: 'top', anchorScrolling: 'enabled'})),
     provideHttpClient(withFetch()),
     provideAnimationsAsync()
   ],
