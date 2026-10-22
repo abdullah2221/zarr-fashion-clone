@@ -1,1 +1,17 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"pnpm build","framework":"angular","functions":{"api/index.js":{"includeFiles":"dist/app/**"}},"installCommand":"pnpm install","outputDirectory":"dist/app/browser","rewrites":[{"destination":"/api/index","source":"/(.*)"}]}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build",
+  "framework": "angular",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/app/**"
+    }
+  },
+  "installCommand": "pnpm install",
+  "outputDirectory": "dist/app/browser",
+  "routes": [
+    { "src": "/", "dest": "/api/index" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/index" }
+  ]
+}

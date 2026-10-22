@@ -1,3 +1,5 @@
+# v6.1 (22 Oct 2026) — routing fix ONLY: vercel.json now uses ordered routes so the homepage "/" is served by the SSR function instead of the static shell (Vercel was serving dist/app/browser/index.html for "/" before the rewrite could fire; every other route already SSRs). Deploy v6.1 instead of v6. If anything looks wrong, redeploy zeenat-phase6.zip to restore the previous behaviour exactly.
+
 # Deployment notes — Phase 3: real SSR on Vercel + admin spacing (prepared 21 Oct 2026)
 
 ## ⚠️ v6 — 22 Oct 2026 (this package; supersedes v5) — DYNAMIC CMS: PAGE BUILDER, FEATURED VIA CAMPAIGNS, TRUTHFUL FALLBACKS REMOVED
