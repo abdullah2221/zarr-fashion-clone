@@ -15,6 +15,8 @@ export interface SitePageContent {
 export interface StorefrontBrandMark {
   name: string;
   styleKey: string;
+  /** Optional tile link (Phase 8 brands records). Absent = plain wordmark, as before. */
+  linkUrl?: string;
 }
 
 export interface StorefrontStatItem {

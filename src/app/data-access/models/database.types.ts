@@ -97,6 +97,18 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['testimonials']['Insert']>;
         Relationships: [];
       };
+      brands: {
+        Row: { id: string; name: string; style_key: string; link_url: string | null; sort_order: number; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id?: string; name: string; style_key?: string; link_url?: string | null; sort_order?: number; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['brands']['Insert']>;
+        Relationships: [];
+      };
+      admin_activity: {
+        Row: { id: string; actor_email: string | null; action: string; entity_type: string; entity_id: string | null; entity_label: string | null; detail: string | null; created_at: string };
+        Insert: { id?: string; actor_email?: string | null; action: string; entity_type: string; entity_id?: string | null; entity_label?: string | null; detail?: string | null; created_at?: string };
+        Update: Partial<Database['public']['Tables']['admin_activity']['Insert']>;
+        Relationships: [];
+      };
       subscribers: {
         Row: { id: string; email: string; created_at: string };
         Insert: { id?: string; email: string; created_at?: string };

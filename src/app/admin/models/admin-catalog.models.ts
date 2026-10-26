@@ -79,9 +79,6 @@ export interface AdminCategoryFormValue {
   description: string;
   sortOrder: number | null;
   isActive: boolean;
-  seoTitle: string;
-  seoDescription: string;
-  campaignLabel: string;
 }
 
 export interface AdminProductListItem {

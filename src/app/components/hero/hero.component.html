@@ -1,4 +1,4 @@
-<section class="hero" aria-label="Featured campaigns">
+<section class="hero" aria-label="Featured campaigns" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
   @for (slide of slides(); track slide.id; let i = $index) {
     <article class="hero__slide" [class.hero__slide--active]="currentSlide() === i">
       <div class="hero__image-container">

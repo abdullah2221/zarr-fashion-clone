@@ -6,6 +6,7 @@ import { AdminShellComponent } from './components/admin-shell.component';
 import { AdminCampaignsPageComponent } from './pages/campaigns/admin-campaigns-page.component';
 import { AdminCategoriesPageComponent } from './pages/categories/admin-categories-page.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard.component';
+import { AdminGuidePageComponent } from './pages/guide/admin-guide-page.component';
 import { AdminVerifyComponent } from './pages/admin-verify.component';
 import { AdminProductEditorPageComponent } from './pages/products/admin-product-editor-page.component';
 import { AdminProductsPageComponent } from './pages/products/admin-products-page.component';
@@ -15,6 +16,8 @@ import { AdminSettingsPageComponent } from './pages/settings/admin-settings-page
 import { AdminPagesPageComponent } from './pages/pages/admin-pages-page.component';
 import { AdminFaqsPageComponent } from './pages/faqs/admin-faqs-page.component';
 import { AdminTestimonialsPageComponent } from './pages/testimonials/admin-testimonials-page.component';
+import { AdminActivityPageComponent } from './pages/activity/admin-activity-page.component';
+import { AdminBrandsPageComponent } from './pages/brands/admin-brands-page.component';
 import { AdminCustomersPageComponent } from './pages/customers/admin-customers-page.component';
 import { AdminMediaPageComponent } from './pages/media/admin-media-page.component';
 import { AdminSubscribersPageComponent } from './pages/subscribers/admin-subscribers-page.component';
@@ -28,6 +31,7 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: AdminDashboardComponent, title: 'Admin Dashboard | Zeenat' },
+      { path: 'guide', component: AdminGuidePageComponent, title: 'Admin Guide | Zeenat Admin' },
       { path: 'verify', component: AdminVerifyComponent, title: 'Admin Verification | Zeenat' },
       { path: 'products', component: AdminProductsPageComponent, title: 'Products | Zeenat Admin' },
       { path: 'products/new', component: AdminProductEditorPageComponent, title: 'New Product | Zeenat Admin' },
@@ -37,6 +41,8 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'pages', component: AdminPagesPageComponent, title: 'Pages | Zeenat Admin' },
       { path: 'faqs', component: AdminFaqsPageComponent, title: 'FAQs | Zeenat Admin' },
       { path: 'testimonials', component: AdminTestimonialsPageComponent, title: 'Testimonials | Zeenat Admin' },
+      { path: 'activity', component: AdminActivityPageComponent, title: 'Activity | Zeenat Admin' },
+      { path: 'brands', component: AdminBrandsPageComponent, title: 'Brands | Zeenat Admin' },
       { path: 'customers', component: AdminCustomersPageComponent, title: 'Customers | Zeenat Admin' },
       { path: 'media', component: AdminMediaPageComponent, title: 'Media | Zeenat Admin' },
       { path: 'subscribers', component: AdminSubscribersPageComponent, title: 'Subscribers | Zeenat Admin' },

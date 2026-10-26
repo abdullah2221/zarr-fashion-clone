@@ -145,6 +145,53 @@
     &--back { font-weight: 700; }
   }
 
+  /* Phase 8 header dropdowns: hover and keyboard focus open the menu. */
+  &__dropdown {
+    position: relative;
+    display: inline-flex;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    padding: $spacing-2 0;
+    background: $color-white;
+    color: $color-black;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-lg;
+    z-index: 20;
+  }
+
+  &__dropdown:hover &__dropdown-menu,
+  &__dropdown:focus-within &__dropdown-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__dropdown-link {
+    display: flex;
+    align-items: center;
+    min-height: $touch-target;
+    padding: 0 $spacing-4;
+    font-size: $font-size-xs;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $color-black;
+
+    &:hover { color: $color-primary-dark; }
+    &--campaign { color: $color-accent; }
+  }
+
   &--scrolled &__link--campaign { color: $color-primary-dark; }
 
   &__logo-wrapper {
@@ -251,6 +298,34 @@
     &:hover { color: $color-primary-dark; transform: translateX(4px); }
     &--sale { color: $color-accent; }
     &--button { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; }
+    &--child { padding-left: $spacing-6; }
+  }
+
+  /* Phase 8 mobile sub-menus: parent row plus an expand button. */
+  &__mobile-group-head {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+
+    .navbar__mobile-link { flex: 1; }
+  }
+
+  &__mobile-expand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: $touch-target;
+    min-height: $touch-target;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  &__mobile-children {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
   }
 
   &__account-menu {

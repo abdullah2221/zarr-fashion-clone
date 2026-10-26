@@ -238,3 +238,13 @@
     mat-icon { font-size: 18px; width: 18px; height: 18px; color: $color-primary-light; }
   }
 }
+
+// Phase 7.2 — mobile only. The hero drops from full viewport height to
+// 92svh so the next section peeks in at the bottom. The min-height
+// floors above are untouched, so on short screens the hero is exactly
+// as tall as before (no content is ever squeezed). Desktop/tablet:
+// no change — height stays 100svh.
+@media (max-width: 767px) {
+  .hero { height: 92svh; }
+  .hero__content { height: 92svh; }
+}

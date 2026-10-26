@@ -49,6 +49,8 @@ export interface StorefrontNavLink {
   url: string;
   highlight?: boolean;
   active?: boolean;
+  /** One level of sub-links (Phase 8). Children never nest further. */
+  children?: StorefrontNavLink[];
 }
 
 export interface StorefrontFooterLinkColumn {

@@ -106,7 +106,7 @@
       }
     }
     @case ('brands-stats') {
-      <div class="reveal-section"><app-brands-gallery [content]="pages.brandsStatsContent(section)"></app-brands-gallery></div>
+      <div class="reveal-section"><app-brands-gallery [content]="brandsContent(section)"></app-brands-gallery></div>
     }
     @case ('offers') {
       <div class="reveal-section"><app-offers [campaigns]="limited(content.offerCampaigns(), section)"></app-offers></div>

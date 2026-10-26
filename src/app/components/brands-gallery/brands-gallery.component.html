@@ -1,14 +1,24 @@
+@if (content().brands.length) {
 <section class="brands">
   <div class="brands__container">
     <h2 class="brands__title">Featured Brands</h2>
 
     <div class="brands__list">
       @for (brand of content().brands; track brand.name) {
-        <span class="brands__logo brands__logo--{{ brand.styleKey }}">{{ brand.name }}</span>
+        @if (brand.linkUrl) {
+          @if (isInternalLink(brand.linkUrl)) {
+            <a [routerLink]="brand.linkUrl" class="brands__logo brands__logo--{{ brand.styleKey }}">{{ brand.name }}</a>
+          } @else {
+            <a [href]="brand.linkUrl" target="_blank" rel="noopener" class="brands__logo brands__logo--{{ brand.styleKey }}">{{ brand.name }}</a>
+          }
+        } @else {
+          <span class="brands__logo brands__logo--{{ brand.styleKey }}">{{ brand.name }}</span>
+        }
       }
     </div>
   </div>
 </section>
+}
 
 <section class="stats">
   <div class="stats__bg">

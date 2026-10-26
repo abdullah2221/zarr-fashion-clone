@@ -15,8 +15,11 @@ import {
 } from '../models/admin-marketing.models';
 import { StorefrontContentService } from '../../services/storefront-content.service';
 
+import { AdminActivityService } from './admin-activity.service';
+
 @Injectable({ providedIn: 'root' })
 export class AdminCampaignsService {
+  private readonly activity = inject(AdminActivityService);
   private readonly bannerRepository = inject(SupabaseBannerRepository);
   private readonly campaignRepository = inject(SupabaseCampaignRepository);
   private readonly adminRepository = inject(SupabaseAdminRepository);
@@ -118,9 +121,12 @@ export class AdminCampaignsService {
     };
   }
 
-  async saveBanner(current: AdminBannerListItem | null, value: AdminBannerEditorValue, imageFile: File | null) {
+  async saveBanner(current: AdminBannerListItem | null, value: AdminBannerEditorValue, imageFile: File | null, pickedImagePath?: string | null) {
     let imagePath = current?.record.image_path || null;
-    if (imageFile) {
+    if (pickedImagePath) {
+      // Phase 8 library pick: adopt the existing file by reference, no upload.
+      imagePath = pickedImagePath;
+    } else if (imageFile) {
       imagePath = await this.storageRepository.uploadPublicImage(this.bannerImagePath(current?.record.id || crypto.randomUUID(), imageFile.name), imageFile, { upsert: true });
     }
 
@@ -148,13 +154,17 @@ export class AdminCampaignsService {
     });
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log(current ? 'banner.updated' : 'banner.created', 'banner', saved.id, value.title);
     return saved;
   }
 
-  async saveCampaign(current: AdminCampaignListItem | null, value: AdminCampaignEditorValue, imageFile: File | null) {
+  async saveCampaign(current: AdminCampaignListItem | null, value: AdminCampaignEditorValue, imageFile: File | null, pickedImagePath?: string | null) {
     const currentMetadata = current ? this.asRecord(current.record.metadata) : {};
     let imagePath = typeof currentMetadata['imagePath'] === 'string' ? currentMetadata['imagePath'] : null;
-    if (imageFile) {
+    if (pickedImagePath) {
+      // Phase 8 library pick: adopt the existing file by reference, no upload.
+      imagePath = pickedImagePath;
+    } else if (imageFile) {
       imagePath = await this.storageRepository.uploadPublicImage(this.campaignImagePath(value.slug || current?.record.id || 'campaign', imageFile.name), imageFile, { upsert: true });
     }
 
@@ -186,6 +196,7 @@ export class AdminCampaignsService {
 
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log(current ? 'campaign.updated' : 'campaign.created', 'campaign', saved.id, value.title);
     return saved;
   }
 
@@ -193,34 +204,39 @@ export class AdminCampaignsService {
     await this.bannerRepository.update(record.id, { is_active: active });
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log(active ? 'banner.activated' : 'banner.deactivated', 'banner', record.id, record.title);
   }
 
   async toggleCampaignActive(record: Tables<'campaigns'>, active: boolean) {
     await this.campaignRepository.update(record.id, { is_active: active });
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log(active ? 'campaign.activated' : 'campaign.deactivated', 'campaign', record.id, record.name);
   }
 
   async deleteBanner(item: AdminBannerListItem) {
     await this.bannerRepository.delete(item.record.id);
     if (item.record.image_path) {
-      await this.storageRepository.removePublicImage(item.record.image_path);
+      await this.storageRepository.removeImageIfUnreferenced(item.record.image_path);
     }
     const nextOverrides = { ...this.bannerOverridesSignal() };
     delete nextOverrides[item.record.id];
     await this.persistStorefrontSetting('bannerOverrides', this.bannerOverridesJson(nextOverrides));
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log('banner.deleted', 'banner', item.record.id, item.record.title);
   }
 
   async deleteCampaign(item: AdminCampaignListItem) {
     const metadata = this.asRecord(item.record.metadata);
-    if (typeof metadata['imagePath'] === 'string') {
-      await this.storageRepository.removePublicImage(metadata['imagePath']);
-    }
     await this.campaignRepository.delete(item.record.id);
+    if (typeof metadata['imagePath'] === 'string') {
+      // Row deleted first, so the guarded removal no longer counts this record.
+      await this.storageRepository.removeImageIfUnreferenced(metadata['imagePath']);
+    }
     await this.load();
     await this.storefront.refresh();
+    await this.activity.log('campaign.deleted', 'campaign', item.record.id, item.record.name);
   }
 
   private async saveBannerOverrides(id: string, value: Record<string, string>) {

@@ -8,6 +8,7 @@ import express from 'express';
 import {join} from 'node:path';
 import {loadServerEnvironment} from './server-env';
 import {installServerWebSocketTransport} from './server-websocket';
+import {handleSitemap} from './server-sitemap';
 
 loadServerEnvironment();
 installServerWebSocketTransport();
@@ -93,6 +94,22 @@ const angularApp = new AngularNodeAppEngine({
  * });
  * ```
  */
+
+/**
+ * Dynamic sitemap (Phase 8). Registered BEFORE the static-file middleware
+ * on purpose: the static layer would otherwise serve a stale
+ * `sitemap.xml` from the browser output, and this handler would never
+ * run. The old static file has been deleted from `public/`.
+ */
+app.get('/sitemap.xml', (req, res) => {
+  void handleSitemap(req, res).catch((error: unknown) => {
+    console.error('Dynamic sitemap: unexpected failure.', error);
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.send(
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://zarr-fashion-clone.vercel.app</loc></url>\n</urlset>\n',
+    );
+  });
+});
 
 /**
  * Serve static files from /browser

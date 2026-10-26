@@ -11,7 +11,21 @@
       <mat-icon>imagesmode</mat-icon>
       <span>Add gallery images</span>
     </label>
+
+    <button class="admin-image-uploader__action" type="button" (click)="pickerTarget.set('main')" [disabled]="disabled()" aria-label="Choose main image from library">
+      <mat-icon>photo_library</mat-icon>
+      <span>Library main image</span>
+    </button>
+
+    <button class="admin-image-uploader__action admin-image-uploader__action--secondary" type="button" (click)="pickerTarget.set('gallery')" [disabled]="disabled()" aria-label="Choose gallery image from library">
+      <mat-icon>collections</mat-icon>
+      <span>Library gallery image</span>
+    </button>
   </div>
+
+  @if (pickerTarget()) {
+    <app-admin-media-picker (picked)="onLibraryPicked($event)" (closed)="pickerTarget.set(null)" />
+  }
   
   @if (error()) {
     <div class="admin-image-uploader__alert admin-image-uploader__alert--error">

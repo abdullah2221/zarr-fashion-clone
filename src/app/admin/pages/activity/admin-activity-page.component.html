@@ -1,0 +1,33 @@
+<section class="admin-activity">
+  <div class="admin-activity__hero">
+    <span class="eyebrow">Admin / Activity</span>
+    <h1>Admin activity</h1>
+    <p>Who changed what, and when. This log is append-only: there is no delete button, because deleting history would defeat the audit. Entries appear here after the admin action succeeds; a failed log write never blocks the action itself.</p>
+  </div>
+
+  <div class="admin-activity__grid">
+    <label><span>Search activity</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search actor, action, or record"></label>
+  </div>
+
+  <div class="admin-activity__list">
+    @if (service.isLoading()) {
+      <p>Loading activity...</p>
+    } @else if (!filtered().length) {
+      <p>No activity recorded yet.</p>
+    } @else {
+      @for (item of filtered(); track item.id) {
+        <article class="admin-activity__item">
+          <div>
+            <strong>{{ item.action }}</strong>
+            <span>{{ item.entity_type }}@if (item.entity_label) { · {{ item.entity_label }} }</span>
+            @if (item.detail) { <span>{{ item.detail }}</span> }
+          </div>
+          <div class="admin-activity__meta">
+            <span>{{ item.actor_email || 'Unknown admin' }}</span>
+            <span>{{ when(item.created_at) }}</span>
+          </div>
+        </article>
+      }
+    }
+  </div>
+</section>

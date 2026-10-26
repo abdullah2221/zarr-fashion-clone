@@ -168,6 +168,19 @@ export interface TestimonialRepository {
   delete(id: string): Promise<void>;
 }
 
+export interface BrandRepository {
+  listActive(): Promise<Tables<'brands'>[]>;
+  listAll(): Promise<Tables<'brands'>[]>;
+  create(brand: Inserts<'brands'>): Promise<Tables<'brands'>>;
+  update(id: string, changes: Updates<'brands'>): Promise<Tables<'brands'>>;
+  delete(id: string): Promise<void>;
+}
+
+export interface AdminActivityRepository {
+  listRecent(limit: number): Promise<Tables<'admin_activity'>[]>;
+  log(entry: Inserts<'admin_activity'>): Promise<void>;
+}
+
 export interface SubscriberRepository {
   /** Public write path: returns 'subscribed' or 'duplicate'. */
   subscribe(email: string): Promise<'subscribed' | 'duplicate'>;

@@ -15,8 +15,9 @@ import { MetaService } from '../../core/services/meta.service';
 import { StorefrontContentService } from '../../services/storefront-content.service';
 import { SitePagesService } from '../../services/site-pages.service';
 import { TestimonialsService } from '../../services/testimonials.service';
+import { BrandsService } from '../../services/brands.service';
 import { EngagementService, SubscribeResult } from '../../services/engagement.service';
-import { SitePageSection } from '../../shared/models/page-content.models';
+import { SitePageSection, StorefrontBrandsStatsContent } from '../../shared/models/page-content.models';
 import { animate, inView } from 'motion';
 
 @Component({
@@ -80,6 +81,21 @@ export class HomeComponent implements OnInit {
   readonly content = inject(StorefrontContentService);
   readonly pages = inject(SitePagesService);
   readonly testimonials = inject(TestimonialsService);
+  readonly brands = inject(BrandsService);
+
+  /**
+   * Brands-strip content for a section (Phase 8): when brand records
+   * have loaded, they replace the section payload's brand list; before
+   * that (or if the table is unreachable) the payload list renders
+   * exactly as before. Stats always come from the payload.
+   */
+  brandsContent(section: SitePageSection): StorefrontBrandsStatsContent {
+    const base = this.pages.brandsStatsContent(section);
+    if (this.brands.state() === 'ready') {
+      return { ...base, brands: this.brands.items() };
+    }
+    return base;
+  }
 
   /** Ordered homepage sections from Admin > Pages (page slug 'home'). */
   readonly sections = computed(() => this.pages.homeSections());
@@ -120,6 +136,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     void this.pages.ensureLoaded('home');
     void this.testimonials.ensureLoaded();
+    void this.brands.ensureLoaded();
     this.metaService.clearJsonLd(['seo-product-schema', 'seo-breadcrumb-schema']);
     this.metaService.setSeo({
       title: 'Home',

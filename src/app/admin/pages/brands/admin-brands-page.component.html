@@ -1,0 +1,68 @@
+<section class="admin-brands">
+  <div class="admin-brands__hero">
+    <span class="eyebrow">Admin / Brands</span>
+    <h1>Featured brands</h1>
+    <p>Active brands render in the homepage brands strip. When at least one brand record is active, these records replace the brand list in Admin &gt; Pages (the stats band itself stays edited in Pages). When no brand is active, the strip hides its brand list and only the stats band shows.</p>
+  </div>
+
+  @if (error()) { <div class="admin-brands__alert admin-brands__alert--error">{{ error() }}</div> }
+  @if (success()) { <div class="admin-brands__alert admin-brands__alert--success">{{ success() }}</div> }
+
+  <div class="admin-brands__layout">
+    <article class="admin-brands__column">
+      <div class="admin-brands__section-head">
+        <div>
+          <span class="admin-brands__kicker">Brands</span>
+          <h2>{{ service.brands().length }} records</h2>
+        </div>
+        <button class="btn btn--dark" type="button" (click)="startCreate()">New brand</button>
+      </div>
+
+      <div class="admin-brands__grid">
+        <label><span>Search brands</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search name or style key"></label>
+      </div>
+
+      <div class="admin-brands__list">
+        @if (service.isLoading()) {
+          <p>Loading brands...</p>
+        } @else if (!filtered().length) {
+          <p>No brands found.</p>
+        } @else {
+          @for (item of filtered(); track item.id) {
+            <article class="admin-brands__item" [class.is-selected]="selectedId() === item.id">
+              <button class="admin-brands__item-main" type="button" (click)="select(item)">
+                <div>
+                  <strong>{{ item.name }}</strong>
+                  <span>Style {{ item.style_key || '—' }} · Sort {{ item.sort_order }} · {{ item.link_url ? item.link_url : 'No link' }} · {{ item.is_active ? 'Active' : 'Inactive' }}</span>
+                </div>
+              </button>
+              <div class="admin-brands__item-actions">
+                <button class="btn btn--ghost" type="button" (click)="toggle(item)">{{ item.is_active ? 'Deactivate' : 'Activate' }}</button>
+                <button class="btn btn--ghost" type="button" (click)="delete(item)">Delete</button>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    </article>
+
+    <form class="admin-brands__editor" (ngSubmit)="save()">
+      <div class="admin-brands__section-head">
+        <div>
+          <span class="admin-brands__kicker">{{ selectedId() ? 'Edit brand' : 'Create brand' }}</span>
+          <h2>{{ selectedId() ? 'Update brand' : 'New brand' }}</h2>
+        </div>
+      </div>
+
+      <div class="admin-brands__grid">
+        <label><span>Name</span><input [ngModel]="editor().name" (ngModelChange)="updateEditor({ name: $event })" name="name" required></label>
+        <label><span>Style key (wordmark style, e.g. sahar)</span><input [ngModel]="editor().styleKey" (ngModelChange)="updateEditor({ styleKey: $event })" name="styleKey"></label>
+        <label class="admin-brands__field"><span>Link URL (optional — tile links here; /shop or a full URL)</span><input [ngModel]="editor().linkUrl" (ngModelChange)="updateEditor({ linkUrl: $event })" name="linkUrl"></label>
+        <label><span>Sort order</span><input type="number" [ngModel]="editor().sortOrder" (ngModelChange)="updateEditor({ sortOrder: $event === '' || $event === null ? null : +$event })" name="sortOrder"></label>
+        <label class="admin-brands__check"><input type="checkbox" [ngModel]="editor().isActive" (ngModelChange)="updateEditor({ isActive: $event })" name="isActive"><span>Active</span></label>
+      </div>
+
+      <button class="btn btn--gold btn--full" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving...' : (selectedId() ? 'Save brand' : 'Create brand') }}</button>
+    </form>
+  </div>
+</section>

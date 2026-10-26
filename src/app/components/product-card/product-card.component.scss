@@ -196,3 +196,9 @@
     transform: translateY(0) scale(1);
   }
 }
+
+// Phase 7.2 — mobile only. The wishlist heart grows to the 44px
+// minimum thumb target (was 38px). Desktop/tablet: no change.
+@media (max-width: 767px) {
+  .product-card__wishlist { width: 44px; height: 44px; }
+}

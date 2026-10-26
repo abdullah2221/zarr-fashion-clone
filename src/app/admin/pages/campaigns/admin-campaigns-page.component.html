@@ -31,7 +31,7 @@
               <img [src]="item.imageUrl" [alt]="item.record.title">
               <div>
                 <strong>{{ item.record.title }}</strong>
-                <span>{{ item.placement }}</span>
+                <span>{{ prettyPlacement(item.placement) }}</span>
               </div>
             </button>
             <div class="admin-campaigns__item-actions">
@@ -49,10 +49,10 @@
           <label><span>CTA text</span><input formControlName="ctaText"></label>
           <label><span>Secondary CTA</span><input formControlName="secondaryCtaText"></label>
           <label><span>Campaign type</span><input formControlName="campaignType"></label>
-          <label><span>Placement</span><select formControlName="placement"><option value="home-hero">Home hero</option><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option></select></label>
+          <label><span>Slide tag</span><select formControlName="placement"><option value="home-hero">Home hero</option><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option></select><small class="admin-campaigns__help">A small label shown on the slide. Every active banner appears in the homepage slider, whichever tag you pick.</small></label>
           <label class="admin-campaigns__field"><span>Description</span><textarea formControlName="description"></textarea></label>
           <label><span>Link URL</span><input formControlName="linkUrl"></label>
-          <label><span>Sort order</span><input type="number" formControlName="sortOrder"></label>
+          <label><span>Sort order</span><input type="number" formControlName="sortOrder"><small class="admin-campaigns__help">Lower numbers show first. 0 is the very top.</small></label>
           <label><span>Start date</span><input type="date" formControlName="startDate"></label>
           <label><span>End date</span><input type="date" formControlName="endDate"></label>
           <label class="admin-campaigns__check"><input type="checkbox" formControlName="isActive"><span>Banner is active</span></label>
@@ -63,6 +63,7 @@
             @if (bannerPreview()) { <img [src]="bannerPreview()" alt="Banner preview"> } @else { <div><mat-icon>image</mat-icon><span>No banner image selected</span></div> }
           </div>
           <label class="admin-campaigns__upload"><input type="file" accept="image/*" (change)="onBannerImageSelected($event)"><mat-icon>upload</mat-icon><span>Upload banner image</span></label>
+          <button class="admin-campaigns__upload" type="button" (click)="pickerTarget.set('banner')"><mat-icon>photo_library</mat-icon><span>Choose from library</span></button>
         </div>
 
         <app-admin-action-button icon="save" [label]="savingBanner() ? 'Saving banner' : 'Save banner'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingBanner()" />
@@ -85,7 +86,7 @@
               <img [src]="item.imageUrl || '/images/product-placeholder.svg'" [alt]="item.title">
               <div>
                 <strong>{{ item.title }}</strong>
-                <span>{{ item.placement }}</span>
+                <span>{{ prettyPlacement(item.placement) }}</span>
               </div>
             </button>
             <div class="admin-campaigns__item-actions">
@@ -99,15 +100,15 @@
       <form class="admin-campaigns__editor" [formGroup]="campaignForm" (ngSubmit)="saveCampaign()">
         <div class="admin-campaigns__grid">
           <label><span>Title *</span><input formControlName="title"></label>
-          <label><span>Slug *</span><input formControlName="slug"></label>
+          <label><span>Slug *</span><input formControlName="slug"><small class="admin-campaigns__help">Lowercase letters, numbers and dashes only, e.g. "eid-noor". Also used for the campaign image file name.</small></label>
           <label><span>Subtitle</span><input formControlName="subtitle"></label>
           <label><span>CTA text</span><input formControlName="ctaText"></label>
           <label><span>Campaign type</span><input formControlName="campaignType"></label>
-          <label><span>Placement</span><select formControlName="placement"><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option><option value="offer-grid">Offer grid</option><option value="featured-collections">Featured collections</option><option value="footer-chip">Footer chip</option><option value="product-badge">Product badge</option></select></label>
+          <label><span>Where does it show?</span><select formControlName="placement"><option value="home-section">Home section</option><option value="shop-banner">Shop banner</option><option value="offer-grid">Offer grid</option><option value="featured-collections">Featured collections</option></select><small class="admin-campaigns__help">{{ campaignPlacementHelp(campaignForm.controls.placement.value) }}</small></label>
           <label class="admin-campaigns__field"><span>Description</span><textarea formControlName="description"></textarea></label>
           <label><span>Link URL</span><input formControlName="linkUrl"></label>
           <label><span>Tag label</span><input formControlName="tag"></label>
-          <label><span>Sort order</span><input type="number" formControlName="sortOrder"></label>
+          <label><span>Sort order</span><input type="number" formControlName="sortOrder"><small class="admin-campaigns__help">Lower numbers show first. 0 is the very top.</small></label>
           <label><span>Start date</span><input type="date" formControlName="startDate"></label>
           <label><span>End date</span><input type="date" formControlName="endDate"></label>
           <label class="admin-campaigns__check"><input type="checkbox" formControlName="active"><span>Campaign is active</span></label>
@@ -118,10 +119,18 @@
             @if (campaignPreview()) { <img [src]="campaignPreview()" alt="Campaign preview"> } @else { <div><mat-icon>image</mat-icon><span>No campaign image selected</span></div> }
           </div>
           <label class="admin-campaigns__upload"><input type="file" accept="image/*" (change)="onCampaignImageSelected($event)"><mat-icon>upload</mat-icon><span>Upload campaign image</span></label>
+          <button class="admin-campaigns__upload" type="button" (click)="pickerTarget.set('campaign')"><mat-icon>photo_library</mat-icon><span>Choose from library</span></button>
         </div>
 
         <app-admin-action-button icon="save" [label]="savingCampaign() ? 'Saving campaign' : 'Save campaign'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingCampaign()" />
       </form>
     </section>
   </div>
+
+  @if (pickerTarget() === 'banner') {
+    <app-admin-media-picker (picked)="onBannerLibraryPicked($event)" (closed)="pickerTarget.set(null)" />
+  }
+  @if (pickerTarget() === 'campaign') {
+    <app-admin-media-picker (picked)="onCampaignLibraryPicked($event)" (closed)="pickerTarget.set(null)" />
+  }
 </section>

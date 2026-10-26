@@ -41,6 +41,7 @@ export class AdminShellComponent {
   });
   readonly navItems: AdminNavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', path: '/admin/dashboard' },
+    { label: 'Guide', icon: 'menu_book', path: '/admin/guide' },
     { label: 'Verification', icon: 'verified_user', path: '/admin/verify' },
     { label: 'Products', icon: 'inventory_2', path: '/admin/products' },
     { label: 'Categories', icon: 'category', path: '/admin/categories' },
@@ -48,6 +49,8 @@ export class AdminShellComponent {
     { label: 'Pages', icon: 'article', path: '/admin/pages' },
     { label: 'FAQs', icon: 'quiz', path: '/admin/faqs' },
     { label: 'Testimonials', icon: 'format_quote', path: '/admin/testimonials' },
+    { label: 'Activity', icon: 'history', path: '/admin/activity' },
+    { label: 'Brands', icon: 'storefront', path: '/admin/brands' },
     { label: 'Customers', icon: 'groups', path: '/admin/customers' },
     { label: 'Media', icon: 'photo_library', path: '/admin/media' },
     { label: 'Subscribers', icon: 'mail', path: '/admin/subscribers' },

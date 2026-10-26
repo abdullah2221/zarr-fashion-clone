@@ -29,7 +29,18 @@
       @if (!isFocusMode()) {
         <nav class="navbar__nav" aria-label="Primary navigation">
           @for (link of content.settings().headerNavLinks; track link.label + link.url) {
-            <a [routerLink]="link.url" class="navbar__link" [class.navbar__link--campaign]="link.highlight" [routerLinkActive]="link.active ? 'active' : []">{{ link.label }}</a>
+            @if (link.children?.length) {
+              <div class="navbar__dropdown">
+                <a [routerLink]="link.url" class="navbar__link" [class.navbar__link--campaign]="link.highlight" [routerLinkActive]="link.active ? 'active' : []">{{ link.label }}<mat-icon>expand_more</mat-icon></a>
+                <div class="navbar__dropdown-menu">
+                  @for (child of link.children; track child.label + child.url) {
+                    <a [routerLink]="child.url" class="navbar__dropdown-link" [class.navbar__dropdown-link--campaign]="child.highlight">{{ child.label }}</a>
+                  }
+                </div>
+              </div>
+            } @else {
+              <a [routerLink]="link.url" class="navbar__link" [class.navbar__link--campaign]="link.highlight" [routerLinkActive]="link.active ? 'active' : []">{{ link.label }}</a>
+            }
           }
         </nav>
       } @else {
@@ -98,7 +109,25 @@
   <div id="mobile-menu" class="navbar__mobile-menu" [class.navbar__mobile-menu--open]="isMenuOpen()">
     <div class="navbar__mobile-inner">
       @for (link of content.settings().mobileNavLinks; track link.label + link.url) {
-        <a [routerLink]="link.url" (click)="toggleMenu()" class="navbar__mobile-link" [class.navbar__mobile-link--sale]="link.highlight">{{ link.label }}</a>
+        @if (link.children?.length) {
+          <div class="navbar__mobile-group">
+            <div class="navbar__mobile-group-head">
+              <a [routerLink]="link.url" (click)="toggleMenu()" class="navbar__mobile-link" [class.navbar__mobile-link--sale]="link.highlight">{{ link.label }}</a>
+              <button type="button" class="navbar__mobile-expand" (click)="toggleMobileChildren(link.label + link.url)" [attr.aria-expanded]="expandedMobileParents().has(link.label + link.url)" aria-label="Toggle sub-links">
+                <mat-icon>{{ expandedMobileParents().has(link.label + link.url) ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
+            </div>
+            @if (expandedMobileParents().has(link.label + link.url)) {
+              <div class="navbar__mobile-children">
+                @for (child of link.children; track child.label + child.url) {
+                  <a [routerLink]="child.url" (click)="toggleMenu()" class="navbar__mobile-link navbar__mobile-link--child" [class.navbar__mobile-link--sale]="child.highlight">{{ child.label }}</a>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <a [routerLink]="link.url" (click)="toggleMenu()" class="navbar__mobile-link" [class.navbar__mobile-link--sale]="link.highlight">{{ link.label }}</a>
+        }
       }
       @if (isLoggedIn() && isCustomer()) {
         <a routerLink="/wishlist" (click)="toggleMenu()" class="navbar__mobile-link">Wishlist</a>

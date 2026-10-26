@@ -35,11 +35,12 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
   ],
   // Menu builder seeds (Phase 7): exactly the links the header,
   // mobile menu and footer rendered before they were editable.
+  // Phase 8: the two placeholder categories (eid-edit, wedding) were
+  // never live categories, so the fallback no longer links at them.
   headerNavLinks: [
     { label: 'New In', url: '/shop', active: true },
     { label: 'Lawn', url: '/category/lawn' },
     { label: 'Unstitched', url: '/category/unstitched' },
-    { label: 'Eid Edit', url: '/category/eid-edit', highlight: true },
     { label: 'Sale', url: '/category/sale' },
   ],
   mobileNavLinks: [
@@ -47,7 +48,6 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
     { label: 'New Arrivals', url: '/shop' },
     { label: 'Summer Lawn', url: '/category/lawn' },
     { label: 'Unstitched', url: '/category/unstitched' },
-    { label: 'Wedding Collection', url: '/category/wedding' },
     { label: 'Sale', url: '/category/sale', highlight: true },
   ],
   footerLinkColumns: [
@@ -207,15 +207,31 @@ export class StorefrontContentService {
   private navLinkArray(value: unknown): StorefrontNavLink[] | undefined {
     if (!Array.isArray(value)) return undefined;
     const links = value
-      .map(item => this.asRecord(item))
-      .filter(item => typeof item['label'] === 'string' && typeof item['url'] === 'string' && item['label'] && item['url'])
-      .map(item => {
-        const link: StorefrontNavLink = { label: item['label'] as string, url: item['url'] as string };
-        if (item['highlight'] === true) link.highlight = true;
-        if (item['active'] === true) link.active = true;
-        return link;
-      });
+      .map(item => this.navLinkFromRecord(item))
+      .filter((link): link is StorefrontNavLink => link !== null);
     return links.length ? links : undefined;
+  }
+
+  /** One record → one link. Children are parsed one level deep only. */
+  private navLinkFromRecord(item: unknown): StorefrontNavLink | null {
+    const record = this.asRecord(item);
+    if (typeof record['label'] !== 'string' || typeof record['url'] !== 'string'
+      || !record['label'] || !record['url']) return null;
+    const link: StorefrontNavLink = { label: record['label'] as string, url: record['url'] as string };
+    if (record['highlight'] === true) link.highlight = true;
+    if (record['active'] === true) link.active = true;
+    if (Array.isArray(record['children'])) {
+      const children = record['children']
+        .map(child => this.navLinkFromRecord(child))
+        .filter((child): child is StorefrontNavLink => child !== null)
+        .map(child => {
+          // Enforce one level: a child's own children are dropped.
+          const { children: _dropped, ...flat } = child;
+          return flat;
+        });
+      if (children.length) link.children = children;
+    }
+    return link;
   }
 
   private footerColumnArray(value: unknown): StorefrontFooterLinkColumn[] | undefined {

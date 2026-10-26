@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminImageDraft } from '../models/admin-catalog.models';
 import { AdminActionButtonComponent } from './admin-action-button.component';
+import { AdminMediaPickerComponent } from './admin-media-picker.component';
+import { AdminMediaItem } from '../services/admin-media.service';
 
 @Component({
   selector: 'app-admin-image-uploader',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, AdminActionButtonComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, AdminActionButtonComponent, AdminMediaPickerComponent],
   templateUrl: './admin-image-uploader.component.html',
   styleUrl: './admin-image-uploader.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +27,49 @@ export class AdminImageUploaderComponent {
 
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
+
+  /** Phase 8 library pick target: 'main' replaces the primary image, 'gallery' appends. */
+  readonly pickerTarget = signal<'main' | 'gallery' | null>(null);
+
+  /**
+   * Phase 8 library pick. The draft references the existing storage
+   * file (no upload at pick time); the product save adopts the path,
+   * and the guarded delete keeps shared files alive.
+   */
+  onLibraryPicked(item: AdminMediaItem) {
+    const target = this.pickerTarget();
+    this.pickerTarget.set(null);
+    if (!target) return;
+
+    if (target === 'gallery') {
+      const next = [
+        ...this.images().filter(image => !image.markedForDeletion),
+        { storagePath: item.path, previewUrl: item.publicUrl, altText: '', isPrimary: false, sortOrder: 0 },
+      ];
+      this.emitState(next);
+      this.success.set(`Added "${item.name}" from the library.`);
+      setTimeout(() => this.success.set(null), 4000);
+      return;
+    }
+
+    const currentImages = [...this.images()];
+    const existing = currentImages.filter(image => !image.markedForDeletion);
+    const previousPrimary = existing[0];
+    const demotedImages = existing.slice(1).map(image => ({ ...image, isPrimary: false }));
+    const mainImage: AdminImageDraft = {
+      storagePath: item.path,
+      previewUrl: item.publicUrl,
+      altText: existing[0]?.altText || '',
+      isPrimary: true,
+      sortOrder: 0,
+    };
+    const retiredPrimary = previousPrimary?.id || previousPrimary?.storagePath
+      ? [{ ...previousPrimary, markedForDeletion: true }]
+      : [];
+    this.emitState([mainImage, ...demotedImages, ...retiredPrimary]);
+    this.success.set(`Main image set from the library ("${item.name}").`);
+    setTimeout(() => this.success.set(null), 4000);
+  }
 
   private validateFile(file: File): boolean {
     this.error.set(null);

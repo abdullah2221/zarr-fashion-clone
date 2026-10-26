@@ -21,6 +21,8 @@ export class HeroComponent implements OnInit, OnDestroy {
   ]);
   currentSlide = signal(0);
   private autoPlayInterval: ReturnType<typeof setInterval> | undefined;
+  private touchStartX: number | null = null;
+  private static readonly SWIPE_THRESHOLD_PX = 50;
 
   ngOnInit() {
     this.startAutoPlay();
@@ -55,5 +57,35 @@ export class HeroComponent implements OnInit, OnDestroy {
     // Reset interval when manually changed
     this.stopAutoPlay();
     this.startAutoPlay();
+  }
+
+  // Phase 7.2 — mobile-only swipe. Desktop is untouched: arrows, fade and
+  // autoplay behave exactly as before, and these handlers ignore any
+  // viewport wider than 767px. No preventDefault: vertical page scroll
+  // keeps working, only a clear horizontal swipe changes slides.
+  onTouchStart(event: TouchEvent) {
+    if (!this.isMobileViewport()) return;
+    this.touchStartX = event.touches[0]?.clientX ?? null;
+    this.stopAutoPlay();
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    const startX = this.touchStartX;
+    this.touchStartX = null;
+    if (startX === null) return;
+    const endX = event.changedTouches[0]?.clientX;
+    if (endX !== undefined) {
+      const dx = endX - startX;
+      if (dx < -HeroComponent.SWIPE_THRESHOLD_PX) this.nextSlide();
+      else if (dx > HeroComponent.SWIPE_THRESHOLD_PX) this.prevSlide();
+    }
+    // Always resume autoplay after the touch (it was paused on touchstart),
+    // matching the reset behaviour of a manual dot/arrow change.
+    this.stopAutoPlay();
+    this.startAutoPlay();
+  }
+
+  private isMobileViewport(): boolean {
+    return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
   }
 }

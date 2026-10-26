@@ -1,0 +1,36 @@
+<div class="admin-media-picker__backdrop" (click)="closed.emit()"></div>
+<section class="admin-media-picker" role="dialog" aria-label="Choose an image from the media library">
+  <div class="admin-media-picker__head">
+    <div>
+      <span class="eyebrow">Media library</span>
+      <h2>Choose an image</h2>
+      <p>Picking reuses the existing file — nothing is uploaded again. The image stays shared with its original record.</p>
+    </div>
+    <button class="admin-media-picker__close" type="button" (click)="closed.emit()" aria-label="Close picker"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <label class="admin-media-picker__search">
+    <span>Search library</span>
+    <input [value]="search()" (input)="onSearch($event)" placeholder="Search by file or folder name">
+  </label>
+
+  @if (media.isLoading()) {
+    <p class="admin-media-picker__state">Loading library...</p>
+  } @else if (!visibleItems().length) {
+    <p class="admin-media-picker__state">No images found. Upload one first, or try another search.</p>
+  } @else {
+    <div class="admin-media-picker__grid">
+      @for (item of visibleItems(); track item.path) {
+        <button class="admin-media-picker__item" type="button" (click)="choose(item)" [title]="item.path">
+          <img [src]="item.publicUrl" [alt]="item.name" loading="lazy">
+          <span>{{ item.name }}</span>
+          <small>{{ item.folder || 'root' }}</small>
+        </button>
+      }
+    </div>
+  }
+
+  <div class="admin-media-picker__foot">
+    <button class="btn btn--ghost" type="button" (click)="closed.emit()">Cancel</button>
+  </div>
+</section>

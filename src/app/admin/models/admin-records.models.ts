@@ -15,3 +15,11 @@ export interface AdminTestimonialEditorValue {
   sortOrder: number | null;
   isActive: boolean;
 }
+
+export interface AdminBrandEditorValue {
+  name: string;
+  styleKey: string;
+  linkUrl: string;
+  sortOrder: number | null;
+  isActive: boolean;
+}

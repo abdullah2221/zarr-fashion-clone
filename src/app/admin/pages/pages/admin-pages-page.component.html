@@ -3,7 +3,7 @@
     <div>
       <span class="eyebrow">Page Builder</span>
       <h1>Pages & Sections</h1>
-      <p>Every page is an ordered list of reusable section blocks. Reorder sections with the sort order, hide them with the visibility toggle, and edit each section's own content fields. Card content (products, categories, campaigns, banners) keeps its own admin screens — each section below says where its content lives.</p>
+      <p>Every page is an ordered list of section blocks, shown top to bottom in the order listed below. Reorder sections with the sort order, hide them with the visibility toggle, and edit each section's own content fields. Card content (products, categories, campaigns, banners) keeps its own admin screens — each section below says where its content lives. Hidden sections are skipped completely on the live site: visitors see no gap where they were.</p>
     </div>
   </div>
 
@@ -44,7 +44,13 @@
       <form class="admin-pages__editor" [formGroup]="pageForm" (ngSubmit)="savePage()">
         <div class="admin-pages__grid">
           <label><span>Title *</span><input formControlName="title"></label>
-          <label><span>Slug *</span><input formControlName="slug"></label>
+          <label><span>Page address *</span><input formControlName="slug">
+            @if (pageMode() === 'new') {
+              <small class="admin-pages__help">Lowercase letters, numbers and dashes only, e.g. "about". This becomes the page address: /about.</small>
+            } @else {
+              <small class="admin-pages__help">The address is locked after creation so existing links keep working.</small>
+            }
+          </label>
           <label class="admin-pages__check"><input type="checkbox" formControlName="isActive"><span>Page is active</span></label>
         </div>
         <app-admin-action-button icon="save" [label]="savingPage() ? 'Saving page' : 'Save page'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingPage()" />
@@ -60,17 +66,23 @@
         <app-admin-action-button icon="add" label="New section" appearance="solid" [showLabel]="true" [size]="'touch'" (pressed)="selectSection(null)" />
       </div>
 
+      @if (!service.selectedPage()) {
+        <p class="admin-pages__note">Choose a page on the left, or create a new page, to manage its sections. Sections are listed in the order visitors see them, top to bottom.</p>
+      } @else if (!service.sections().length) {
+        <p class="admin-pages__note">This page has no sections yet. Use the form below to add the first one — pick what it should show, then save.</p>
+      }
+
       <div class="admin-pages__list">
         @for (row of service.sections(); track row.id) {
           <article class="admin-pages__item" [class.is-selected]="selectedSection()?.id === row.id">
             <button type="button" class="admin-pages__item-main" (click)="selectSection(row)">
               <div>
-                <strong>{{ row.sort_order }} · {{ typeInfo(row.section_type).label }}</strong>
-                <span>{{ row.section_type }}</span>
+                <strong>{{ typeInfo(row.section_type).label }}</strong>
+                <span>{{ typeInfo(row.section_type).description }}</span>
               </div>
             </button>
             <div class="admin-pages__item-actions">
-              <app-admin-status-badge [text]="row.is_active ? 'Visible' : 'Hidden'" [tone]="row.is_active ? 'success' : 'muted'"></app-admin-status-badge>
+              <app-admin-status-badge [text]="row.is_active ? 'Visible' : 'Hidden — skipped on site'" [tone]="row.is_active ? 'success' : 'muted'"></app-admin-status-badge>
               <app-admin-action-button [icon]="row.is_active ? 'visibility_off' : 'visibility'" [label]="row.is_active ? 'Hide section' : 'Show section'" (pressed)="toggleSection(row)" />
               <app-admin-action-button icon="delete" label="Delete section" tone="danger" (pressed)="deleteSection(row)" />
             </div>
@@ -80,15 +92,17 @@
 
       <form class="admin-pages__editor" [formGroup]="sectionForm" (ngSubmit)="saveSection()">
         <div class="admin-pages__grid">
-          <label><span>Section type *</span>
+          <label><span>What should this section show? *</span>
             <select formControlName="sectionType" (change)="onSectionTypeChange()">
               @for (info of sectionTypes; track info.type) {
                 <option [value]="info.type">{{ info.label }}</option>
               }
             </select>
+            <small class="admin-pages__help">{{ typeInfo(sectionType()).description }}</small>
           </label>
-          <label><span>Sort order *</span><input type="number" formControlName="sortOrder"></label>
+          <label><span>Order on the page *</span><input type="number" formControlName="sortOrder"><small class="admin-pages__help">Lower numbers show first. 0 is the very top.</small></label>
           <label class="admin-pages__check"><input type="checkbox" formControlName="isActive"><span>Section is visible</span></label>
+          <small class="admin-pages__help">Untick to hide this section from the site without deleting it. Hidden sections are skipped completely — visitors see no gap.</small>
           @if (isLimitable(sectionType())) {
             <label><span>Item limit (optional)</span><input type="number" min="1" formControlName="limit"><small class="admin-pages__help">Leave empty to show every item from the source list.</small></label>
           }
@@ -123,19 +137,27 @@
             <div class="admin-pages__grid">
               <label><span>Heading</span><input formControlName="heading"></label>
               <label class="admin-pages__field"><span>Body text</span><textarea formControlName="body"></textarea><small class="admin-pages__help">Plain text — line breaks are kept as paragraphs spacing on the page.</small></label>
-              <label><span>Image path (optional)</span><input formControlName="imagePath"><small class="admin-pages__help">Storage path inside the product-images bucket, e.g. sections/my-image.jpg — see Admin &gt; Media for paths.</small></label>
-              <label><span>Image description (alt)</span><input formControlName="imageAlt"></label>
+              <label><span>Image (optional)</span><input formControlName="imagePath"><small class="admin-pages__help">Pick an image from the library instead of typing a path — the button below opens your uploaded images.</small></label>
+              <app-admin-action-button icon="photo_library" label="Choose from library" [showLabel]="true" [size]="'touch'" (pressed)="pickerFor.set('custom-image')" />
+              @if (imagePreview(sectionForm.controls.imagePath.value)) {
+                <img class="admin-pages__preview" [src]="imagePreview(sectionForm.controls.imagePath.value)" alt="Selected section image preview">
+              }
+              <label><span>Image description (alt)</span><input formControlName="imageAlt"><small class="admin-pages__help">A short description of the image, read aloud for visitors who cannot see it.</small></label>
               <label><span>Button text (optional)</span><input formControlName="ctaText"></label>
               <label><span>Button link (optional)</span><input formControlName="ctaLink"></label>
             </div>
           }
           @case ('brands-stats') {
             <div class="admin-pages__grid">
-              <label class="admin-pages__field"><span>Brand wordmarks</span><textarea formControlName="brandsText"></textarea><small class="admin-pages__help">One per line: Name | style-key (the style-key selects the wordmark font style)</small></label>
+              <label class="admin-pages__field"><span>Brand wordmarks (fallback only)</span><textarea formControlName="brandsText"></textarea><small class="admin-pages__help">Only used when no brand is active in Admin &gt; Brands. Brand names are now managed there — edit them in Admin &gt; Brands instead. One per line: Name | style-key.</small></label>
               <label><span>Stats eyebrow</span><input formControlName="statsEyebrow"></label>
-              <label class="admin-pages__field"><span>Stat items</span><textarea formControlName="statsItemsText"></textarea><small class="admin-pages__help">One per line: Value | Label</small></label>
-              <label><span>Background image path</span><input formControlName="statsBackgroundPath"></label>
-              <label><span>Background image description (alt)</span><input formControlName="statsBackgroundAlt"></label>
+              <label class="admin-pages__field"><span>Stat items</span><textarea formControlName="statsItemsText"></textarea><small class="admin-pages__help">One per line: Value | Label, e.g. "500+ | Happy customers". Only use numbers you can stand behind.</small></label>
+              <label><span>Background image (optional)</span><input formControlName="statsBackgroundPath"><small class="admin-pages__help">Pick an image from the library instead of typing a path. Leave empty for no background image.</small></label>
+              <app-admin-action-button icon="photo_library" label="Choose from library" [showLabel]="true" [size]="'touch'" (pressed)="pickerFor.set('stats-bg')" />
+              @if (imagePreview(sectionForm.controls.statsBackgroundPath.value)) {
+                <img class="admin-pages__preview" [src]="imagePreview(sectionForm.controls.statsBackgroundPath.value)" alt="Selected stats background preview">
+              }
+              <label><span>Background image description (alt)</span><input formControlName="statsBackgroundAlt"><small class="admin-pages__help">A short description of the image, read aloud for visitors who cannot see it.</small></label>
             </div>
           }
           @case ('newsletter') {
@@ -150,7 +172,7 @@
           @case ('static-content') {
             <div class="admin-pages__grid">
               <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
-              <label><span>Icon (Material icon name)</span><input formControlName="icon"></label>
+              <label><span>Icon (optional)</span><input formControlName="icon"><small class="admin-pages__help">A small symbol beside the text, e.g. local_shipping, verified_user, autorenew. Leave empty for no symbol.</small></label>
               <label class="admin-pages__field"><span>Intro</span><textarea formControlName="intro"></textarea></label>
               <label><span>CTA text</span><input formControlName="ctaText"></label>
               <label><span>CTA link</span><input formControlName="ctaLink"></label>
@@ -168,6 +190,10 @@
 
         <app-admin-action-button icon="save" [label]="savingSection() ? 'Saving section' : 'Save section'" appearance="solid" [showLabel]="true" [size]="'touch'" type="submit" [disabled]="savingSection()" />
       </form>
+
+      @if (pickerFor()) {
+        <app-admin-media-picker (picked)="onLibraryPicked($event)" (closed)="pickerFor.set(null)" />
+      }
     </section>
   </div>
 </section>

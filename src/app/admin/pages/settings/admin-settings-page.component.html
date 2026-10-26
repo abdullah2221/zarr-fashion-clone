@@ -55,17 +55,25 @@
     <article class="admin-settings__panel">
       <div class="admin-settings__panel-head"><h2>Campaign chips and trust badges</h2><p>Use one chip per line. For trust badges, use <code>icon|label|detail</code> on each line.</p></div>
       <div class="admin-settings__grid">
-        <label class="admin-settings__field"><span>Campaign chips</span><textarea formControlName="campaignChipsText"></textarea></label>
-        <label class="admin-settings__field"><span>Trust badges</span><textarea formControlName="trustBadgesText"></textarea></label>
+        <label class="admin-settings__field"><span>Campaign chips</span><textarea formControlName="campaignChipsText"></textarea><small class="admin-settings__help">One short phrase per line, e.g. "Summer Lawn" on one line and "Eid Edit" on the next. These scroll under the hero.</small></label>
+        <label class="admin-settings__field"><span>Trust badges</span><textarea formControlName="trustBadgesText"></textarea><small class="admin-settings__help">One badge per line, e.g. "local_shipping | Free delivery | On orders over Rs. 4,999". The icon is a small symbol name; leave the icon empty if you are unsure.</small></label>
       </div>
     </article>
 
     <article class="admin-settings__panel">
-      <div class="admin-settings__panel-head"><h2>Navigation menus</h2><p>Header and mobile menus: one link per line as <code>Label | URL</code>, with an optional third part for flags — <code>active</code> marks the current-page link in the header, <code>highlight</code> gives it the campaign colour. Footer columns start with a <code># Column title</code> line, followed by their <code>Label | URL</code> lines. Reorder lines to reorder the menu.</p></div>
+      <div class="admin-settings__panel-head"><h2>Navigation menus</h2><p>Header and mobile menus are edited as rows: label, URL, and the <code>active</code> (current-page link in the header) and <code>highlight</code> (campaign colour) flags. Reorder with Up/Down. A sub-link under a header or mobile link renders as a dropdown on desktop and an expandable group on mobile. Footer columns are still edited as text: a <code># Column title</code> line, followed by <code>Label | URL</code> lines.</p></div>
       <div class="admin-settings__grid">
-        <label class="admin-settings__field"><span>Header menu links</span><textarea formControlName="headerNavText"></textarea></label>
-        <label class="admin-settings__field"><span>Mobile menu shopping links</span><textarea formControlName="mobileNavText"></textarea></label>
-        <label class="admin-settings__field"><span>Footer link columns</span><textarea formControlName="footerColumnsText"></textarea></label>
+        <div class="admin-settings__field">
+          <span>Header menu links</span>
+          <app-admin-nav-link-editor [links]="headerLinks()" (linksChange)="headerLinks.set($event)" />
+          <details><summary>View as text</summary><textarea readonly>{{ headerTextPreview() }}</textarea></details>
+        </div>
+        <div class="admin-settings__field">
+          <span>Mobile menu shopping links</span>
+          <app-admin-nav-link-editor [links]="mobileLinks()" (linksChange)="mobileLinks.set($event)" />
+          <details><summary>View as text</summary><textarea readonly>{{ mobileTextPreview() }}</textarea></details>
+        </div>
+        <label class="admin-settings__field"><span>Footer link columns</span><textarea formControlName="footerColumnsText"></textarea><small class="admin-settings__help">Example: a line "# Help", then "FAQs | /faq" and "Track order | /track-order" underneath it. Start a new column with another "# Title" line.</small></label>
       </div>
     </article>
 

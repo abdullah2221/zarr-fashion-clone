@@ -175,3 +175,12 @@
 @keyframes category-shimmer {
   to { background-position-x: -200%; }
 }
+
+// Phase 7.2 — mobile only. Tiles shrink moderately (230px → 200px max)
+// so roughly one and a half tiles show, and the rail's scrollbar is
+// hidden. Behaviour is unchanged: finger swipe + snap. Desktop/tablet:
+// no change.
+@media (max-width: 767px) {
+  .category-scroll__slider { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+  .category-scroll__item { width: min(62vw, 200px); }
+}

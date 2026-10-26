@@ -52,6 +52,7 @@
             <label>
               <span>Slug *</span>
               <input formControlName="slug" [class.invalid-field]="form.controls.slug.invalid && form.controls.slug.touched">
+              <small class="admin-product-editor__help">Filled in automatically from the name. You can change it, but it must be unique and use lowercase letters, numbers and dashes.</small>
               @if (form.controls.slug.invalid && form.controls.slug.touched) {
                 <small class="admin-product-editor__field-error">A unique slug is required.</small>
               }
@@ -59,6 +60,7 @@
             <label>
               <span>SKU *</span>
               <input formControlName="sku" [class.invalid-field]="form.controls.sku.invalid && form.controls.sku.touched">
+              <small class="admin-product-editor__help">Your own stock code, e.g. LN-101. Customers never see it.</small>
               @if (form.controls.sku.invalid && form.controls.sku.touched) {
                 <small class="admin-product-editor__field-error">SKU is required for admin operations.</small>
               }

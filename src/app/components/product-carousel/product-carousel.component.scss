@@ -22,3 +22,13 @@
   &__item app-product-card { width: 100%; height: 100%; }
   &__nav { display: none; position: absolute; top: 42%; transform: translateY(-50%); width: 3rem; height: 3rem; background-color: rgba(255,255,255,.9); box-shadow: $shadow-md; border-radius: $border-radius-full; @include flex-center; color: $color-black; z-index: 20; @include transition; @include respond-to('lg') { display: flex; } &:hover { background-color: $color-black; color: $color-white; } &--left { left: 0; &.carousel__nav--offset { left: 292px; } } &--right { right: 0; } }
 }
+
+// Phase 7.2 — mobile only. Cards shrink moderately (245px → 220px max)
+// so roughly one and a half cards show, and the rail's scrollbar is
+// hidden (some Android browsers draw a grey bar). Behaviour is
+// unchanged: finger swipe + snap, exactly as before. Desktop/tablet:
+// no change.
+@media (max-width: 767px) {
+  .carousel__track { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+  .carousel__item { width: 64vw; max-width: 220px; }
+}

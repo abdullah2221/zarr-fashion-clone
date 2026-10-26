@@ -31,6 +31,7 @@
   &__panel-head p { margin: $spacing-2 0 0; color: $color-gray-600; line-height: 1.6; }
   &__grid { display: grid; gap: $spacing-4; @include respond-to('md') { grid-template-columns: repeat(2, minmax(0, 1fr)); } label { display: grid; gap: $spacing-2; } span { font-size: $font-size-xs; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: $color-gray-600; } input, textarea { width: 100%; border: 1px solid rgba($color-black, .08); border-radius: 16px; background: rgba($color-gray-50, .9); color: $color-gray-800; } input { min-height: 46px; padding: 0 $spacing-3; } textarea { min-height: 120px; padding: $spacing-3; resize: vertical; } }
   &__field { grid-column: 1 / -1; }
+  &__help { font-size: $font-size-xs; font-weight: 400; letter-spacing: 0; text-transform: none; color: $color-gray-500; }
   &__save { display: flex; justify-content: flex-end; }
   &__alert { padding: $spacing-3 $spacing-4; border-left: 4px solid $color-primary-dark; background: rgba($color-primary-light, .12); }
   &__alert--error { border-left-color: $color-error; background: rgba($color-error, .08); color: $color-rosewood; }

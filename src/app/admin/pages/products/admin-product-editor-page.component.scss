@@ -264,6 +264,12 @@
     line-height: 1.5;
   }
 
+  &__help {
+    color: $color-gray-500;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
   &__side-stack {
     display: grid;
     gap: $spacing-4;

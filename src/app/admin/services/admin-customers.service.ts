@@ -2,8 +2,11 @@ import { Injectable, inject, signal } from '@angular/core';
 import { SupabaseCustomerRepository } from '../../data-access/supabase/supabase.repositories';
 import { Tables, UserRole } from '../../data-access/models/database.types';
 
+import { AdminActivityService } from './admin-activity.service';
+
 @Injectable({ providedIn: 'root' })
 export class AdminCustomersService {
+  private readonly activity = inject(AdminActivityService);
   private readonly customerRepository = inject(SupabaseCustomerRepository);
 
   readonly customers = signal<Tables<'profiles'>[]>([]);
@@ -37,5 +40,6 @@ export class AdminCustomersService {
   async setRole(profile: Tables<'profiles'>, role: UserRole) {
     await this.customerRepository.setRole(profile.id, role);
     await this.load();
+    await this.activity.log('customer.role_changed', 'customer', profile.id, profile.email, `${profile.role} → ${role}`);
   }
 }

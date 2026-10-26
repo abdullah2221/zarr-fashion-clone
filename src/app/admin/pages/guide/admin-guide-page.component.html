@@ -1,0 +1,110 @@
+<section class="admin-guide">
+  <div class="admin-guide__hero">
+    <div>
+      <span class="eyebrow">Admin Guide</span>
+      <h1>How to run your shop</h1>
+      <p>Step-by-step instructions for everyday tasks. No technical knowledge is needed. Every screen also carries its own short hints — this guide is the full version in one place.</p>
+    </div>
+  </div>
+
+  <div class="admin-guide__grid">
+    <article class="admin-guide__card">
+      <h2>1. Change the homepage</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/pages">Pages</a> and select the <strong>Home</strong> page on the left.</li>
+        <li>Its sections are listed in the order visitors see them, top to bottom.</li>
+        <li>Click a section to edit it. The form tells you in plain words what that section shows.</li>
+        <li>To move a section, change its <strong>Order on the page</strong>: lower numbers show first, 0 is the very top.</li>
+        <li>To remove a section from the site without deleting it, untick <strong>Section is visible</strong> and save.</li>
+        <li>Some sections get their content from other screens — the form tells you exactly where, e.g. "Admin &gt; Campaigns".</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>2. Add a product</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/products">Products</a> and choose <strong>New product</strong>.</li>
+        <li>Fill in the name, prices, category and stock. The web address is filled in automatically from the name.</li>
+        <li>Add photos: upload a new photo, or pick one already in the shop with <strong>Choose from library</strong>.</li>
+        <li>Tick <strong>Publish product</strong> to show it in the shop. Untick it to keep it as a draft.</li>
+        <li>Tick <strong>Feature in storefront</strong> only for products you want highlighted.</li>
+        <li>Save, then open the shop in a new tab and check the product looks right.</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>3. Make a banner or campaign card</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/campaigns">Campaigns</a>.</li>
+        <li><strong>Hero banners</strong> are the big sliding images at the top of the homepage. Every active banner appears there, in order.</li>
+        <li><strong>Campaigns</strong> are the smaller cards and strips. When you make one, choose <strong>Where does it show?</strong> — that is the only place it will appear.</li>
+        <li>Set a start and end date if the campaign should stop on its own, e.g. after Eid.</li>
+        <li>Untick <strong>Active</strong> to pause a banner or campaign without deleting it.</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>4. Change the menus</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/settings">Settings</a> and find <strong>Navigation menus</strong>.</li>
+        <li>Each menu is a list of rows: a label (what visitors see) and a link (where it goes).</li>
+        <li>Use <strong>Up</strong> and <strong>Down</strong> to reorder, <strong>Add link</strong> for a new row, and <strong>Add sub-link</strong> for a dropdown item under it.</li>
+        <li>A sub-link shows as a dropdown on computers and as an expandable group on phones.</li>
+        <li>Footer columns are still typed as text: a line starting with <code>#</code> is a column title, then one <code>Label | /link</code> line per link.</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>5. Handle an order</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/orders">Orders</a> and click an order to open it.</li>
+        <li>Change its status as the order moves (for example, from pending to packed to delivered) and add a short note if you like.</li>
+        <li>Every status change is recorded with your note, so you can always see the order's history.</li>
+        <li>Customer details live in <a routerLink="/admin/customers">Customers</a>. Do not delete orders to tidy up — cancelled orders are part of your records.</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>6. Use photos safely</h2>
+      <ol>
+        <li>Open <a routerLink="/admin/media">Media</a> to see every uploaded image in the shop.</li>
+        <li>When a form offers <strong>Choose from library</strong>, picking a photo reuses the same file — it is not copied.</li>
+        <li>Deleting a product, banner or campaign never deletes a photo that another item still uses.</li>
+        <li>For product photos, use a clear photo of the real product. A photo of a different item confuses customers.</li>
+      </ol>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>7. What "hidden" means</h2>
+      <p>Nothing is half-shown on the site. The rules are simple:</p>
+      <ul>
+        <li><strong>Hidden sections</strong> are skipped completely — visitors see no gap where they were.</li>
+        <li><strong>Empty sections hide themselves.</strong> If a section's content is empty (no active testimonials, no active campaign tiles), the section does not appear at all.</li>
+        <li><strong>Inactive products and categories</strong> do not appear in the shop until you publish them.</li>
+        <li>If something disappeared from the site, check <strong>Visible / Active / Publish</strong> on that item first — that is the usual cause.</li>
+      </ul>
+    </article>
+
+    <article class="admin-guide__card">
+      <h2>8. Words explained</h2>
+      <dl>
+        <dt>Page address</dt>
+        <dd>The web address part of a page or product, e.g. "about" for /about. Lowercase letters, numbers and dashes only. It is locked after creation so old links keep working.</dd>
+        <dt>Order on the page</dt>
+        <dd>The number that decides the order of sections, banners or categories. Lower numbers show first.</dd>
+        <dt>Visible / Active / Publish</dt>
+        <dd>Three words for the same idea: this item shows on the site. Untick any of them to hide it without deleting it.</dd>
+        <dt>Where does it show?</dt>
+        <dd>For campaigns, the one place on the site where the card appears — for example, the homepage or the offers grid.</dd>
+        <dt>SKU</dt>
+        <dd>Your own stock code for a product, e.g. LN-101. Customers never see it.</dd>
+        <dt>SEO title / description</dt>
+        <dd>The title and short description search engines show for a page or product. If left empty, the shop's default is used.</dd>
+        <dt>Alt text</dt>
+        <dd>A short description of an image, read aloud for visitors who cannot see it. One plain sentence is enough.</dd>
+      </dl>
+    </article>
+  </div>
+
+  <p class="admin-guide__foot">Safe habit: make one change, save, then open the shop in a new tab and check it. If anything looks wrong, the change you just made is the first place to look.</p>
+</section>

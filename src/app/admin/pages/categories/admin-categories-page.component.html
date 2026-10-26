@@ -26,10 +26,6 @@
   @if (success()) {
     <p class="admin-categories__alert admin-categories__alert--success">{{ success() }}</p>
   }
-  @if (note()) {
-    <p class="admin-categories__alert">{{ note() }}</p>
-  }
-
   <div class="admin-categories__layout">
     <section class="admin-categories__list-card">
       <div class="admin-categories__section-head">
@@ -137,11 +133,13 @@
             <label>
               <span>Slug *</span>
               <input formControlName="slug">
+              <small class="admin-categories__help">Filled in automatically from the name. You can change it, but it must be unique and use lowercase letters, numbers and dashes.</small>
             </label>
 
             <label>
               <span>Sort order</span>
               <input type="number" formControlName="sortOrder">
+              <small class="admin-categories__help">Lower numbers show first. 0 is the very top.</small>
             </label>
 
             <label class="admin-categories__check">
@@ -159,31 +157,6 @@
           </div>
         </article>
 
-        <article class="admin-categories__panel">
-          <div class="admin-categories__panel-head">
-            <div>
-              <h3>SEO Planning</h3>
-              <p>These fields are visible for planning, but the current live schema still needs dedicated columns before they can be persisted.</p>
-            </div>
-          </div>
-
-          <div class="admin-categories__grid">
-            <label>
-              <span>SEO title</span>
-              <input formControlName="seoTitle">
-            </label>
-
-            <label>
-              <span>Campaign label</span>
-              <input formControlName="campaignLabel">
-            </label>
-
-            <label class="admin-categories__field">
-              <span>SEO description</span>
-              <textarea formControlName="seoDescription"></textarea>
-            </label>
-          </div>
-        </article>
       </section>
 
       <aside class="admin-categories__editor-side">
@@ -211,6 +184,10 @@
             <mat-icon>upload</mat-icon>
             <span>{{ selectedCategory()?.image_path ? 'Replace image' : 'Upload image' }}</span>
           </label>
+          <button class="admin-categories__upload" type="button" (click)="pickerOpen.set(true)">
+            <mat-icon>photo_library</mat-icon>
+            <span>Choose from library</span>
+          </button>
         </article>
 
         <article class="admin-categories__panel">
@@ -248,4 +225,8 @@
       </aside>
     </form>
   </div>
+
+  @if (pickerOpen()) {
+    <app-admin-media-picker (picked)="onLibraryPicked($event)" (closed)="pickerOpen.set(false)" />
+  }
 </section>

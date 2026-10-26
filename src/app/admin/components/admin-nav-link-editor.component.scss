@@ -1,0 +1,57 @@
+@use '../../../styles/abstracts/variables' as *;
+@use '../../../styles/abstracts/mixins' as *;
+
+.admin-nav-editor {
+  display: grid;
+  gap: $spacing-3;
+
+  &__row {
+    display: grid;
+    gap: $spacing-2;
+    grid-template-columns: 1fr 1fr;
+    padding: $spacing-3;
+    border: 1px solid rgba($color-black, .08);
+    border-radius: $border-radius-md;
+    background: rgba($color-gray-50, .6);
+
+    &--child {
+      margin-left: $spacing-6;
+      background: $color-white;
+    }
+
+    label:not(.admin-nav-editor__check) {
+      display: grid;
+      gap: $spacing-1;
+      font-size: $font-size-xs;
+      font-weight: 600;
+
+      input[type="text"], input:not([type="checkbox"]) {
+        padding: $spacing-2;
+        border: 1px solid rgba($color-black, .15);
+        border-radius: $border-radius-md;
+        font-weight: 400;
+      }
+    }
+  }
+
+  &__check {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-2;
+    font-size: $font-size-xs;
+    font-weight: 600;
+  }
+
+  &__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+  }
+
+  &__empty {
+    color: $color-gray-500;
+    margin: 0;
+  }
+}

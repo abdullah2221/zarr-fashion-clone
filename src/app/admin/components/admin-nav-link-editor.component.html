@@ -1,0 +1,36 @@
+<div class="admin-nav-editor">
+  @for (link of links(); track $index; let i = $index) {
+    <div class="admin-nav-editor__row">
+      <label><span>Label</span><input [ngModel]="link.label" (ngModelChange)="updateTop(i, { label: $event })" placeholder="e.g. Lawn"></label>
+      <label><span>URL</span><input [ngModel]="link.url" (ngModelChange)="updateTop(i, { url: $event })" placeholder="e.g. /category/lawn"></label>
+      <label class="admin-nav-editor__check"><input type="checkbox" [ngModel]="!!link.active" (ngModelChange)="updateTop(i, { active: $event || undefined })"><span>Active</span></label>
+      <label class="admin-nav-editor__check"><input type="checkbox" [ngModel]="!!link.highlight" (ngModelChange)="updateTop(i, { highlight: $event || undefined })"><span>Highlight</span></label>
+      <div class="admin-nav-editor__actions">
+        <button class="btn btn--ghost" type="button" (click)="moveTop(i, -1)" [disabled]="i === 0">Up</button>
+        <button class="btn btn--ghost" type="button" (click)="moveTop(i, 1)" [disabled]="i === links().length - 1">Down</button>
+        <button class="btn btn--ghost" type="button" (click)="addChild(i)">Add sub-link</button>
+        <button class="btn btn--ghost" type="button" (click)="removeTop(i)">Delete</button>
+      </div>
+    </div>
+
+    @for (child of link.children ?? []; track $index; let j = $index) {
+      <div class="admin-nav-editor__row admin-nav-editor__row--child">
+        <label><span>Sub-link label</span><input [ngModel]="child.label" (ngModelChange)="updateChild(i, j, { label: $event })" placeholder="e.g. Summer Lawn"></label>
+        <label><span>URL</span><input [ngModel]="child.url" (ngModelChange)="updateChild(i, j, { url: $event })" placeholder="e.g. /category/lawn"></label>
+        <label class="admin-nav-editor__check"><input type="checkbox" [ngModel]="!!child.active" (ngModelChange)="updateChild(i, j, { active: $event || undefined })"><span>Active</span></label>
+        <label class="admin-nav-editor__check"><input type="checkbox" [ngModel]="!!child.highlight" (ngModelChange)="updateChild(i, j, { highlight: $event || undefined })"><span>Highlight</span></label>
+        <div class="admin-nav-editor__actions">
+          <button class="btn btn--ghost" type="button" (click)="moveChild(i, j, -1)" [disabled]="j === 0">Up</button>
+          <button class="btn btn--ghost" type="button" (click)="moveChild(i, j, 1)" [disabled]="j === (link.children ?? []).length - 1">Down</button>
+          <button class="btn btn--ghost" type="button" (click)="removeChild(i, j)">Delete</button>
+        </div>
+      </div>
+    }
+  }
+
+  @if (!links().length) {
+    <p class="admin-nav-editor__empty">No links yet. Add the first one below.</p>
+  }
+
+  <button class="btn btn--dark" type="button" (click)="addTop()">Add link</button>
+</div>

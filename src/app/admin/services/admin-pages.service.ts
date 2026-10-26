@@ -6,8 +6,11 @@ import {
   PAYLOAD_SECTION_TYPES,
 } from '../models/admin-pages.models';
 
+import { AdminActivityService } from './admin-activity.service';
+
 @Injectable({ providedIn: 'root' })
 export class AdminPagesService {
+  private readonly activity = inject(AdminActivityService);
   private readonly pageRepository = inject(SupabaseSitePageRepository);
 
   readonly pages = signal<Tables<'site_pages'>[]>([]);
@@ -45,6 +48,7 @@ export class AdminPagesService {
       await this.pageRepository.createPage({ slug: value.slug, title: value.title, is_active: value.isActive });
     }
     await this.load();
+    await this.activity.log(id ? 'page.updated' : 'page.created', 'page', id, value.title);
   }
 
   async deletePage(page: Tables<'site_pages'>) {
@@ -53,6 +57,7 @@ export class AdminPagesService {
       this.selectedPage.set(null);
     }
     await this.load();
+    await this.activity.log('page.deleted', 'page', page.id, page.title);
   }
 
   emptySectionEditor(): AdminSectionEditorValue {
@@ -242,6 +247,7 @@ export class AdminPagesService {
       await this.pageRepository.createSection({ page_id: page.id, ...payload });
     }
     this.sections.set(await this.pageRepository.listAllSections(page.id));
+    await this.activity.log(id ? 'section.updated' : 'section.created', 'section', id, `${page.slug} / ${value.sectionType}`);
   }
 
   async toggleSection(row: Tables<'page_sections'>) {
@@ -250,6 +256,7 @@ export class AdminPagesService {
     if (page) {
       this.sections.set(await this.pageRepository.listAllSections(page.id));
     }
+    await this.activity.log(row.is_active ? 'section.deactivated' : 'section.activated', 'section', row.id, `${page?.slug ?? 'page'} / ${row.section_type}`);
   }
 
   async deleteSection(row: Tables<'page_sections'>) {
@@ -258,6 +265,7 @@ export class AdminPagesService {
     if (page) {
       this.sections.set(await this.pageRepository.listAllSections(page.id));
     }
+    await this.activity.log('section.deleted', 'section', row.id, `${page?.slug ?? 'page'} / ${row.section_type}`);
   }
 
   private parseLines(text: string, keys: string[]): Array<Record<string, string>> {

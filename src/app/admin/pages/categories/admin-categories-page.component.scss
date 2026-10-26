@@ -427,6 +427,7 @@
     border: 1px solid rgba($color-black, .08);
     border-radius: 16px;
     background: rgba($color-gray-50, .95);
+    font-family: inherit;
     font-size: $font-size-xs;
     font-weight: 800;
     letter-spacing: .12em;
@@ -529,4 +530,6 @@
       margin-left: 0;
     }
   }
+
+  &__help { font-size: $font-size-xs; font-weight: 400; letter-spacing: 0; text-transform: none; color: $color-gray-500; }
 }

@@ -2,9 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { SupabaseClientService } from '../../core/supabase/supabase-client.service';
 import { Inserts, Tables, Updates } from '../models/database.types';
 import {
+  AdminActivityRepository,
   AdminRepository,
   AuthRepository,
   BannerRepository,
+  BrandRepository,
   CampaignRepository,
   CategoryRepository,
   ContactMessageRepository,
@@ -502,6 +504,59 @@ export class SupabaseStorageRepository extends SupabaseRepositoryBase implements
     await this.removeProductImage(path);
   }
 
+  /**
+   * Phase 8 — shared-library guard. The media picker lets several
+   * records point at one storage file, so a delete must never remove
+   * a file another record still references. Checks product images,
+   * banners, categories, campaign metadata and page-section payloads
+   * (the last two are small tables, scanned in code). Fail-safe: any
+   * query error counts as "referenced" — the file is kept (orphan)
+   * rather than risk breaking a live record.
+   */
+  async isStoragePathReferenced(path: string): Promise<boolean> {
+    if (this.isRemoteUrl(path)) return false;
+    const client = this.client();
+    try {
+      const [products, banners, categories] = await Promise.all([
+        client.from('product_images').select('id').eq('storage_path', path).limit(1),
+        client.from('banners').select('id').eq('image_path', path).limit(1),
+        client.from('categories').select('id').eq('image_path', path).limit(1),
+      ]);
+      if (products.error || banners.error || categories.error) return true;
+      if (products.data?.length || banners.data?.length || categories.data?.length) return true;
+
+      const { data: campaigns, error: campaignsError } = await client
+        .from('campaigns')
+        .select('metadata');
+      if (campaignsError) return true;
+      if ((campaigns ?? []).some(row => {
+        const metadata = (row as { metadata: unknown }).metadata;
+        return metadata !== null && typeof metadata === 'object'
+          && (metadata as Record<string, unknown>)['imagePath'] === path;
+      })) return true;
+
+      const { data: sections, error: sectionsError } = await client
+        .from('page_sections')
+        .select('content');
+      if (sectionsError) return true;
+      return (sections ?? []).some(row =>
+        JSON.stringify((row as { content: unknown }).content).includes(path));
+    } catch {
+      return true;
+    }
+  }
+
+  /**
+   * Removes the storage object only when nothing references it.
+   * Callers must delete their own database row FIRST, so their own
+   * reference no longer counts. Remote URLs are never bucket files.
+   */
+  async removeImageIfUnreferenced(path: string): Promise<void> {
+    if (this.isRemoteUrl(path)) return;
+    if (await this.isStoragePathReferenced(path)) return;
+    await this.removeProductImage(path);
+  }
+
   /** Returns true if the path is an absolute http/https URL (remote placeholder or CDN). */
   private isRemoteUrl(path: string): boolean {
     return path.startsWith('http://') || path.startsWith('https://');
@@ -667,6 +722,52 @@ export class SupabaseTestimonialRepository extends SupabaseRepositoryBase implem
 
   async delete(id: string) {
     const { error } = await this.client().from('testimonials').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseBrandsRepository extends SupabaseRepositoryBase implements BrandRepository {
+  async listActive() {
+    const { data, error } = await this.client().from('brands').select('*').eq('is_active', true).order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('brands').select('*').order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async create(brand: Inserts<'brands'>) {
+    const { data, error } = await this.client().from('brands').insert(brand).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'brands'>) {
+    const { data, error } = await this.client().from('brands').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('brands').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseAdminActivityRepository extends SupabaseRepositoryBase implements AdminActivityRepository {
+  async listRecent(limit: number) {
+    const { data, error } = await this.client().from('admin_activity').select('*').order('created_at', { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data;
+  }
+
+  async log(entry: Inserts<'admin_activity'>) {
+    const { error } = await this.client().from('admin_activity').insert(entry);
     if (error) throw error;
   }
 }

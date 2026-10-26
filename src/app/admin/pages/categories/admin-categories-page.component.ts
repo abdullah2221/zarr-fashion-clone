@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { AdminStatusBadgeComponent } from '../../components/admin-status-badge.component';
 import { AdminActionButtonComponent } from '../../components/admin-action-button.component';
+import { AdminMediaPickerComponent } from '../../components/admin-media-picker.component';
+import { AdminMediaItem } from '../../services/admin-media.service';
 import { AdminCategorySort } from '../../models/admin-catalog.models';
 import { AdminCategoriesService } from '../../services/admin-categories.service';
 import { Tables } from '../../../data-access/models/database.types';
@@ -12,7 +14,7 @@ import { Tables } from '../../../data-access/models/database.types';
 @Component({
   selector: 'app-admin-categories-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule, AdminStatusBadgeComponent, AdminActionButtonComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule, AdminStatusBadgeComponent, AdminActionButtonComponent, AdminMediaPickerComponent],
   templateUrl: './admin-categories-page.component.html',
   styleUrl: './admin-categories-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +25,8 @@ export class AdminCategoriesPageComponent {
 
   readonly selectedCategory = signal<Tables<'categories'> | null>(null);
   readonly imageFile = signal<File | null>(null);
+  readonly pickedImagePath = signal<string | null>(null);
+  readonly pickerOpen = signal(false);
   readonly imagePreview = signal<string>('');
   readonly search = signal('');
   readonly sort = signal<AdminCategorySort>('sort-order');
@@ -30,7 +34,6 @@ export class AdminCategoriesPageComponent {
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
-  readonly note = signal<string | null>('Category SEO title, SEO description, and campaign label are shown for planning, but the current live categories schema does not yet include storage columns for them.');
   readonly isLoading = this.service.isLoading;
 
   readonly categories = computed(() => this.service.filterCategories(this.service.categoryList(), this.search(), this.sort()));
@@ -55,9 +58,6 @@ export class AdminCategoriesPageComponent {
     description: [''],
     sortOrder: [0 as number | null, [Validators.required]],
     isActive: [true],
-    seoTitle: [{ value: '', disabled: true }],
-    seoDescription: [{ value: '', disabled: true }],
-    campaignLabel: [{ value: '', disabled: true }],
   });
 
   private slugTouched = false;
@@ -80,6 +80,7 @@ export class AdminCategoriesPageComponent {
   selectCategory(category: Tables<'categories'> | null) {
     this.selectedCategory.set(category);
     this.imageFile.set(null);
+    this.pickedImagePath.set(null);
     this.imagePreview.set(category?.image_path ? this.service.categoryList().find(item => item.record.id === category.id)?.imageUrl || '' : '');
     this.form.reset(this.service.createFormValueFromRecord(category));
     this.slugTouched = Boolean(category);
@@ -89,8 +90,17 @@ export class AdminCategoriesPageComponent {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0] || null;
     this.imageFile.set(file);
+    this.pickedImagePath.set(null);
     this.imagePreview.set(file ? URL.createObjectURL(file) : '');
     if (input) input.value = '';
+  }
+
+  /** Phase 8 library pick: adopt the existing file by reference, no upload. */
+  onLibraryPicked(item: AdminMediaItem) {
+    this.pickedImagePath.set(item.path);
+    this.imageFile.set(null);
+    this.imagePreview.set(item.publicUrl);
+    this.pickerOpen.set(false);
   }
 
   async save() {
@@ -112,7 +122,7 @@ export class AdminCategoriesPageComponent {
     this.saving.set(true);
     try {
       const editing = Boolean(this.selectedCategory());
-      await this.service.saveCategory(this.selectedCategory(), value, this.imageFile());
+      await this.service.saveCategory(this.selectedCategory(), value, this.imageFile(), this.pickedImagePath());
       this.success.set(editing ? 'Category updated successfully.' : 'Category created successfully.');
       this.selectCategory(null);
     } catch (error) {

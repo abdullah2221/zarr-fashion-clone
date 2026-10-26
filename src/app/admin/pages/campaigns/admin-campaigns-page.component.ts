@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminActionButtonComponent } from '../../components/admin-action-button.component';
 import { AdminStatusBadgeComponent } from '../../components/admin-status-badge.component';
+import { AdminMediaPickerComponent } from '../../components/admin-media-picker.component';
+import { AdminMediaItem } from '../../services/admin-media.service';
 import { AdminCampaignsService } from '../../services/admin-campaigns.service';
 import {
   AdminBannerEditorValue,
@@ -15,7 +17,7 @@ import {
 @Component({
   selector: 'app-admin-campaigns-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, AdminActionButtonComponent, AdminStatusBadgeComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, AdminActionButtonComponent, AdminStatusBadgeComponent, AdminMediaPickerComponent],
   templateUrl: './admin-campaigns-page.component.html',
   styleUrl: './admin-campaigns-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,8 +30,12 @@ export class AdminCampaignsPageComponent {
   readonly selectedCampaign = signal<AdminCampaignListItem | null>(null);
   readonly bannerImageFile = signal<File | null>(null);
   readonly campaignImageFile = signal<File | null>(null);
+  readonly bannerPickedPath = signal<string | null>(null);
+  readonly campaignPickedPath = signal<string | null>(null);
   readonly bannerPreview = signal('');
   readonly campaignPreview = signal('');
+  /** Phase 8 library picker target: which image field the picker fills. */
+  readonly pickerTarget = signal<'banner' | 'campaign' | null>(null);
   readonly savingBanner = signal(false);
   readonly savingCampaign = signal(false);
   readonly error = signal<string | null>(null);
@@ -78,6 +84,7 @@ export class AdminCampaignsPageComponent {
   selectBanner(item: AdminBannerListItem | null) {
     this.selectedBanner.set(item);
     this.bannerImageFile.set(null);
+    this.bannerPickedPath.set(null);
     this.bannerPreview.set(item?.imageUrl || '');
     this.bannerForm.reset(this.service.createBannerFormValue(item));
   }
@@ -85,6 +92,7 @@ export class AdminCampaignsPageComponent {
   selectCampaign(item: AdminCampaignListItem | null) {
     this.selectedCampaign.set(item);
     this.campaignImageFile.set(null);
+    this.campaignPickedPath.set(null);
     this.campaignPreview.set(item?.imageUrl || '');
     this.campaignForm.reset(this.service.createCampaignFormValue(item));
   }
@@ -93,6 +101,7 @@ export class AdminCampaignsPageComponent {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0] || null;
     this.bannerImageFile.set(file);
+    this.bannerPickedPath.set(null);
     this.bannerPreview.set(file ? URL.createObjectURL(file) : this.selectedBanner()?.imageUrl || '');
     if (input) input.value = '';
   }
@@ -101,8 +110,41 @@ export class AdminCampaignsPageComponent {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0] || null;
     this.campaignImageFile.set(file);
+    this.campaignPickedPath.set(null);
     this.campaignPreview.set(file ? URL.createObjectURL(file) : this.selectedCampaign()?.imageUrl || '');
     if (input) input.value = '';
+  }
+
+  /** Words like "home-section" shown as "Home section" in lists. */
+  prettyPlacement(value: string): string {
+    return (value || '').replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  /** Where a campaign placement actually shows on the site, in plain words. */
+  campaignPlacementHelp(value: string): string {
+    switch (value) {
+      case 'home-section': return 'Shows as a card on the homepage.';
+      case 'shop-banner': return 'Shows as the wide banner strip used by the Campaign band section.';
+      case 'offer-grid': return 'Shows as a card in the Offers grid on the homepage.';
+      case 'featured-collections': return 'Shows as a tile in the Seasonal Collections section on the homepage.';
+      default: return 'Pick where this campaign shows on the site.';
+    }
+  }
+
+  /** Phase 8 library pick: adopt the existing file by reference, no upload. */
+  onBannerLibraryPicked(item: AdminMediaItem) {
+    this.bannerPickedPath.set(item.path);
+    this.bannerImageFile.set(null);
+    this.bannerPreview.set(item.publicUrl);
+    this.pickerTarget.set(null);
+  }
+
+  /** Phase 8 library pick: adopt the existing file by reference, no upload. */
+  onCampaignLibraryPicked(item: AdminMediaItem) {
+    this.campaignPickedPath.set(item.path);
+    this.campaignImageFile.set(null);
+    this.campaignPreview.set(item.publicUrl);
+    this.pickerTarget.set(null);
   }
 
   async saveBanner() {
@@ -118,7 +160,8 @@ export class AdminCampaignsPageComponent {
       await this.service.saveBanner(
         this.selectedBanner(),
         this.bannerForm.getRawValue() as AdminBannerEditorValue,
-        this.bannerImageFile()
+        this.bannerImageFile(),
+        this.bannerPickedPath()
       );
       this.success.set(this.selectedBanner() ? 'Banner updated successfully.' : 'Banner created successfully.');
       this.selectBanner(null);
@@ -142,7 +185,8 @@ export class AdminCampaignsPageComponent {
       await this.service.saveCampaign(
         this.selectedCampaign(),
         this.campaignForm.getRawValue() as AdminCampaignEditorValue,
-        this.campaignImageFile()
+        this.campaignImageFile(),
+        this.campaignPickedPath()
       );
       this.success.set(this.selectedCampaign() ? 'Campaign updated successfully.' : 'Campaign created successfully.');
       this.selectCampaign(null);

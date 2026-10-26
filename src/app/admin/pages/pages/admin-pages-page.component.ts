@@ -4,6 +4,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminActionButtonComponent } from '../../components/admin-action-button.component';
 import { AdminStatusBadgeComponent } from '../../components/admin-status-badge.component';
+import { AdminMediaPickerComponent } from '../../components/admin-media-picker.component';
+import { AdminMediaItem } from '../../services/admin-media.service';
+import { SupabaseStorageRepository } from '../../../data-access/supabase/supabase.repositories';
 import { AdminPagesService } from '../../services/admin-pages.service';
 import {
   ADMIN_SECTION_TYPES,
@@ -16,7 +19,7 @@ import { Tables } from '../../../data-access/models/database.types';
 @Component({
   selector: 'app-admin-pages-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, AdminActionButtonComponent, AdminStatusBadgeComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, AdminActionButtonComponent, AdminStatusBadgeComponent, AdminMediaPickerComponent],
   templateUrl: './admin-pages-page.component.html',
   styleUrl: './admin-pages-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,11 +27,14 @@ import { Tables } from '../../../data-access/models/database.types';
 export class AdminPagesPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   readonly service = inject(AdminPagesService);
+  private readonly storageRepository = inject(SupabaseStorageRepository);
   readonly sectionTypes = ADMIN_SECTION_TYPES;
 
   readonly pageMode = signal<'edit' | 'new'>('edit');
   readonly selectedSection = signal<Tables<'page_sections'> | null>(null);
   readonly sectionType = signal('static-content');
+  /** Which section image field the media picker is open for, if any. */
+  readonly pickerFor = signal<'custom-image' | 'stats-bg' | null>(null);
   readonly savingPage = signal(false);
   readonly savingSection = signal(false);
   readonly error = signal<string | null>(null);
@@ -146,6 +152,27 @@ export class AdminPagesPageComponent {
 
   onSectionTypeChange() {
     this.sectionType.set(this.sectionForm.controls.sectionType.value);
+  }
+
+  /** Preview URL for a stored image path, or '' when the path is empty/invalid. */
+  imagePreview(path: string): string {
+    const trimmed = (path || '').trim();
+    if (!trimmed) return '';
+    try {
+      return this.storageRepository.getPublicImageUrl(trimmed);
+    } catch {
+      return '';
+    }
+  }
+
+  onLibraryPicked(item: AdminMediaItem) {
+    const target = this.pickerFor();
+    if (target === 'custom-image') {
+      this.sectionForm.controls.imagePath.setValue(item.path);
+    } else if (target === 'stats-bg') {
+      this.sectionForm.controls.statsBackgroundPath.setValue(item.path);
+    }
+    this.pickerFor.set(null);
   }
 
   async saveSection() {

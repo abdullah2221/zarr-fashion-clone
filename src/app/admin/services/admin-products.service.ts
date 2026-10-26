@@ -14,8 +14,11 @@ import {
   AdminStockFilter,
 } from '../models/admin-catalog.models';
 
+import { AdminActivityService } from './admin-activity.service';
+
 @Injectable({ providedIn: 'root' })
 export class AdminProductsService {
+  private readonly activity = inject(AdminActivityService);
   private readonly productRepository = inject(SupabaseProductRepository);
   private readonly categoryRepository = inject(SupabaseCategoryRepository);
   private readonly storageRepository = inject(SupabaseStorageRepository);
@@ -180,6 +183,7 @@ export class AdminProductsService {
     await this.syncImages(savedProduct, images);
     await this.load();
     await this.productService.refreshCatalog();
+    await this.activity.log(currentProduct ? 'product.updated' : 'product.created', 'product', savedProduct.id, savedProduct.name);
     return savedProduct;
   }
 
@@ -191,18 +195,21 @@ export class AdminProductsService {
     await this.productRepository.delete(id);
     await this.load();
     await this.productService.refreshCatalog();
+    await this.activity.log('product.deleted', 'product', id, this.productsSignal().find(p => p.id === id)?.name ?? null);
   }
 
   async toggleProductActive(product: Tables<'products'>, isActive: boolean) {
     await this.productRepository.update(product.id, { is_active: isActive });
     await this.load();
     await this.productService.refreshCatalog();
+    await this.activity.log(isActive ? 'product.activated' : 'product.deactivated', 'product', product.id, product.name);
   }
 
   async toggleProductFeatured(product: Tables<'products'>, isFeatured: boolean) {
     await this.productRepository.update(product.id, { is_featured: isFeatured });
     await this.load();
     await this.productService.refreshCatalog();
+    await this.activity.log(isFeatured ? 'product.featured' : 'product.unfeatured', 'product', product.id, product.name);
   }
 
   filterProducts(
@@ -293,8 +300,12 @@ export class AdminProductsService {
     const newImages = activeImages.filter(image => !image.id);
     // Images with a real File → upload to Supabase Storage bucket
     const fileImages = newImages.filter(image => !!image.file);
+    // Phase 8 library picks → adopt the existing storage path by
+    // reference (no upload); the guarded delete below keeps shared
+    // files alive while any record references them.
+    const pickedImages = newImages.filter(image => !image.file && image.storagePath && !this.isRemoteUrl(image.storagePath));
     // Images with a remote http/https URL → store the URL directly as storage_path, no bucket upload
-    const remoteImages = newImages.filter(image => !image.file && this.isRemoteUrl(image.previewUrl));
+    const remoteImages = newImages.filter(image => !image.file && !image.storagePath && this.isRemoteUrl(image.previewUrl));
     const productFolder = `products/${product.legacy_id || product.id}`;
 
     for (const image of images.filter(image => image.markedForDeletion && image.id && image.storagePath)) {
@@ -317,6 +328,17 @@ export class AdminProductsService {
       await this.productRepository.createImage({
         product_id: product.id,
         storage_path: path,
+        alt_text: image.altText,
+        is_primary: image.isPrimary,
+        sort_order: image.sortOrder,
+      });
+    }
+
+    // Adopt library picks by reference — no upload, the file already exists.
+    for (const image of pickedImages) {
+      await this.productRepository.createImage({
+        product_id: product.id,
+        storage_path: image.storagePath!,
         alt_text: image.altText,
         is_primary: image.isPrimary,
         sort_order: image.sortOrder,
@@ -353,7 +375,7 @@ export class AdminProductsService {
 
   private async deleteImageRecord(id: string, storagePath: string) {
     await this.productRepository.deleteImage(id);
-    await this.storageRepository.removeProductImage(storagePath);
+    await this.storageRepository.removeImageIfUnreferenced(storagePath);
   }
 
   private normalizeImageDrafts(images: AdminImageDraft[]) {

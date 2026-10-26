@@ -65,3 +65,21 @@
   &__cta-title { font-family: $font-family-serif; font-size: clamp(1.8rem, 3vw, 3.2rem); line-height: 1.05; max-width: 360px; }
   &__cta-btn { margin-top: $spacing-5; padding: $spacing-3 $spacing-5; background: $color-white; color: $color-black; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; @include transition; }
 }
+
+// Phase 7.2 — mobile only. The tiles stop stacking as one full-width
+// column and become a horizontal swipe row, the same pattern as every
+// other rail on the page (finger swipe + snap + a peek of the next
+// tile). Tile height and copy are unchanged. This block comes last so
+// it overrides the 2-column grid for 640–767px too. Desktop/tablet
+// (≥768px): grid unchanged.
+@media (max-width: 767px) {
+  .featured__grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: $spacing-8;
+    &::-webkit-scrollbar { display: none; }
+  }
+  .featured__item { flex: none; width: 82vw; max-width: 340px; scroll-snap-align: start; }
+}

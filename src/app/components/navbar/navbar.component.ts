@@ -26,6 +26,17 @@ export class NavbarComponent implements OnInit {
   isTop = signal(true);
   isMenuOpen = signal(false);
   isAccountMenuOpen = signal(false);
+  /** Phase 8: mobile sub-menus expanded by parent key (label + url). */
+  readonly expandedMobileParents = signal<ReadonlySet<string>>(new Set());
+
+  toggleMobileChildren(key: string) {
+    this.expandedMobileParents.update(current => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
   isHomePage = signal(true);
   isFocusMode = this.layoutService.isFocusMode;
   cartCount = this.cartService.count;

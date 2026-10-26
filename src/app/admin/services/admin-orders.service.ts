@@ -12,8 +12,11 @@ import {
 
 type ShippingAddressRecord = Record<string, unknown>;
 
+import { AdminActivityService } from './admin-activity.service';
+
 @Injectable({ providedIn: 'root' })
 export class AdminOrdersService {
+  private readonly activity = inject(AdminActivityService);
   private readonly orderRepository = inject(SupabaseOrderRepository);
   private readonly productRepository = inject(SupabaseProductRepository);
   private readonly storageRepository = inject(SupabaseStorageRepository);
@@ -175,6 +178,7 @@ export class AdminOrdersService {
       updated_at: new Date().toISOString(),
     });
     await this.load();
+    await this.activity.log('order.status_changed', 'order', order.id, order.order_number ?? order.id, note ?? null);
   }
 
   async updateCodOperations(order: Tables<'orders'>, changes: {
@@ -195,6 +199,7 @@ export class AdminOrdersService {
       updated_at: new Date().toISOString(),
     });
     await this.load();
+    await this.activity.log('order.cod_updated', 'order', order.id, order.order_number ?? order.id);
   }
 
   statusTone(status: OrderStatus): 'success' | 'warning' | 'muted' | 'neutral' {
