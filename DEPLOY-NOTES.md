@@ -1,3 +1,7 @@
+# v8.2 (26 Oct 2026) — ADMIN SPACING FIX (see PHASE-8.2-RESULTS.md). This package CONTAINS v8.1 (and everything before it) — deploy v8.2 INSTEAD of v8.1 from a fresh folder (npx vercel --prod). NO migration for 8.2: nothing in the database changes, and the phase-9 SQL from the v8 notes is still only required if you have not run it yet. Rollback = redeploy zeenat-phase8.1.zip (rolling back loses only the spacing fix; no stored data is affected).
+
+What v8.2 changes (admin only — the shopfront visitors see is unchanged): one rule added to the global stylesheet removes the storefront's 64px/96px section padding inside the admin shell, so the first card on every admin page now sits directly under the page heading with only the small ~16px gap. Storefront section spacing is untouched.
+
 # v8.1 (26 Oct 2026) — ADMIN SIMPLICITY FOR NON-DEVELOPERS (see PHASE-8.1-RESULTS.md). This package CONTAINS v8 (and v7.2) — deploy v8.1 INSTEAD of v8 from a fresh folder (npx vercel --prod). No migration: run the phase-9 SQL from the v8 notes first (still required if you have not run it yet). Rollback = redeploy zeenat-phase8.zip (nothing in 8.1 changes stored data, so rolling back loses only the new help text and the Guide page).
 
 What v8.1 changes (admin only — the shopfront visitors see is unchanged):

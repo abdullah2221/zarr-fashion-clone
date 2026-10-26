@@ -40,6 +40,13 @@ section {
   }
 }
 
+// Admin shell: opt out of the storefront section rhythm. Admin pages set
+// their own card/column padding; this only removes the inherited 64/96px
+// padding, and any class-based padding still wins (higher specificity).
+:where(.admin-shell) section {
+  padding: 0;
+}
+
 .container {
   @include premium-container($container-lg);
 }
