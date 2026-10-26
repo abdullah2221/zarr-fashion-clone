@@ -1,3 +1,55 @@
+# v7 (22 Oct 2026) — CMS COMPLETION: FAQ + TESTIMONIAL RECORDS, MENU BUILDER, MEDIA LIBRARY, CUSTOMERS, SUBSCRIBERS, MESSAGES, ORDER HISTORY
+
+**Deploy v7 INSTEAD of v6.1. Unzip FULLY into a NEW folder and deploy
+from there (`npx vercel --prod`). This package CONTAINS the v6.1
+routing fix (vercel.json ordered routes — unchanged), the v6 page
+builder, the v5 SSR fix, and the v3/v4 fixes. No Vercel setting
+changes.**
+
+**ONE DATABASE STEP (required): run `supabase/phase-8-cms-completion.sql`
+in Supabase Dashboard -> SQL Editor -> Run BEFORE deploying v7.**
+It creates four new tables (`faqs`, `testimonials`, `subscribers`,
+`contact_messages`), makes sure `order_status_history` exists, adds a
+trigger that records every order status change, and seeds the FAQs
+and testimonials with the site's current copy, word for word. It is
+safe to re-run (it never overwrites your later admin edits). If you
+deploy first and run it after, nothing breaks: until it runs, the
+FAQ page and homepage testimonials keep showing the existing copy,
+and the newsletter/contact forms simply report an error if used.
+
+What v7 changes:
+
+1. **FAQs and testimonials are records now** (new Admin > FAQs and
+   Admin > Testimonials). The FAQ page reads its questions from the
+   `faqs` table; a new "FAQ list" block can also be placed on any
+   page in Admin > Pages. The homepage testimonials section reads
+   the `testimonials` table and hides itself when no testimonial is
+   active.
+2. **Menu builder (Admin > Settings > Navigation menus).** Header
+   menu, mobile menu and footer link columns are editable and
+   reorderable, stored in the existing settings.
+3. **New admin screens:** Media (read-only library of the
+   product-images bucket with public-URL copy), Customers (profiles
+   list; role changes via the existing set_user_role function,
+   super admin only), Subscribers (newsletter signups), Messages
+   (contact-form inbox with a mark-handled toggle).
+4. **Working forms:** the footer and homepage newsletter forms now
+   subscribe for real (with already-subscribed and error states);
+   the Contact page form saves enquiries to the Messages inbox.
+5. **Page builder grows:** a "Custom content" block (heading, body,
+   optional image + button) for any page, and an optional item
+   `limit` on list sections (categories, featured collections, both
+   carousels, offers, campaign cards, FAQ list).
+6. **Dashboard + orders:** the dashboard shows real revenue
+   (all orders except cancelled), the order count and the latest 5
+   orders; the order detail page shows the status-history timeline
+   recorded by the new trigger.
+7. **Account page:** customers can now change their password as
+   well as edit their name and phone.
+
+Rollback: redeploy zeenat-phase6.1.zip — the phase-8 tables can stay
+in place; v6.1 ignores them.
+
 # v6.1 (22 Oct 2026) — routing fix ONLY: vercel.json now uses ordered routes so the homepage "/" is served by the SSR function instead of the static shell (Vercel was serving dist/app/browser/index.html for "/" before the rewrite could fire; every other route already SSRs). Deploy v6.1 instead of v6. If anything looks wrong, redeploy zeenat-phase6.zip to restore the previous behaviour exactly.
 
 # Deployment notes — Phase 3: real SSR on Vercel + admin spacing (prepared 21 Oct 2026)

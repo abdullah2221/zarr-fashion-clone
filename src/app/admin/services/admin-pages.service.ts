@@ -81,6 +81,10 @@ export class AdminPagesService {
       formType: '',
       sectionsText: '',
       secondaryText: '',
+      limit: null,
+      body: '',
+      imagePath: '',
+      imageAlt: '',
     };
   }
 
@@ -122,45 +126,84 @@ export class AdminPagesService {
     editor.secondaryText = this.recordArray(content['secondary'])
       .map(item => `${this.stringValue(item['label']) || ''} | ${this.stringValue(item['value']) || ''}`)
       .join('\n');
+    const rawLimit = content['limit'];
+    editor.limit = typeof rawLimit === 'number' && Number.isFinite(rawLimit) && rawLimit > 0 ? Math.floor(rawLimit) : null;
+    editor.body = this.stringValue(content['body']) || '';
+    editor.imagePath = this.stringValue(content['imagePath']) || '';
+    editor.imageAlt = this.stringValue(content['imageAlt']) || '';
     return editor;
   }
 
   editorToContent(value: AdminSectionEditorValue, existing?: Json): Json {
+    const existingRecord = this.asRecord(existing);
+    // Phase 7: the optional item limit applies to every list-backed
+    // section, payload-owned or not; a cleared limit removes the key
+    // so the renderer falls back to the full list.
+    const withLimit = (content: Json): Json => {
+      const record = this.asRecord(content);
+      if (value.limit && value.limit > 0) {
+        record['limit'] = Math.floor(value.limit);
+      } else {
+        delete record['limit'];
+      }
+      return record as Json;
+    };
+
     if (!PAYLOAD_SECTION_TYPES.includes(value.sectionType)) {
       // Sections whose content lives in another system keep whatever
       // payload they already carry; the row only controls order and
-      // visibility for them.
-      return existing ?? {};
+      // visibility for them (plus the limit, when one is set).
+      return withLimit(existing ?? {});
     }
 
     switch (value.sectionType) {
       case 'carousel-sale':
-        return {
+        return withLimit({
           sideBannerTitle: value.sideBannerTitle.trim(),
           sideBannerText: value.sideBannerText.trim(),
-        };
-      case 'testimonials':
-        return {
+        });
+      case 'faq-list':
+        return withLimit({
           eyebrow: value.eyebrow.trim(),
           title: value.title.trim(),
-          items: this.parseLines(value.itemsText, ['quote', 'author']),
+        });
+      case 'custom-content': {
+        const content: Record<string, unknown> = {
+          heading: value.heading.trim(),
+          body: value.body.trim(),
         };
+        if (value.imagePath.trim()) content['imagePath'] = value.imagePath.trim();
+        if (value.imageAlt.trim()) content['imageAlt'] = value.imageAlt.trim();
+        if (value.ctaText.trim()) content['ctaText'] = value.ctaText.trim();
+        if (value.ctaLink.trim()) content['ctaLink'] = value.ctaLink.trim();
+        return withLimit(content as Json);
+      }
+      case 'testimonials':
+        // Phase 7: the quotes themselves live in Admin > Testimonials
+        // records. The payload keeps its eyebrow/title here and its
+        // legacy items are PRESERVED untouched as the storefront's
+        // offline fallback mirror — never edited from this form.
+        return withLimit({
+          eyebrow: value.eyebrow.trim(),
+          title: value.title.trim(),
+          items: Array.isArray(existingRecord['items']) ? existingRecord['items'] : this.parseLines(value.itemsText, ['quote', 'author']),
+        });
       case 'brands-stats':
-        return {
+        return withLimit({
           brands: this.parseLines(value.brandsText, ['name', 'styleKey']),
           statsEyebrow: value.statsEyebrow.trim(),
           statsItems: this.parseLines(value.statsItemsText, ['value', 'label']),
           statsBackgroundPath: value.statsBackgroundPath.trim(),
           statsBackgroundAlt: value.statsBackgroundAlt.trim(),
-        };
+        });
       case 'newsletter':
-        return {
+        return withLimit({
           eyebrow: value.eyebrow.trim(),
           heading: value.heading.trim(),
           emailPlaceholder: value.emailPlaceholder.trim(),
           buttonText: value.buttonText.trim(),
           note: value.note.trim(),
-        };
+        });
       case 'static-content': {
         const content: Record<string, unknown> = {
           eyebrow: value.eyebrow.trim(),
@@ -177,10 +220,10 @@ export class AdminPagesService {
         if (value.formType) content['formType'] = value.formType;
         const secondary = this.parseLines(value.secondaryText, ['label', 'value']);
         if (secondary.length) content['secondary'] = secondary;
-        return content as Json;
+        return withLimit(content as Json);
       }
       default:
-        return existing ?? {};
+        return withLimit(existing ?? {});
     }
   }
 

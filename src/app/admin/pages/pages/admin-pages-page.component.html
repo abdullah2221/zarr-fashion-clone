@@ -89,6 +89,9 @@
           </label>
           <label><span>Sort order *</span><input type="number" formControlName="sortOrder"></label>
           <label class="admin-pages__check"><input type="checkbox" formControlName="isActive"><span>Section is visible</span></label>
+          @if (isLimitable(sectionType())) {
+            <label><span>Item limit (optional)</span><input type="number" min="1" formControlName="limit"><small class="admin-pages__help">Leave empty to show every item from the source list.</small></label>
+          }
         </div>
 
         @if (typeInfo(sectionType()).contentOwner) {
@@ -106,7 +109,24 @@
             <div class="admin-pages__grid">
               <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
               <label><span>Heading</span><input formControlName="title"></label>
-              <label class="admin-pages__field"><span>Testimonials</span><textarea formControlName="itemsText"></textarea><small class="admin-pages__help">One per line: Quote | Author</small></label>
+              <p class="admin-pages__note admin-pages__field">The quotes themselves are managed as records in Admin &gt; Testimonials. With no active testimonial record, this section hides itself.</p>
+            </div>
+          }
+          @case ('faq-list') {
+            <div class="admin-pages__grid">
+              <label><span>Eyebrow</span><input formControlName="eyebrow"></label>
+              <label><span>Heading</span><input formControlName="title"></label>
+              <p class="admin-pages__note admin-pages__field">The questions and answers are managed as records in Admin &gt; FAQs. With no active FAQ, this section hides itself.</p>
+            </div>
+          }
+          @case ('custom-content') {
+            <div class="admin-pages__grid">
+              <label><span>Heading</span><input formControlName="heading"></label>
+              <label class="admin-pages__field"><span>Body text</span><textarea formControlName="body"></textarea><small class="admin-pages__help">Plain text — line breaks are kept as paragraphs spacing on the page.</small></label>
+              <label><span>Image path (optional)</span><input formControlName="imagePath"><small class="admin-pages__help">Storage path inside the product-images bucket, e.g. sections/my-image.jpg — see Admin &gt; Media for paths.</small></label>
+              <label><span>Image description (alt)</span><input formControlName="imageAlt"></label>
+              <label><span>Button text (optional)</span><input formControlName="ctaText"></label>
+              <label><span>Button link (optional)</span><input formControlName="ctaLink"></label>
             </div>
           }
           @case ('brands-stats') {

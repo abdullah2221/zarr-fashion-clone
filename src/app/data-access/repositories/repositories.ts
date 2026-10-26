@@ -151,3 +151,57 @@ export interface AdminRepository {
   upsertSetting(setting: Inserts<'admin_settings'>): Promise<Tables<'admin_settings'>>;
   deleteSetting(key: string): Promise<void>;
 }
+
+export interface FaqRepository {
+  listActive(): Promise<Tables<'faqs'>[]>;
+  listAll(): Promise<Tables<'faqs'>[]>;
+  create(faq: Inserts<'faqs'>): Promise<Tables<'faqs'>>;
+  update(id: string, changes: Updates<'faqs'>): Promise<Tables<'faqs'>>;
+  delete(id: string): Promise<void>;
+}
+
+export interface TestimonialRepository {
+  listActive(): Promise<Tables<'testimonials'>[]>;
+  listAll(): Promise<Tables<'testimonials'>[]>;
+  create(testimonial: Inserts<'testimonials'>): Promise<Tables<'testimonials'>>;
+  update(id: string, changes: Updates<'testimonials'>): Promise<Tables<'testimonials'>>;
+  delete(id: string): Promise<void>;
+}
+
+export interface SubscriberRepository {
+  /** Public write path: returns 'subscribed' or 'duplicate'. */
+  subscribe(email: string): Promise<'subscribed' | 'duplicate'>;
+  listAll(): Promise<Tables<'subscribers'>[]>;
+}
+
+export interface ContactMessageRepository {
+  /** Public write path (INSERT-only policy). */
+  send(message: Inserts<'contact_messages'>): Promise<void>;
+  listAll(): Promise<Tables<'contact_messages'>[]>;
+  setHandled(id: string, handled: boolean): Promise<Tables<'contact_messages'>>;
+}
+
+export interface CustomerRepository {
+  listProfiles(): Promise<Tables<'profiles'>[]>;
+  /** Role changes go through the set_user_role RPC, which enforces super_admin server-side. */
+  setRole(userId: string, role: Tables<'profiles'>['role']): Promise<Tables<'profiles'>>;
+}
+
+export interface OrderStatusHistoryRepository {
+  listByOrder(orderId: string): Promise<Tables<'order_status_history'>[]>;
+}
+
+export interface MediaObject {
+  name: string;
+  id: string | null;
+  updated_at: string | null;
+  created_at: string | null;
+  last_accessed_at: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+export interface MediaRepository {
+  /** Lists one folder level of the product-images bucket (folders have a null id). */
+  listFolder(folder: string): Promise<MediaObject[]>;
+  getPublicUrl(path: string): string;
+}

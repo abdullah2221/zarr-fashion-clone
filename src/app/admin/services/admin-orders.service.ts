@@ -1,8 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Json, OrderStatus, Tables } from '../../data-access/models/database.types';
-import { SupabaseOrderRepository, SupabaseProductRepository, SupabaseStorageRepository } from '../../data-access/supabase/supabase.repositories';
+import { SupabaseOrderRepository, SupabaseOrderStatusHistoryRepository, SupabaseProductRepository, SupabaseStorageRepository } from '../../data-access/supabase/supabase.repositories';
 import {
   AdminOrderDetail,
+  AdminOrderHistoryEntry,
   AdminOrderItemDetail,
   AdminOrderListFilters,
   AdminOrderListItem,
@@ -16,6 +17,7 @@ export class AdminOrdersService {
   private readonly orderRepository = inject(SupabaseOrderRepository);
   private readonly productRepository = inject(SupabaseProductRepository);
   private readonly storageRepository = inject(SupabaseStorageRepository);
+  private readonly historyRepository = inject(SupabaseOrderStatusHistoryRepository);
 
   private readonly ordersSignal = signal<Tables<'orders'>[]>([]);
   private readonly loadingSignal = signal(false);
@@ -123,7 +125,45 @@ export class AdminOrdersService {
       order,
       listItem: this.mapOrder(order),
       items: detailItems,
+      history: await this.loadHistory(order),
     };
+  }
+
+  /**
+   * Phase 7: status history comes from the order_status_history
+   * table (written by the phase-8 trigger). Orders changed before
+   * the trigger existed — or a database where the migration has not
+   * run yet — fall back to the legacy JSON log the admin has always
+   * appended inside shipping_address, so the timeline never breaks.
+   */
+  private async loadHistory(order: Tables<'orders'>): Promise<AdminOrderHistoryEntry[]> {
+    try {
+      const rows = await this.historyRepository.listByOrder(order.id);
+      if (rows.length) {
+        return rows.map(row => ({
+          fromStatus: row.from_status,
+          toStatus: row.to_status,
+          note: row.note,
+          changedAt: row.changed_at,
+        }));
+      }
+    } catch {
+      // Table missing (migration not run yet) — use the JSON log.
+    }
+    const metadata = this.asRecord(order.shipping_address);
+    const legacy = Array.isArray(metadata['orderStatusHistory']) ? metadata['orderStatusHistory'] : [];
+    return legacy
+      .filter(item => item && typeof item === 'object')
+      .map(item => {
+        const entry = item as Record<string, unknown>;
+        return {
+          fromStatus: typeof entry['from'] === 'string' ? entry['from'] : null,
+          toStatus: typeof entry['to'] === 'string' ? entry['to'] : '',
+          note: typeof entry['note'] === 'string' ? entry['note'] : null,
+          changedAt: typeof entry['at'] === 'string' ? entry['at'] : '',
+        };
+      })
+      .filter(entry => entry.toStatus);
   }
 
   async updateStatus(order: Tables<'orders'>, status: OrderStatus, note?: string) {

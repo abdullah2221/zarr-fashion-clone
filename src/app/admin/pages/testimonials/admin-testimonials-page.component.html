@@ -1,0 +1,69 @@
+<section class="admin-testimonials">
+  <div class="admin-testimonials__hero">
+    <span class="eyebrow">Admin / Testimonials</span>
+    <h1>Customer testimonials</h1>
+    <p>Active testimonials render in the homepage testimonials section (its heading stays on the section in Admin &gt; Pages). When no testimonial is active, the section hides itself. Only publish quotes you have permission to use.</p>
+  </div>
+
+  @if (error()) { <div class="admin-testimonials__alert admin-testimonials__alert--error">{{ error() }}</div> }
+  @if (success()) { <div class="admin-testimonials__alert admin-testimonials__alert--success">{{ success() }}</div> }
+
+  <div class="admin-testimonials__layout">
+    <article class="admin-testimonials__column">
+      <div class="admin-testimonials__section-head">
+        <div>
+          <span class="admin-testimonials__kicker">Testimonials</span>
+          <h2>{{ service.testimonials().length }} records</h2>
+        </div>
+        <button class="btn btn--dark" type="button" (click)="startCreate()">New testimonial</button>
+      </div>
+
+      <div class="admin-testimonials__grid">
+        <label><span>Search testimonials</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search name, place or quote"></label>
+      </div>
+
+      <div class="admin-testimonials__list">
+        @if (service.isLoading()) {
+          <p>Loading testimonials...</p>
+        } @else if (!filtered().length) {
+          <p>No testimonials found.</p>
+        } @else {
+          @for (item of filtered(); track item.id) {
+            <article class="admin-testimonials__item" [class.is-selected]="selectedId() === item.id">
+              <button class="admin-testimonials__item-main" type="button" (click)="select(item)">
+                <div>
+                  <strong>{{ item.name }}{{ item.designation ? ', ' + item.designation : '' }}</strong>
+                  <span>Sort {{ item.sort_order }} · {{ item.rating ? item.rating + ' stars' : 'No rating' }} · {{ item.is_active ? 'Active' : 'Inactive' }}</span>
+                </div>
+              </button>
+              <div class="admin-testimonials__item-actions">
+                <button class="btn btn--ghost" type="button" (click)="toggle(item)">{{ item.is_active ? 'Deactivate' : 'Activate' }}</button>
+                <button class="btn btn--ghost" type="button" (click)="delete(item)">Delete</button>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    </article>
+
+    <form class="admin-testimonials__editor" (ngSubmit)="save()">
+      <div class="admin-testimonials__section-head">
+        <div>
+          <span class="admin-testimonials__kicker">{{ selectedId() ? 'Edit testimonial' : 'Create testimonial' }}</span>
+          <h2>{{ selectedId() ? 'Update testimonial' : 'New testimonial' }}</h2>
+        </div>
+      </div>
+
+      <div class="admin-testimonials__grid">
+        <label><span>Name</span><input [ngModel]="editor().name" (ngModelChange)="updateEditor({ name: $event })" name="name" required></label>
+        <label><span>City / designation (optional)</span><input [ngModel]="editor().designation" (ngModelChange)="updateEditor({ designation: $event })" name="designation"></label>
+        <label class="admin-testimonials__field"><span>Quote</span><textarea [ngModel]="editor().body" (ngModelChange)="updateEditor({ body: $event })" name="body" required></textarea></label>
+        <label><span>Rating (1–5, optional)</span><input type="number" min="1" max="5" [ngModel]="editor().rating" (ngModelChange)="updateEditor({ rating: $event === '' || $event === null ? null : +$event })" name="rating"></label>
+        <label><span>Sort order</span><input type="number" [ngModel]="editor().sortOrder" (ngModelChange)="updateEditor({ sortOrder: $event === '' || $event === null ? null : +$event })" name="sortOrder"></label>
+        <label class="admin-testimonials__check"><input type="checkbox" [ngModel]="editor().isActive" (ngModelChange)="updateEditor({ isActive: $event })" name="isActive"><span>Active</span></label>
+      </div>
+
+      <button class="btn btn--gold btn--full" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving...' : (selectedId() ? 'Save testimonial' : 'Create testimonial') }}</button>
+    </form>
+  </div>
+</section>

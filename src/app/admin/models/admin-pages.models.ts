@@ -19,7 +19,9 @@ export const ADMIN_SECTION_TYPES: AdminSectionTypeInfo[] = [
   { type: 'campaign-band', label: 'Campaign band', contentOwner: 'Admin > Campaigns (placement: Shop banner)' },
   { type: 'carousel-popular', label: 'Product carousel — Popular', contentOwner: 'Admin > Products' },
   { type: 'carousel-sale', label: 'Product carousel — On Sale', contentOwner: null },
-  { type: 'testimonials', label: 'Testimonials', contentOwner: null },
+  { type: 'testimonials', label: 'Testimonials', contentOwner: 'Admin > Testimonials (heading edited here)' },
+  { type: 'faq-list', label: 'FAQ list', contentOwner: 'Admin > FAQs (heading edited here)' },
+  { type: 'custom-content', label: 'Custom content', contentOwner: null },
   { type: 'brands-stats', label: 'Brands + stats band', contentOwner: null },
   { type: 'offers', label: 'Offers grid', contentOwner: 'Admin > Campaigns (placement: Offer grid)' },
   { type: 'campaign-cards', label: 'Campaign cards', contentOwner: 'Admin > Campaigns (placement: Home section)' },
@@ -28,7 +30,22 @@ export const ADMIN_SECTION_TYPES: AdminSectionTypeInfo[] = [
   { type: 'static-content', label: 'Page content', contentOwner: null },
 ];
 
-export const PAYLOAD_SECTION_TYPES = ['carousel-sale', 'testimonials', 'brands-stats', 'newsletter', 'static-content'];
+export const PAYLOAD_SECTION_TYPES = ['carousel-sale', 'testimonials', 'brands-stats', 'newsletter', 'static-content', 'faq-list', 'custom-content'];
+
+/**
+ * Section types that pull a LIST from another source and therefore
+ * honour the optional payload `limit` (Phase 7). The Pages editor
+ * shows the limit field for exactly these types — no dead fields.
+ */
+export const LIMITABLE_SECTION_TYPES = [
+  'category-scroll',
+  'featured-collections',
+  'carousel-popular',
+  'carousel-sale',
+  'offers',
+  'campaign-cards',
+  'faq-list',
+];
 
 export function sectionTypeInfo(type: string): AdminSectionTypeInfo {
   return ADMIN_SECTION_TYPES.find(item => item.type === type) || { type, label: type, contentOwner: null };
@@ -65,4 +82,10 @@ export interface AdminSectionEditorValue {
   formType: string;
   sectionsText: string;
   secondaryText: string;
+  // Phase 7: optional per-section item limit for list-backed sections
+  limit: number | null;
+  // Phase 7: custom-content section
+  body: string;
+  imagePath: string;
+  imageAlt: string;
 }

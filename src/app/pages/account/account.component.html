@@ -24,6 +24,15 @@
         <button type="submit" [disabled]="saving()">{{ saving() ? 'Saving...' : 'Save Profile' }}</button>
       </form>
 
+      <form class="account-page__card" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <h2>Change Password</h2>
+        <label><span>New password</span><input type="password" formControlName="newPassword" autocomplete="new-password"></label>
+        <label><span>Confirm new password</span><input type="password" formControlName="confirmPassword" autocomplete="new-password"></label>
+        @if (passwordError()) { <p class="account-page__error">{{ passwordError() }}</p> }
+        @if (passwordSuccess()) { <p class="account-page__success">{{ passwordSuccess() }}</p> }
+        <button type="submit" [disabled]="passwordSaving()">{{ passwordSaving() ? 'Updating...' : 'Update Password' }}</button>
+      </form>
+
       <aside class="account-page__card">
         <h2>Quick Actions</h2>
         <a routerLink="/orders">View My Orders</a>

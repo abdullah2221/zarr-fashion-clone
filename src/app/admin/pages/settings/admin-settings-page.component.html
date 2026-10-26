@@ -61,6 +61,15 @@
     </article>
 
     <article class="admin-settings__panel">
+      <div class="admin-settings__panel-head"><h2>Navigation menus</h2><p>Header and mobile menus: one link per line as <code>Label | URL</code>, with an optional third part for flags — <code>active</code> marks the current-page link in the header, <code>highlight</code> gives it the campaign colour. Footer columns start with a <code># Column title</code> line, followed by their <code>Label | URL</code> lines. Reorder lines to reorder the menu.</p></div>
+      <div class="admin-settings__grid">
+        <label class="admin-settings__field"><span>Header menu links</span><textarea formControlName="headerNavText"></textarea></label>
+        <label class="admin-settings__field"><span>Mobile menu shopping links</span><textarea formControlName="mobileNavText"></textarea></label>
+        <label class="admin-settings__field"><span>Footer link columns</span><textarea formControlName="footerColumnsText"></textarea></label>
+      </div>
+    </article>
+
+    <article class="admin-settings__panel">
       <div class="admin-settings__panel-head"><h2>Static page intros</h2><p>Override the main intro copy for support and legal pages without redeploying the storefront.</p></div>
       <div class="admin-settings__grid">
         <label class="admin-settings__field"><span>Contact page intro</span><textarea formControlName="contactPageIntro"></textarea></label>

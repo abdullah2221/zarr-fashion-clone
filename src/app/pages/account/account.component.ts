@@ -31,6 +31,15 @@ export class AccountComponent {
     phone: ['', [Validators.required, this.phoneValidator]],
   });
 
+  readonly passwordSaving = signal(false);
+  readonly passwordSuccess = signal<string | null>(null);
+  readonly passwordError = signal<string | null>(null);
+
+  readonly passwordForm = this.fb.nonNullable.group({
+    newPassword: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.required]],
+  });
+
   constructor() {
     this.meta.setSeo({
       title: 'Account',
@@ -64,6 +73,28 @@ export class AccountComponent {
       this.error.set(error instanceof Error ? error.message : 'Unable to update profile.');
     } finally {
       this.saving.set(false);
+    }
+  }
+
+  async changePassword() {
+    this.passwordForm.markAllAsTouched();
+    this.passwordSuccess.set(null);
+    this.passwordError.set(null);
+    if (this.passwordForm.invalid) return;
+    const { newPassword, confirmPassword } = this.passwordForm.getRawValue();
+    if (newPassword !== confirmPassword) {
+      this.passwordError.set('The new passwords do not match.');
+      return;
+    }
+    this.passwordSaving.set(true);
+    try {
+      await this.session.updatePassword(newPassword);
+      this.passwordSuccess.set('Password updated successfully.');
+      this.passwordForm.reset();
+    } catch (error) {
+      this.passwordError.set(error instanceof Error ? error.message : 'Unable to update password.');
+    } finally {
+      this.passwordSaving.set(false);
     }
   }
 

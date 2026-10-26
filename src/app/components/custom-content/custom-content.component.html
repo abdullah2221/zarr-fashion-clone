@@ -1,0 +1,18 @@
+@if (content().heading || content().body) {
+  <section class="custom-content reveal-section">
+    <div class="custom-content__container" [class.custom-content__container--split]="imageUrl()">
+      @if (imageUrl()) {
+        <div class="custom-content__media">
+          <img [src]="imageUrl()" [alt]="content().imageAlt || ''" loading="lazy" decoding="async" />
+        </div>
+      }
+      <div class="custom-content__copy">
+        @if (content().heading) { <h2>{{ content().heading }}</h2> }
+        @if (content().body) { <p class="custom-content__body">{{ content().body }}</p> }
+        @if (content().ctaText && content().ctaLink) {
+          <a [routerLink]="content().ctaLink" class="custom-content__cta">{{ content().ctaText }}</a>
+        }
+      </div>
+    </div>
+  </section>
+}

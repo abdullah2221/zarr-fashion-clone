@@ -7,12 +7,20 @@ import {
   BannerRepository,
   CampaignRepository,
   CategoryRepository,
+  ContactMessageRepository,
+  CustomerRepository,
+  FaqRepository,
   FeedbackRepository,
+  MediaObject,
+  MediaRepository,
   OrderRepository,
+  OrderStatusHistoryRepository,
   ProfileRepository,
   SitePageRepository,
   ProductRepository,
   StorageRepository,
+  SubscriberRepository,
+  TestimonialRepository,
   WishlistRepository,
   CheckoutOrderParams,
   CheckoutOrderResult,} from '../repositories/repositories';
@@ -596,5 +604,160 @@ export class SupabaseSitePageRepository extends SupabaseRepositoryBase implement
   async deleteSection(id: string) {
     const { error } = await this.client().from('page_sections').delete().eq('id', id);
     if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseFaqRepository extends SupabaseRepositoryBase implements FaqRepository {
+  async listActive() {
+    const { data, error } = await this.client().from('faqs').select('*').eq('is_active', true).order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('faqs').select('*').order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async create(faq: Inserts<'faqs'>) {
+    const { data, error } = await this.client().from('faqs').insert(faq).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'faqs'>) {
+    const { data, error } = await this.client().from('faqs').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('faqs').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseTestimonialRepository extends SupabaseRepositoryBase implements TestimonialRepository {
+  async listActive() {
+    const { data, error } = await this.client().from('testimonials').select('*').eq('is_active', true).order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('testimonials').select('*').order('sort_order', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async create(testimonial: Inserts<'testimonials'>) {
+    const { data, error } = await this.client().from('testimonials').insert(testimonial).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async update(id: string, changes: Updates<'testimonials'>) {
+    const { data, error } = await this.client().from('testimonials').update(changes).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+
+  async delete(id: string) {
+    const { error } = await this.client().from('testimonials').delete().eq('id', id);
+    if (error) throw error;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseSubscriberRepository extends SupabaseRepositoryBase implements SubscriberRepository {
+  async subscribe(email: string): Promise<'subscribed' | 'duplicate'> {
+    // No .select() on purpose: the subscribers table is INSERT-only
+    // for the public role, so asking PostgREST to return the row
+    // would fail. A unique-violation (23505) means "already on the
+    // list", which the forms surface as a friendly duplicate state.
+    const { error } = await this.client().from('subscribers').insert({ email });
+    if (error) {
+      if ((error as { code?: string }).code === '23505') return 'duplicate';
+      throw error;
+    }
+    return 'subscribed';
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('subscribers').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseContactMessageRepository extends SupabaseRepositoryBase implements ContactMessageRepository {
+  async send(message: Inserts<'contact_messages'>) {
+    // INSERT-only for the public role — no .select(), see subscribers.
+    const { error } = await this.client().from('contact_messages').insert(message);
+    if (error) throw error;
+  }
+
+  async listAll() {
+    const { data, error } = await this.client().from('contact_messages').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async setHandled(id: string, handled: boolean) {
+    const { data, error } = await this.client().from('contact_messages').update({ is_handled: handled }).eq('id', id).select('*').single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseCustomerRepository extends SupabaseRepositoryBase implements CustomerRepository {
+  async listProfiles() {
+    const { data, error } = await this.client().from('profiles').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async setRole(userId: string, role: Tables<'profiles'>['role']) {
+    const { data, error } = await this.client().rpc('set_user_role', { target_user_id: userId, target_role: role });
+    if (error) throw error;
+    return data as Tables<'profiles'>;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseOrderStatusHistoryRepository extends SupabaseRepositoryBase implements OrderStatusHistoryRepository {
+  async listByOrder(orderId: string) {
+    const { data, error } = await this.client().from('order_status_history').select('*').eq('order_id', orderId).order('changed_at', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseMediaRepository extends SupabaseRepositoryBase implements MediaRepository {
+  private static readonly PRODUCT_IMAGES_BUCKET = 'product-images';
+
+  async listFolder(folder: string): Promise<MediaObject[]> {
+    const { data, error } = await this.client().storage
+      .from(SupabaseMediaRepository.PRODUCT_IMAGES_BUCKET)
+      .list(folder, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
+    if (error) throw error;
+    return (data || []).map(item => ({
+      name: item.name,
+      id: item.id,
+      updated_at: item.updated_at,
+      created_at: item.created_at,
+      last_accessed_at: item.last_accessed_at,
+      metadata: (item.metadata || null) as Record<string, unknown> | null,
+    }));
+  }
+
+  getPublicUrl(path: string): string {
+    return this.client().storage.from(SupabaseMediaRepository.PRODUCT_IMAGES_BUCKET).getPublicUrl(path).data.publicUrl;
   }
 }

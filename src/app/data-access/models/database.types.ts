@@ -85,6 +85,36 @@ export interface Database {
         Update: { value?: Json; updated_by?: string | null; updated_at?: string };
         Relationships: [];
       };
+      faqs: {
+        Row: { id: string; question: string; answer: string; sort_order: number; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id?: string; question: string; answer: string; sort_order?: number; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['faqs']['Insert']>;
+        Relationships: [];
+      };
+      testimonials: {
+        Row: { id: string; name: string; designation: string | null; body: string; rating: number | null; sort_order: number; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id?: string; name: string; designation?: string | null; body: string; rating?: number | null; sort_order?: number; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['testimonials']['Insert']>;
+        Relationships: [];
+      };
+      subscribers: {
+        Row: { id: string; email: string; created_at: string };
+        Insert: { id?: string; email: string; created_at?: string };
+        Update: Partial<Database['public']['Tables']['subscribers']['Insert']>;
+        Relationships: [];
+      };
+      contact_messages: {
+        Row: { id: string; name: string; contact: string; message: string; is_handled: boolean; created_at: string };
+        Insert: { id?: string; name: string; contact: string; message: string; is_handled?: boolean; created_at?: string };
+        Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>;
+        Relationships: [];
+      };
+      order_status_history: {
+        Row: { id: string; order_id: string; from_status: OrderStatus | null; to_status: OrderStatus; changed_by: string | null; note: string | null; changed_at: string };
+        Insert: { id?: string; order_id: string; from_status?: OrderStatus | null; to_status: OrderStatus; changed_by?: string | null; note?: string | null; changed_at?: string };
+        Update: Partial<Database['public']['Tables']['order_status_history']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -99,6 +129,10 @@ export interface Database {
       create_guest_order: {
         Args: { payload: Json };
         Returns: { order_id: string; order_number: string }[];
+      };
+      set_user_role: {
+        Args: { target_user_id: string; target_role: UserRole };
+        Returns: Database['public']['Tables']['profiles']['Row'];
       };
       track_order_public: {
         Args: { lookup_order_number: string; lookup_phone: string };

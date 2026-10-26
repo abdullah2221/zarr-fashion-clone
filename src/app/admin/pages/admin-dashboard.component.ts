@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AdminSessionService } from '../../services/admin-session.service';
 import { AdminProductsService } from '../services/admin-products.service';
 import { AdminCategoriesService } from '../services/admin-categories.service';
+import { AdminOrdersService } from '../services/admin-orders.service';
 import { AdminActionButtonComponent } from '../components/admin-action-button.component';
 
 @Component({
@@ -19,6 +20,26 @@ export class AdminDashboardComponent {
   readonly session = inject(AdminSessionService);
   readonly products = inject(AdminProductsService);
   readonly categories = inject(AdminCategoriesService);
+  readonly ordersService = inject(AdminOrdersService);
+
+  /**
+   * Phase 7 order metrics. Revenue = sum of total_amount over all
+   * orders whose status is NOT 'cancelled' (cancelled orders never
+   * collected money). Order count = every order on record.
+   */
+  readonly orderStats = computed(() => {
+    const orders = this.ordersService.orders();
+    const revenue = orders
+      .filter(order => order.status !== 'cancelled')
+      .reduce((sum, order) => sum + order.total_amount, 0);
+    return { total: orders.length, revenue };
+  });
+
+  readonly recentOrders = computed(() =>
+    [...this.ordersService.orders()]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(0, 5)
+  );
 
   readonly isLoading = computed(() => this.products.isLoading() || this.categories.isLoading());
   readonly summaryCards = computed(() => {
@@ -99,6 +120,10 @@ export class AdminDashboardComponent {
 
     if (!this.categories.categories().length) {
       void this.categories.load();
+    }
+
+    if (!this.ordersService.orders().length) {
+      void this.ordersService.load().catch(() => undefined);
     }
   }
 }

@@ -1,0 +1,52 @@
+<section class="admin-media">
+  <div class="admin-media__hero">
+    <span class="eyebrow">Admin / Media</span>
+    <h1>Media library</h1>
+    <p>Every file in the product-images storage bucket, read-only. Copy a file's public URL to use it in a page section or campaign. Uploads still happen inside the product, category and campaign editors.</p>
+  </div>
+
+  @if (error()) { <div class="admin-media__alert admin-media__alert--error">{{ error() }}</div> }
+
+  <article class="admin-media__column">
+    <div class="admin-media__section-head">
+      <div>
+        <span class="admin-media__kicker">Bucket: product-images</span>
+        <h2>{{ service.items().length }} files</h2>
+      </div>
+      <button class="btn btn--dark" type="button" (click)="service.load()">Refresh</button>
+    </div>
+
+    <div class="admin-media__grid">
+      <label><span>Search files</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search by folder or file name"></label>
+    </div>
+
+    <div class="admin-media__list">
+      @if (service.isLoading()) {
+        <p>Loading media...</p>
+      } @else if (!filtered().length) {
+        <p>No files found.</p>
+      } @else {
+        @for (item of filtered(); track item.path) {
+          <article class="admin-media__item">
+            <div class="admin-media__item-main">
+              @if (item.isImage) {
+                <img [src]="item.publicUrl" [alt]="item.name" loading="lazy">
+              } @else {
+                <div class="admin-media__tile-fallback">File</div>
+              }
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.folder || 'Bucket root' }} · {{ service.formatSize(item.size) }}</span>
+                <span class="admin-media__path">{{ item.path }}</span>
+              </div>
+            </div>
+            <div class="admin-media__item-actions">
+              <button class="btn btn--ghost" type="button" (click)="copyUrl(item)">{{ copiedPath() === item.path ? 'Copied' : 'Copy URL' }}</button>
+              <a class="btn btn--ghost" [href]="item.publicUrl" target="_blank" rel="noopener">Open</a>
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </article>
+</section>

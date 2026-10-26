@@ -65,11 +65,16 @@ export interface AdminCampaignListItem {
   tag: string;
 }
 
-export interface AdminStoreSettingsFormValue extends Omit<StorefrontSettings, 'bannerOverrides' | 'campaignChips' | 'trustBadges' | 'socialLinks'> {
+export interface AdminStoreSettingsFormValue extends Omit<StorefrontSettings, 'bannerOverrides' | 'campaignChips' | 'trustBadges' | 'socialLinks' | 'headerNavLinks' | 'mobileNavLinks' | 'footerLinkColumns'> {
   instagram: string;
   facebook: string;
   tiktok: string;
   youtube: string;
   campaignChipsText: string;
   trustBadgesText: string;
+  /** Menu builder (Phase 7): one "Label | URL | flags" per line. */
+  headerNavText: string;
+  mobileNavText: string;
+  /** Footer columns: a "# Column title" line, then "Label | URL" lines. */
+  footerColumnsText: string;
 }

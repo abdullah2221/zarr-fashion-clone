@@ -19,34 +19,29 @@
           <a routerLink="/" class="footer__brand"><span>Zeenat</span></a>
           <p class="footer__text">{{ content.settings().defaultSeoDescription }}</p>
         </div>
-        <div class="footer__column">
-          <h4 class="footer__subtitle">Help & Information</h4>
-          <ul class="footer__list">
-            <li><a routerLink="/faq" class="footer__link">FAQs</a></li>
-            <li><a routerLink="/contact" class="footer__link">Contact Us</a></li>
-            <li><a routerLink="/track-order" class="footer__link">Track Order</a></li>
-            <li><a routerLink="/return-exchange-policy" class="footer__link">Delivery & Exchange Policy</a></li>
-            <li><a routerLink="/terms-conditions" class="footer__link">Terms & Conditions</a></li>
-            <li><a routerLink="/privacy-policy" class="footer__link">Privacy Policy</a></li>
-          </ul>
-        </div>
-        <div class="footer__column">
-          <h4 class="footer__subtitle">Shop</h4>
-          <ul class="footer__list">
-            <li><a routerLink="/shop" class="footer__link">New Arrivals</a></li>
-            <li><a routerLink="/category/lawn" class="footer__link">Summer Lawn</a></li>
-            <li><a routerLink="/category/eid-edit" class="footer__link">Eid Collection</a></li>
-            <li><a routerLink="/category/wedding" class="footer__link">Wedding Edit</a></li>
-            <li><a routerLink="/category/sale" class="footer__link">Sale</a></li>
-            <li><a routerLink="/about" class="footer__link">About Zeenat</a></li>
-          </ul>
-        </div>
+        @for (column of content.settings().footerLinkColumns; track column.title) {
+          <div class="footer__column">
+            <h4 class="footer__subtitle">{{ column.title }}</h4>
+            <ul class="footer__list">
+              @for (link of column.links; track link.label + link.url) {
+                <li><a [routerLink]="link.url" class="footer__link">{{ link.label }}</a></li>
+              }
+            </ul>
+          </div>
+        }
         <div class="footer__column footer__column--newsletter">
           <h4 class="footer__subtitle">Let's Be Email Friends</h4>
           <p class="footer__text">First looks at Eid drops, lawn launches, sale alerts and COD/free-delivery offers.</p>
-          <form class="footer__form">
-            <div class="footer__input-group"><input type="email" placeholder="Enter your email address" class="footer__input" required aria-label="Email address" /><button type="submit" class="footer__submit">Sign Up</button></div>
-            <label class="footer__checkbox-label"><div class="footer__checkbox-wrapper"><input type="checkbox" class="footer__checkbox" required id="agreement"/><mat-icon class="footer__checkbox-icon">check</mat-icon></div><span class="footer__checkbox-text">I agree to receive curated Zeenat updates and accept the <a routerLink="/terms-conditions" class="footer__link footer__link--accent">Terms</a>.</span></label>
+          <form class="footer__form" #newsletterForm="ngForm" (ngSubmit)="subscribe(newsletterForm)">
+            <div class="footer__input-group"><input type="email" name="newsletterEmail" [(ngModel)]="newsletterEmail" placeholder="Enter your email address" class="footer__input" required aria-label="Email address" /><button type="submit" class="footer__submit" [disabled]="newsletterSubmitting()">{{ newsletterSubmitting() ? 'Signing Up...' : 'Sign Up' }}</button></div>
+            <label class="footer__checkbox-label"><div class="footer__checkbox-wrapper"><input type="checkbox" class="footer__checkbox" required id="agreement" name="agreement" ngModel/><mat-icon class="footer__checkbox-icon">check</mat-icon></div><span class="footer__checkbox-text">I agree to receive curated Zeenat updates and accept the <a routerLink="/terms-conditions" class="footer__link footer__link--accent">Terms</a>.</span></label>
+            @if (newsletterStatus() === 'success') {
+              <p class="footer__text" role="status">Thank you — you are on the list.</p>
+            } @else if (newsletterStatus() === 'duplicate') {
+              <p class="footer__text" role="status">This email is already subscribed.</p>
+            } @else if (newsletterStatus() === 'error') {
+              <p class="footer__text" role="alert">Something went wrong. Please try again.</p>
+            }
           </form>
         </div>
       </div>

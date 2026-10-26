@@ -36,8 +36,18 @@ export interface AdminOrderItemDetail {
   color: string;
 }
 
+/** One status-change entry, normalised from order_status_history rows
+ *  or from the legacy JSON log kept inside shipping_address. */
+export interface AdminOrderHistoryEntry {
+  fromStatus: string | null;
+  toStatus: string;
+  note: string | null;
+  changedAt: string;
+}
+
 export interface AdminOrderDetail {
   order: Tables<'orders'>;
   listItem: AdminOrderListItem;
   items: AdminOrderItemDetail[];
+  history: AdminOrderHistoryEntry[];
 }

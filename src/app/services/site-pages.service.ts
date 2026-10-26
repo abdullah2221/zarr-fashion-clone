@@ -11,6 +11,7 @@ import {
   SitePageContent,
   SitePageSection,
   StorefrontBrandsStatsContent,
+  StorefrontCustomContent,
   StorefrontNewsletterContent,
   StorefrontStaticContent,
   StorefrontTestimonialsContent,
@@ -86,6 +87,27 @@ export class SitePagesService {
   sectionContent(section: SitePageSection, key: string, fallback = ''): string {
     const value = section.content[key];
     return typeof value === 'string' && value ? value : fallback;
+  }
+
+  /**
+   * Optional per-section item limit (Phase 7). List-backed sections
+   * may carry a positive `limit` in their payload; blank/invalid
+   * values mean "no limit — keep the previous behaviour".
+   */
+  sectionLimit(section: SitePageSection): number | null {
+    const value = section.content['limit'];
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.floor(value) : null;
+  }
+
+  customContent(section: SitePageSection): StorefrontCustomContent {
+    return {
+      heading: this.sectionContent(section, 'heading'),
+      body: this.sectionContent(section, 'body'),
+      imagePath: this.stringValue(section.content['imagePath']),
+      imageAlt: this.stringValue(section.content['imageAlt']),
+      ctaText: this.stringValue(section.content['ctaText']),
+      ctaLink: this.stringValue(section.content['ctaLink']),
+    };
   }
 
   saleSideBanner(section: SitePageSection): { sideBannerTitle: string; sideBannerText: string } {

@@ -13,6 +13,12 @@ import { AdminOrderDetailPageComponent } from './pages/orders/admin-order-detail
 import { AdminOrdersPageComponent } from './pages/orders/admin-orders-page.component';
 import { AdminSettingsPageComponent } from './pages/settings/admin-settings-page.component';
 import { AdminPagesPageComponent } from './pages/pages/admin-pages-page.component';
+import { AdminFaqsPageComponent } from './pages/faqs/admin-faqs-page.component';
+import { AdminTestimonialsPageComponent } from './pages/testimonials/admin-testimonials-page.component';
+import { AdminCustomersPageComponent } from './pages/customers/admin-customers-page.component';
+import { AdminMediaPageComponent } from './pages/media/admin-media-page.component';
+import { AdminSubscribersPageComponent } from './pages/subscribers/admin-subscribers-page.component';
+import { AdminMessagesPageComponent } from './pages/messages/admin-messages-page.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -29,6 +35,12 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'categories', component: AdminCategoriesPageComponent, title: 'Categories | Zeenat Admin' },
       { path: 'campaigns', component: AdminCampaignsPageComponent, title: 'Campaigns | Zeenat Admin' },
       { path: 'pages', component: AdminPagesPageComponent, title: 'Pages | Zeenat Admin' },
+      { path: 'faqs', component: AdminFaqsPageComponent, title: 'FAQs | Zeenat Admin' },
+      { path: 'testimonials', component: AdminTestimonialsPageComponent, title: 'Testimonials | Zeenat Admin' },
+      { path: 'customers', component: AdminCustomersPageComponent, title: 'Customers | Zeenat Admin' },
+      { path: 'media', component: AdminMediaPageComponent, title: 'Media | Zeenat Admin' },
+      { path: 'subscribers', component: AdminSubscribersPageComponent, title: 'Subscribers | Zeenat Admin' },
+      { path: 'messages', component: AdminMessagesPageComponent, title: 'Messages | Zeenat Admin' },
       { path: 'orders', component: AdminOrdersPageComponent, title: 'Orders | Zeenat Admin' },
       { path: 'orders/:id', component: AdminOrderDetailPageComponent, title: 'Order Detail | Zeenat Admin' },
       { path: 'settings', component: AdminSettingsPageComponent, title: 'Settings | Zeenat Admin', canActivate: [superAdminGuard] },

@@ -6,6 +6,8 @@ import { HeroSlide } from '../shared/models/models';
 import {
   StorefrontCampaignCard,
   StorefrontContentState,
+  StorefrontFooterLinkColumn,
+  StorefrontNavLink,
   StorefrontSettings,
   StorefrontTrustBadge,
 } from '../shared/models/storefront-content.models';
@@ -30,6 +32,47 @@ const DEFAULT_SETTINGS: StorefrontSettings = {
     { icon: 'payments', label: 'Cash on Delivery', detail: 'Available across Pakistan' },
     { icon: 'verified_user', label: 'Secure checkout', detail: 'SSL protected shopping' },
     { icon: 'autorenew', label: 'Easy exchange', detail: 'Simple support-led process' },
+  ],
+  // Menu builder seeds (Phase 7): exactly the links the header,
+  // mobile menu and footer rendered before they were editable.
+  headerNavLinks: [
+    { label: 'New In', url: '/shop', active: true },
+    { label: 'Lawn', url: '/category/lawn' },
+    { label: 'Unstitched', url: '/category/unstitched' },
+    { label: 'Eid Edit', url: '/category/eid-edit', highlight: true },
+    { label: 'Sale', url: '/category/sale' },
+  ],
+  mobileNavLinks: [
+    { label: 'Home', url: '/' },
+    { label: 'New Arrivals', url: '/shop' },
+    { label: 'Summer Lawn', url: '/category/lawn' },
+    { label: 'Unstitched', url: '/category/unstitched' },
+    { label: 'Wedding Collection', url: '/category/wedding' },
+    { label: 'Sale', url: '/category/sale', highlight: true },
+  ],
+  footerLinkColumns: [
+    {
+      title: 'Help & Information',
+      links: [
+        { label: 'FAQs', url: '/faq' },
+        { label: 'Contact Us', url: '/contact' },
+        { label: 'Track Order', url: '/track-order' },
+        { label: 'Delivery & Exchange Policy', url: '/return-exchange-policy' },
+        { label: 'Terms & Conditions', url: '/terms-conditions' },
+        { label: 'Privacy Policy', url: '/privacy-policy' },
+      ],
+    },
+    {
+      title: 'Shop',
+      links: [
+        { label: 'New Arrivals', url: '/shop' },
+        { label: 'Summer Lawn', url: '/category/lawn' },
+        { label: 'Eid Collection', url: '/category/eid-edit' },
+        { label: 'Wedding Edit', url: '/category/wedding' },
+        { label: 'Sale', url: '/category/sale' },
+        { label: 'About Zeenat', url: '/about' },
+      ],
+    },
   ],
   contactPageIntro: 'Support should be easy to find, especially for COD, exchange and delivery questions.',
   aboutPageIntro: 'Zeenat is positioned as a premium Pakistani fashion storefront for seasonal wardrobes, festive dressing and everyday confidence.',
@@ -154,8 +197,38 @@ export class StorefrontContentService {
       },
       campaignChips: this.stringArray(raw['campaignChips']) || DEFAULT_SETTINGS.campaignChips,
       trustBadges: this.trustBadgeArray(raw['trustBadges']) || DEFAULT_SETTINGS.trustBadges,
+      headerNavLinks: this.navLinkArray(raw['headerNavLinks']) || DEFAULT_SETTINGS.headerNavLinks,
+      mobileNavLinks: this.navLinkArray(raw['mobileNavLinks']) || DEFAULT_SETTINGS.mobileNavLinks,
+      footerLinkColumns: this.footerColumnArray(raw['footerLinkColumns']) || DEFAULT_SETTINGS.footerLinkColumns,
       bannerOverrides: this.bannerOverrideMap(raw['bannerOverrides']),
     };
+  }
+
+  private navLinkArray(value: unknown): StorefrontNavLink[] | undefined {
+    if (!Array.isArray(value)) return undefined;
+    const links = value
+      .map(item => this.asRecord(item))
+      .filter(item => typeof item['label'] === 'string' && typeof item['url'] === 'string' && item['label'] && item['url'])
+      .map(item => {
+        const link: StorefrontNavLink = { label: item['label'] as string, url: item['url'] as string };
+        if (item['highlight'] === true) link.highlight = true;
+        if (item['active'] === true) link.active = true;
+        return link;
+      });
+    return links.length ? links : undefined;
+  }
+
+  private footerColumnArray(value: unknown): StorefrontFooterLinkColumn[] | undefined {
+    if (!Array.isArray(value)) return undefined;
+    const columns = value
+      .map(item => this.asRecord(item))
+      .filter(item => typeof item['title'] === 'string' && item['title'])
+      .map(item => ({
+        title: item['title'] as string,
+        links: this.navLinkArray(item['links']) || [],
+      }))
+      .filter(column => column.links.length);
+    return columns.length ? columns : undefined;
   }
 
   private mappedCampaigns(): StorefrontCampaignCard[] {

@@ -46,9 +46,14 @@ export class AdminShellComponent {
     { label: 'Categories', icon: 'category', path: '/admin/categories' },
     { label: 'Campaigns', icon: 'campaign', path: '/admin/campaigns' },
     { label: 'Pages', icon: 'article', path: '/admin/pages' },
+    { label: 'FAQs', icon: 'quiz', path: '/admin/faqs' },
+    { label: 'Testimonials', icon: 'format_quote', path: '/admin/testimonials' },
+    { label: 'Customers', icon: 'groups', path: '/admin/customers' },
+    { label: 'Media', icon: 'photo_library', path: '/admin/media' },
+    { label: 'Subscribers', icon: 'mail', path: '/admin/subscribers' },
+    { label: 'Messages', icon: 'mark_email_unread', path: '/admin/messages' },
     { label: 'Orders', icon: 'receipt_long', path: '/admin/orders' },
     { label: 'Settings', icon: 'tune', path: '/admin/settings' },
-    { label: 'Customers', icon: 'groups', soon: true },
     { label: 'Feedback', icon: 'reviews', soon: true },
   ];
 

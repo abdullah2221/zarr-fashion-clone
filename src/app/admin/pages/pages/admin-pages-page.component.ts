@@ -8,6 +8,7 @@ import { AdminPagesService } from '../../services/admin-pages.service';
 import {
   ADMIN_SECTION_TYPES,
   AdminSectionEditorValue,
+  LIMITABLE_SECTION_TYPES,
   sectionTypeInfo,
 } from '../../models/admin-pages.models';
 import { Tables } from '../../../data-access/models/database.types';
@@ -64,6 +65,10 @@ export class AdminPagesPageComponent {
     formType: [''],
     sectionsText: [''],
     secondaryText: [''],
+    limit: [null as number | null],
+    body: [''],
+    imagePath: [''],
+    imageAlt: [''],
   });
 
   constructor() {
@@ -75,6 +80,10 @@ export class AdminPagesPageComponent {
 
   typeInfo(type: string) {
     return sectionTypeInfo(type);
+  }
+
+  isLimitable(type: string) {
+    return LIMITABLE_SECTION_TYPES.includes(type);
   }
 
   selectPage(page: Tables<'site_pages'>) {

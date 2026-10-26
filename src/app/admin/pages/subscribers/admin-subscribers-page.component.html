@@ -1,0 +1,41 @@
+<section class="admin-subscribers">
+  <div class="admin-subscribers__hero">
+    <span class="eyebrow">Admin / Subscribers</span>
+    <h1>Newsletter subscribers</h1>
+    <p>Everyone who signed up through the footer or homepage newsletter forms. This list is read-only — emails are stored once and duplicates are rejected by the database.</p>
+  </div>
+
+  @if (error()) { <div class="admin-subscribers__alert admin-subscribers__alert--error">{{ error() }}</div> }
+
+  <article class="admin-subscribers__column">
+    <div class="admin-subscribers__section-head">
+      <div>
+        <span class="admin-subscribers__kicker">Subscribers</span>
+        <h2>{{ service.subscribers().length }} total</h2>
+      </div>
+    </div>
+
+    <div class="admin-subscribers__grid">
+      <label><span>Search subscribers</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search email"></label>
+    </div>
+
+    <div class="admin-subscribers__list">
+      @if (service.isLoading()) {
+        <p>Loading subscribers...</p>
+      } @else if (!filtered().length) {
+        <p>No subscribers yet.</p>
+      } @else {
+        @for (item of filtered(); track item.id) {
+          <article class="admin-subscribers__item">
+            <div class="admin-subscribers__item-main">
+              <div>
+                <strong>{{ item.email }}</strong>
+                <span>Subscribed {{ item.created_at | date:'medium' }}</span>
+              </div>
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </article>
+</section>

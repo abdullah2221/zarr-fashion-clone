@@ -38,6 +38,24 @@ export interface StorefrontSocialLinks {
   youtube?: string;
 }
 
+/**
+ * One editable navigation link (Phase 7 light menu builder).
+ * `highlight` renders the campaign/sale accent style; `active`
+ * marks the single header link that carries routerLinkActive,
+ * matching the pre-builder markup exactly.
+ */
+export interface StorefrontNavLink {
+  label: string;
+  url: string;
+  highlight?: boolean;
+  active?: boolean;
+}
+
+export interface StorefrontFooterLinkColumn {
+  title: string;
+  links: StorefrontNavLink[];
+}
+
 export interface StorefrontSettings {
   storeName: string;
   whatsappNumber: string;
@@ -53,6 +71,9 @@ export interface StorefrontSettings {
   defaultSeoDescription: string;
   campaignChips: string[];
   trustBadges: StorefrontTrustBadge[];
+  headerNavLinks: StorefrontNavLink[];
+  mobileNavLinks: StorefrontNavLink[];
+  footerLinkColumns: StorefrontFooterLinkColumn[];
   contactPageIntro?: string;
   aboutPageIntro?: string;
   faqIntro?: string;

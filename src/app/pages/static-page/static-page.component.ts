@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
@@ -7,9 +7,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MetaService } from '../../core/services/meta.service';
 import { CampaignChipsComponent } from '../../components/campaign-chips/campaign-chips.component';
 import { TrustBadgeStripComponent, TrustBadgeItem } from '../../components/trust-badge-strip/trust-badge-strip.component';
+import { FaqListComponent } from '../../components/faq-list/faq-list.component';
+import { CustomContentComponent } from '../../components/custom-content/custom-content.component';
 import { AdminSessionService } from '../../services/admin-session.service';
 import { StorefrontContentService } from '../../services/storefront-content.service';
 import { SitePagesService } from '../../services/site-pages.service';
+import { FaqsService } from '../../services/faqs.service';
+import { EngagementService } from '../../services/engagement.service';
+import { SitePageSection, StorefrontCustomContent } from '../../shared/models/page-content.models';
 
 type PageKey =
   | 'wishlist'
@@ -61,7 +66,7 @@ const FORM_TYPES: Array<NonNullable<StaticPageContent['formType']>> = ['checkout
 @Component({
   selector: 'app-static-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, ReactiveFormsModule, CampaignChipsComponent, TrustBadgeStripComponent],
+  imports: [CommonModule, RouterLink, MatIconModule, ReactiveFormsModule, CampaignChipsComponent, TrustBadgeStripComponent, FaqListComponent, CustomContentComponent],
   templateUrl: './static-page.component.html',
   styleUrl: './static-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -73,9 +78,12 @@ export class StaticPageComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private adminSession = inject(AdminSessionService);
   private pagesService = inject(SitePagesService);
+  private faqsService = inject(FaqsService);
+  private engagement = inject(EngagementService);
   readonly contentService = inject(StorefrontContentService);
 
   page = signal<StaticPageContent>({ eyebrow: '', title: 'Zeenat', intro: '', icon: 'article', sections: [] });
+  readonly pageKey = signal<PageKey>('about');
   isMissing = signal(false);
   isAuthSubmitting = signal(false);
   authError = signal<string | null>(null);
@@ -84,14 +92,37 @@ export class StaticPageComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  /** Contact enquiry form (Phase 7): submits to contact_messages. */
+  contactForm = this.formBuilder.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    contact: ['', [Validators.required, Validators.minLength(5)]],
+    message: ['', [Validators.required, Validators.minLength(5)]],
+  });
+  isContactSubmitting = signal(false);
+  contactError = signal<string | null>(null);
+  contactNotice = signal<string | null>(null);
+
+  /** Builder sections placed on this page besides its static-content block. */
+  readonly extraSections = computed(() => {
+    const page = this.pagesService.getPage(this.pageKey());
+    return (page?.sections || []).filter(
+      section => section.sectionType === 'faq-list' || section.sectionType === 'custom-content'
+    );
+  });
+
   campaignChips = this.contentService.campaignChips;
   trustItems = signal<TrustBadgeItem[]>([]);
 
   ngOnInit() {
     this.route.data.subscribe(data => {
       const key = (data['page'] || 'about') as PageKey;
+      this.pageKey.set(key);
       this.applyContent(key);
       void this.pagesService.ensureLoaded(key).then(() => this.applyContent(key));
+      void this.faqsService.ensureLoaded().then(() => {
+        if (this.pageKey() === 'faq') this.applyContent('faq');
+      });
     });
 
     void this.adminSession.ensureInitialized().then(() => {
@@ -126,6 +157,40 @@ export class StaticPageComponent implements OnInit {
     }
   }
 
+  async submitContact() {
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
+    this.isContactSubmitting.set(true);
+    this.contactError.set(null);
+    this.contactNotice.set(null);
+    try {
+      const sent = await this.engagement.sendContactMessage(this.contactForm.getRawValue());
+      if (sent) {
+        this.contactNotice.set('Message sent. Our team will get back to you soon.');
+        this.contactForm.reset();
+      } else {
+        this.contactError.set('Unable to send your message right now. Please try WhatsApp or email instead.');
+      }
+    } finally {
+      this.isContactSubmitting.set(false);
+    }
+  }
+
+  /** Template helpers for the builder sections rendered below the page grid. */
+  customContentOf(section: SitePageSection): StorefrontCustomContent {
+    return this.pagesService.customContent(section);
+  }
+
+  sectionText(section: SitePageSection, key: string): string {
+    return this.pagesService.sectionContent(section, key);
+  }
+
+  sectionLimitOf(section: SitePageSection): number | null {
+    return this.pagesService.sectionLimit(section);
+  }
+
   private applyContent(key: PageKey) {
     const dbPage = this.pagesService.getPage(key);
     const section = dbPage?.sections.find(item => item.sectionType === 'static-content');
@@ -143,6 +208,14 @@ export class StaticPageComponent implements OnInit {
         sections: parsed.sections,
         secondary: parsed.secondary,
       };
+      // Phase 7: on the FAQ page the Q&A cards come from the faqs
+      // table once it has answered (records are authoritative,
+      // even if the owner deactivated every question). Before
+      // that — or if the table is unreachable — the seeded
+      // static-content cards above remain, word for word.
+      if (key === 'faq' && this.faqsService.state() === 'ready') {
+        content.sections = this.faqsService.items().map(item => ({ title: item.question, body: item.answer }));
+      }
       this.page.set(this.withStorefrontOverrides(key, content));
       this.isMissing.set(false);
     } else if (this.pagesService.isLoaded(key)) {

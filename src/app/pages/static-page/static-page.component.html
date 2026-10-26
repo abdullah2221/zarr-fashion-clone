@@ -65,10 +65,16 @@
         </form>
       }
       @case ('contact') {
-        <form class="static-page__form-shell" aria-label="Contact support form">
+        <form class="static-page__form-shell" aria-label="Contact support form" [formGroup]="contactForm" (ngSubmit)="submitContact()">
           <div class="static-page__form-header"><mat-icon>support_agent</mat-icon><div><h2>Send a support request</h2><p>For delivery, COD, exchange or product questions.</p></div></div>
-          <div class="static-page__form-grid"><input placeholder="Your name" aria-label="Your name"><input placeholder="Phone or email" aria-label="Phone or email"><textarea class="wide" placeholder="How can we help?" aria-label="Message"></textarea></div>
-          <button type="button">Send Message</button>
+          <div class="static-page__form-grid"><input placeholder="Your name" aria-label="Your name" formControlName="name"><input placeholder="Phone or email" aria-label="Phone or email" formControlName="contact"><textarea class="wide" placeholder="How can we help?" aria-label="Message" formControlName="message"></textarea></div>
+          @if (contactError()) {
+            <p class="static-page__auth-message static-page__auth-message--error">{{ contactError() }}</p>
+          }
+          @if (contactNotice()) {
+            <p class="static-page__auth-message">{{ contactNotice() }}</p>
+          }
+          <button type="submit" [disabled]="isContactSubmitting()">{{ isContactSubmitting() ? 'Sending...' : 'Send Message' }}</button>
         </form>
       }
       @case ('wishlist') {
@@ -102,6 +108,21 @@
           </article>
         }
       </div>
+    }
+
+    @for (section of extraSections(); track section.id) {
+      @switch (section.sectionType) {
+        @case ('faq-list') {
+          <app-faq-list
+            [eyebrow]="sectionText(section, 'eyebrow')"
+            [title]="sectionText(section, 'title')"
+            [limit]="sectionLimitOf(section)"
+          ></app-faq-list>
+        }
+        @case ('custom-content') {
+          <app-custom-content [content]="customContentOf(section)"></app-custom-content>
+        }
+      }
     }
 
     <div class="static-page__support">

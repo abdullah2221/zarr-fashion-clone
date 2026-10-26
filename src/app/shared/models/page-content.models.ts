@@ -41,6 +41,31 @@ export interface StorefrontTestimonialsContent {
   items: StorefrontTestimonialItem[];
 }
 
+export interface StorefrontFaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+/** A testimonials-table record as the storefront renders it (Phase 7). */
+export interface StorefrontTestimonialRecord {
+  id: string;
+  name: string;
+  designation: string | null;
+  body: string;
+  rating: number | null;
+}
+
+/** Payload of the builder's generic 'custom-content' block (Phase 7). */
+export interface StorefrontCustomContent {
+  heading: string;
+  body: string;
+  imagePath?: string;
+  imageAlt?: string;
+  ctaText?: string;
+  ctaLink?: string;
+}
+
 export interface StorefrontNewsletterContent {
   eyebrow: string;
   heading: string;

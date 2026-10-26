@@ -1,0 +1,67 @@
+<section class="admin-faqs">
+  <div class="admin-faqs__hero">
+    <span class="eyebrow">Admin / FAQs</span>
+    <h1>Frequently asked questions</h1>
+    <p>These questions and answers power the FAQ page and every FAQ-list section placed in the page builder. Inactive questions never render on the storefront.</p>
+  </div>
+
+  @if (error()) { <div class="admin-faqs__alert admin-faqs__alert--error">{{ error() }}</div> }
+  @if (success()) { <div class="admin-faqs__alert admin-faqs__alert--success">{{ success() }}</div> }
+
+  <div class="admin-faqs__layout">
+    <article class="admin-faqs__column">
+      <div class="admin-faqs__section-head">
+        <div>
+          <span class="admin-faqs__kicker">Questions</span>
+          <h2>{{ service.faqs().length }} records</h2>
+        </div>
+        <button class="btn btn--dark" type="button" (click)="startCreate()">New FAQ</button>
+      </div>
+
+      <div class="admin-faqs__grid">
+        <label><span>Search questions</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search question or answer"></label>
+      </div>
+
+      <div class="admin-faqs__list">
+        @if (service.isLoading()) {
+          <p>Loading FAQs...</p>
+        } @else if (!filtered().length) {
+          <p>No FAQs found.</p>
+        } @else {
+          @for (item of filtered(); track item.id) {
+            <article class="admin-faqs__item" [class.is-selected]="selectedId() === item.id">
+              <button class="admin-faqs__item-main" type="button" (click)="select(item)">
+                <div>
+                  <strong>{{ item.question }}</strong>
+                  <span>Sort {{ item.sort_order }} · {{ item.is_active ? 'Active' : 'Inactive' }}</span>
+                </div>
+              </button>
+              <div class="admin-faqs__item-actions">
+                <button class="btn btn--ghost" type="button" (click)="toggle(item)">{{ item.is_active ? 'Deactivate' : 'Activate' }}</button>
+                <button class="btn btn--ghost" type="button" (click)="delete(item)">Delete</button>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    </article>
+
+    <form class="admin-faqs__editor" (ngSubmit)="save()">
+      <div class="admin-faqs__section-head">
+        <div>
+          <span class="admin-faqs__kicker">{{ selectedId() ? 'Edit FAQ' : 'Create FAQ' }}</span>
+          <h2>{{ selectedId() ? 'Update question' : 'New question' }}</h2>
+        </div>
+      </div>
+
+      <div class="admin-faqs__grid">
+        <label class="admin-faqs__field"><span>Question</span><input [ngModel]="editor().question" (ngModelChange)="updateEditor({ question: $event })" name="question" required></label>
+        <label class="admin-faqs__field"><span>Answer</span><textarea [ngModel]="editor().answer" (ngModelChange)="updateEditor({ answer: $event })" name="answer" required></textarea></label>
+        <label><span>Sort order</span><input type="number" [ngModel]="editor().sortOrder" (ngModelChange)="updateEditor({ sortOrder: $event === '' || $event === null ? null : +$event })" name="sortOrder"></label>
+        <label class="admin-faqs__check"><input type="checkbox" [ngModel]="editor().isActive" (ngModelChange)="updateEditor({ isActive: $event })" name="isActive"><span>Active</span></label>
+      </div>
+
+      <button class="btn btn--gold btn--full" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving...' : (selectedId() ? 'Save FAQ' : 'Create FAQ') }}</button>
+    </form>
+  </div>
+</section>

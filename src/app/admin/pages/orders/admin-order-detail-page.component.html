@@ -57,6 +57,20 @@
       </article>
 
       <article class="admin-order-detail__panel">
+        <h2>Status History</h2>
+        @if (!vm.history.length) {
+          <p class="admin-order-detail__muted">No status changes recorded yet.</p>
+        } @else {
+          @for (entry of vm.history; track entry.changedAt + entry.toStatus) {
+            <p>
+              <strong>{{ entry.fromStatus || '—' }} → {{ entry.toStatus }}</strong><br>
+              <small>{{ entry.changedAt | date:'medium' }}@if (entry.note) { · {{ entry.note }} }</small>
+            </p>
+          }
+        }
+      </article>
+
+      <article class="admin-order-detail__panel">
         <h2>COD Operations</h2>
         <label><span>Verification status</span><input [ngModel]="verificationStatus()" (ngModelChange)="verificationStatus.set($event)" placeholder="verified / pending / unreachable"></label>
         <label><span>Courier name</span><input [ngModel]="courierName()" (ngModelChange)="courierName.set($event)" placeholder="Leopards / TCS / M&P"></label>

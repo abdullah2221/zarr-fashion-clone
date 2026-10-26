@@ -35,10 +35,20 @@
       </section>
     }
     @case ('category-scroll') {
-      <div class="reveal-section"><app-category-scroll></app-category-scroll></div>
+      <div class="reveal-section"><app-category-scroll [limit]="pages.sectionLimit(section)"></app-category-scroll></div>
     }
     @case ('featured-collections') {
-      <div class="reveal-section"><app-featured-collections></app-featured-collections></div>
+      <div class="reveal-section"><app-featured-collections [limit]="pages.sectionLimit(section)"></app-featured-collections></div>
+    }
+    @case ('faq-list') {
+      <app-faq-list
+        [eyebrow]="pages.sectionContent(section, 'eyebrow')"
+        [title]="pages.sectionContent(section, 'title')"
+        [limit]="pages.sectionLimit(section)"
+      ></app-faq-list>
+    }
+    @case ('custom-content') {
+      <app-custom-content [content]="pages.customContent(section)"></app-custom-content>
     }
     @case ('campaign-band') {
       @if (content.shopBanner()) {
@@ -56,45 +66,56 @@
     }
     @case ('carousel-popular') {
       <div class="reveal-section">
-        <app-product-carousel [title]="'Popular Right Now'" [products]="popularProducts()"></app-product-carousel>
+        <app-product-carousel [title]="'Popular Right Now'" [products]="limited(popularProducts(), section)"></app-product-carousel>
       </div>
     }
     @case ('carousel-sale') {
       <div class="reveal-section">
         <app-product-carousel
           [title]="'On Sale Right Now'"
-          [products]="saleProducts()"
+          [products]="limited(saleProducts(), section)"
           [sideBannerTitle]="pages.saleSideBanner(section).sideBannerTitle"
           [sideBannerText]="pages.saleSideBanner(section).sideBannerText"
         ></app-product-carousel>
       </div>
     }
     @case ('testimonials') {
-      <section class="proof reveal-section">
-        <div class="proof__container">
-          <div class="proof__intro">
-            <span class="eyebrow">{{ pages.testimonialsContent(section).eyebrow }}</span>
-            <h2>{{ pages.testimonialsContent(section).title }}</h2>
+      @if (testimonials.state() !== 'ready' || testimonials.items().length) {
+        <section class="proof reveal-section">
+          <div class="proof__container">
+            <div class="proof__intro">
+              <span class="eyebrow">{{ pages.testimonialsContent(section).eyebrow }}</span>
+              <h2>{{ pages.testimonialsContent(section).title }}</h2>
+            </div>
+            <div class="proof__grid">
+              @if (testimonials.state() === 'ready') {
+                @for (item of testimonials.items(); track item.id) {
+                  <article class="proof__card">
+                    @if (testimonials.stars(item)) { <div class="proof__stars">{{ testimonials.stars(item) }}</div> }
+                    <p>{{ item.body }}</p><strong>{{ testimonials.authorLine(item) }}</strong>
+                  </article>
+                }
+              } @else {
+                @for (item of pages.testimonialsContent(section).items; track item.author) {
+                  <article class="proof__card"><div class="proof__stars">★★★★★</div><p>{{ item.quote }}</p><strong>{{ item.author }}</strong></article>
+                }
+              }
+            </div>
           </div>
-          <div class="proof__grid">
-            @for (item of pages.testimonialsContent(section).items; track item.author) {
-              <article class="proof__card"><div class="proof__stars">★★★★★</div><p>{{ item.quote }}</p><strong>{{ item.author }}</strong></article>
-            }
-          </div>
-        </div>
-      </section>
+        </section>
+      }
     }
     @case ('brands-stats') {
       <div class="reveal-section"><app-brands-gallery [content]="pages.brandsStatsContent(section)"></app-brands-gallery></div>
     }
     @case ('offers') {
-      <div class="reveal-section"><app-offers [campaigns]="content.offerCampaigns()"></app-offers></div>
+      <div class="reveal-section"><app-offers [campaigns]="limited(content.offerCampaigns(), section)"></app-offers></div>
     }
     @case ('campaign-cards') {
-      @if (content.homeCampaigns().length) {
+      @if (limited(content.homeCampaigns(), section).length) {
         <section class="campaign-cards reveal-section" aria-label="Seasonal campaign cards">
           <div class="campaign-cards__container">
-            @for (campaign of content.homeCampaigns(); track campaign.id) {
+            @for (campaign of limited(content.homeCampaigns(), section); track campaign.id) {
               <article class="campaign-cards__card">
                 <span class="campaign-cards__tag" [class.campaign-cards__tag--accent]="$index === 1">{{ campaign.tag || campaign.campaignType || 'Campaign' }}</span>
                 <h3>{{ campaign.title }}</h3>
@@ -121,10 +142,17 @@
         <div class="newsletter__container">
           <span class="eyebrow">{{ pages.newsletterContent(section).eyebrow }}</span>
           <h2>{{ pages.newsletterContent(section).heading }}</h2>
-          <form class="newsletter__form">
-            <input type="email" [placeholder]="pages.newsletterContent(section).emailPlaceholder" aria-label="Email address" required />
-            <button type="submit">{{ pages.newsletterContent(section).buttonText }}</button>
+          <form class="newsletter__form" #newsletterForm="ngForm" (ngSubmit)="subscribeNewsletter(newsletterForm)">
+            <input type="email" name="newsletterEmail" [(ngModel)]="newsletterEmail" [placeholder]="pages.newsletterContent(section).emailPlaceholder" aria-label="Email address" required />
+            <button type="submit" [disabled]="newsletterSubmitting()">{{ newsletterSubmitting() ? 'Sending...' : pages.newsletterContent(section).buttonText }}</button>
           </form>
+          @if (newsletterStatus() === 'success') {
+            <p role="status">Thank you — you are on the list.</p>
+          } @else if (newsletterStatus() === 'duplicate') {
+            <p role="status">This email is already subscribed.</p>
+          } @else if (newsletterStatus() === 'error') {
+            <p role="alert">Something went wrong. Please try again.</p>
+          }
           <p>{{ pages.newsletterContent(section).note }}</p>
         </div>
       </section>

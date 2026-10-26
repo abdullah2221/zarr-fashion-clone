@@ -1,0 +1,59 @@
+<section class="admin-customers">
+  <div class="admin-customers__hero">
+    <span class="eyebrow">Admin / Customers</span>
+    <h1>Customers</h1>
+    <p>Registered customer accounts from the profiles table. Role changes run through the database's set_user_role function, which only a super admin can call; your own role row is locked here.</p>
+  </div>
+
+  @if (error()) { <div class="admin-customers__alert admin-customers__alert--error">{{ error() }}</div> }
+  @if (success()) { <div class="admin-customers__alert admin-customers__alert--success">{{ success() }}</div> }
+
+  <article class="admin-customers__column">
+    <div class="admin-customers__section-head">
+      <div>
+        <span class="admin-customers__kicker">Profiles</span>
+        <h2>{{ service.customers().length }} accounts</h2>
+      </div>
+    </div>
+
+    <div class="admin-customers__grid">
+      <label><span>Search customers</span><input [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Search name, email or role"></label>
+    </div>
+
+    <div class="admin-customers__list">
+      @if (service.isLoading()) {
+        <p>Loading customers...</p>
+      } @else if (!filtered().length) {
+        <p>No customers found.</p>
+      } @else {
+        @for (profile of filtered(); track profile.id) {
+          <article class="admin-customers__item">
+            <div class="admin-customers__item-main">
+              <div>
+                <strong>{{ profile.full_name || 'Unnamed customer' }}</strong>
+                <span>{{ profile.email || 'No email' }} · Joined {{ profile.created_at | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            <div class="admin-customers__item-actions">
+              @if (session.isSuperAdmin() && !isOwnRow(profile)) {
+                <select
+                  [ngModel]="profile.role"
+                  (ngModelChange)="changeRole(profile, $event)"
+                  [disabled]="savingId() === profile.id"
+                  aria-label="Change role"
+                >
+                  @for (role of service.roleOptions; track role) {
+                    <option [value]="role">{{ role }}</option>
+                  }
+                </select>
+              } @else {
+                <span class="admin-customers__role">{{ profile.role }}</span>
+                @if (isOwnRow(profile)) { <span>(you)</span> }
+              }
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </article>
+</section>

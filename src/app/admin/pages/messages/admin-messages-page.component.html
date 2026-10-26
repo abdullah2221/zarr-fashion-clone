@@ -1,0 +1,46 @@
+<section class="admin-messages">
+  <div class="admin-messages__hero">
+    <span class="eyebrow">Admin / Messages</span>
+    <h1>Contact messages</h1>
+    <p>Enquiries sent from the Contact page form. Mark a message handled once you have replied through the customer's own phone or email.</p>
+  </div>
+
+  @if (error()) { <div class="admin-messages__alert admin-messages__alert--error">{{ error() }}</div> }
+
+  <article class="admin-messages__column">
+    <div class="admin-messages__section-head">
+      <div>
+        <span class="admin-messages__kicker">Inbox</span>
+        <h2>{{ pendingCount() }} waiting · {{ service.messages().length }} total</h2>
+      </div>
+      <label class="admin-messages__check"><input type="checkbox" [ngModel]="showHandled()" (ngModelChange)="showHandled.set($event)"><span>Show handled</span></label>
+    </div>
+
+    <div class="admin-messages__list">
+      @if (service.isLoading()) {
+        <p>Loading messages...</p>
+      } @else if (!visible().length) {
+        <p>No messages to show.</p>
+      } @else {
+        @for (item of visible(); track item.id) {
+          <article class="admin-messages__item">
+            <div class="admin-messages__item-main">
+              <div>
+                <strong>{{ item.name }} · {{ item.contact }}</strong>
+                <span>{{ item.created_at | date:'medium' }} · {{ item.is_handled ? 'Handled' : 'Waiting' }}</span>
+              </div>
+            </div>
+            <p>{{ item.message }}</p>
+            <div class="admin-messages__item-actions">
+              @if (item.is_handled) {
+                <button class="btn btn--ghost" type="button" [disabled]="savingId() === item.id" (click)="setHandled(item, false)">Reopen</button>
+              } @else {
+                <button class="btn btn--dark" type="button" [disabled]="savingId() === item.id" (click)="setHandled(item, true)">Mark handled</button>
+              }
+            </div>
+          </article>
+        }
+      }
+    </div>
+  </article>
+</section>
