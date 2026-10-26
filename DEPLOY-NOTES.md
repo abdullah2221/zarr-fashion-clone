@@ -1,3 +1,5 @@
+# v7.1 (26 Oct 2026) — homepage paint fix + fallback-image cleanup (see PHASE-7.1-RESULTS.md). Three changes: (1) the reveal CSS no longer starts sections at opacity 0 (global + home rules), so a missed animation can never hide content again; (2) the reveal observer now re-runs whenever the section list changes instead of once at first paint; (3) the built-in fallback catalogue (shown on first paint and if the live catalogue ever fails to load) no longer points at Unsplash hotlinks — hero slides use the 3 live banner images, category tiles use the 5 live category images, product images use each product's own storage photos, and 3 fallback tiles for categories that do not exist were removed. No migration. Deploy v7.1 instead of v7 from a fresh folder (npx vercel --prod). Rollback = redeploy zeenat-phase7.zip.
+
 # v7 (22 Oct 2026) — CMS COMPLETION: FAQ + TESTIMONIAL RECORDS, MENU BUILDER, MEDIA LIBRARY, CUSTOMERS, SUBSCRIBERS, MESSAGES, ORDER HISTORY
 
 **Deploy v7 INSTEAD of v6.1. Unzip FULLY into a NEW folder and deploy

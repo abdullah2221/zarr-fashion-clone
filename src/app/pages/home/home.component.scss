@@ -1,7 +1,13 @@
 @use '../../../styles/abstracts/variables' as *;
 @use '../../../styles/abstracts/mixins' as *;
 
-.reveal-section { opacity: 0; will-change: transform, opacity; }
+// Phase 7.1 fail-safe: sections must NEVER start invisible. The previous
+// `opacity: 0` here meant that if the scroll-reveal observer missed a section
+// (it runs once, but sections render asynchronously after their data loads),
+// that section stayed invisible forever. The reveal animation itself still
+// starts from opacity 0 (see home.component.ts), so the visual effect is
+// unchanged for observed sections — this rule only removes the trap.
+.reveal-section { will-change: transform, opacity; }
 
 .pakistan-pulse {
   background: linear-gradient(90deg, $color-charcoal, $color-black 52%, #2a1b18);

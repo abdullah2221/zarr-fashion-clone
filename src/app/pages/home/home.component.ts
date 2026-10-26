@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, AfterViewInit, computed, inject, PLATFORM_ID, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterRenderEffect, computed, inject, PLATFORM_ID, OnInit, signal } from '@angular/core';
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -39,7 +39,40 @@ import { animate, inView } from 'motion';
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
+  /**
+   * Phase 7.1: sections render asynchronously (their data arrives after the
+   * first paint), so a one-shot observer in ngAfterViewInit misses them — it
+   * ran before the sections existed and they stayed invisible forever. This
+   * effect re-runs whenever the section list changes and observes only the
+   * sections it has not observed yet, so late-rendered sections animate in
+   * exactly like early ones. Together with the CSS fail-safe (no starting
+   * opacity: 0), a missed observation can no longer hide content.
+   */
+  private readonly observedRevealSections = new Set<Element>();
+
+  constructor() {
+    afterRenderEffect(() => {
+      if (!isPlatformBrowser(this.platformId)) {
+        return;
+      }
+      // Reading the signal tracks it: the effect re-runs when sections arrive.
+      void this.sections();
+      document.querySelectorAll('.reveal-section').forEach((section) => {
+        if (this.observedRevealSections.has(section)) {
+          return;
+        }
+        this.observedRevealSections.add(section);
+        inView(section, () => {
+          animate(
+            section,
+            { opacity: [0, 1], y: [50, 0] },
+            { duration: 0.8, ease: [0.17, 0.55, 0.55, 1] }
+          );
+        }, { margin: '-100px' });
+      });
+    });
+  }
   private platformId = inject(PLATFORM_ID);
   private productService = inject(ProductService);
   private metaService = inject(MetaService);
@@ -97,19 +130,4 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      const sections = document.querySelectorAll('.reveal-section');
-      
-      sections.forEach((section) => {
-        inView(section, () => {
-          animate(
-            section, 
-            { opacity: [0, 1], y: [50, 0] },
-            { duration: 0.8, ease: [0.17, 0.55, 0.55, 1] }
-          );
-        }, { margin: "-100px" });
-      });
-    }
-  }
 }

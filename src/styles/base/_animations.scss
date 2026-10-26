@@ -1,5 +1,11 @@
+// Phase 7.1 fail-safe: sections must NEVER start invisible. The previous
+// `opacity: 0` here meant that if the scroll-reveal observer missed a section
+// (it ran once in ngAfterViewInit, but homepage sections render asynchronously
+// after their data loads), that section stayed invisible forever — the exact
+// blank-middle fault seen on the live homepage. The reveal animation itself
+// still starts from opacity 0 (see home.component.ts), so the visual effect is
+// unchanged for observed sections; this only removes the trap.
 .reveal-section {
-  opacity: 0;
   will-change: transform, opacity;
 }
 
